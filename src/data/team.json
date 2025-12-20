@@ -1,0 +1,79 @@
+[
+  {
+    "slug": "gregory-autieri",
+    "name": "Gregory Autieri",
+    "role": "Associé & CEO",
+    "photo": "/team/gregory-autieri.jpg",
+    "email": "gregory@gary.ch",
+    "phone": "+41 22 557 07 00",
+    "linkedin": "",
+    "quote": "Vision long terme, exigence et proximité.",
+    "bio": "Bio à compléter…"
+  },
+  {
+    "slug": "steven-bourg",
+    "name": "Steven Bourg",
+    "role": "Associé & Courtier",
+    "photo": "/team/steven-bourg.jpg",
+    "email": "steven@gary.ch",
+    "phone": "+41 78 243 05 08",
+    "linkedin": "",
+    "quote": "Accompagnement sur-mesure et résultats.",
+    "bio": "Bio à compléter…"
+  },
+  {
+    "slug": "frederic-batista",
+    "name": "Frédéric Batista",
+    "role": "Associé & Courtier",
+    "photo": "/team/frederic-batista.jpg",
+    "email": "frederic@gary.ch",
+    "phone": "",
+    "linkedin": "",
+    "quote": "Négociation rigoureuse, dossiers solides.",
+    "bio": "Bio à compléter…"
+  },
+  {
+    "slug": "guive-emami",
+    "name": "Guive Emami, MRICS",
+    "role": "Courtier Senior",
+    "photo": "/team/guive-emami.jpg",
+    "email": "guive@gary.ch",
+    "phone": "+41 78 689 06 86",
+    "linkedin": "",
+    "quote": "Expertise MRICS, précision et transparence.",
+    "bio": "Bio à compléter…"
+  },
+  {
+    "slug": "jared-camaddo",
+    "name": "Jared Camaddo",
+    "role": "Associé, Opérations & Marketing",
+    "photo": "/team/jared-camaddo.jpg",
+    "email": "jared@gary.ch",
+    "phone": "",
+    "linkedin": "",
+    "quote": "Opérations fluides, marketing efficace.",
+    "bio": "Bio à compléter…"
+  },
+  {
+    "slug": "florie-autieri",
+    "name": "Florie Autieri",
+    "role": "Responsable Opérations",
+    "photo": "/team/florie-autieri.jpg",
+    "email": "florie@gary.ch",
+    "phone": "",
+    "linkedin": "",
+    "quote": "Process clairs, qualité d’exécution.",
+    "bio": "Bio à compléter…"
+  },
+  {
+    "slug": "michel-angot",
+    "name": "Michel Angot",
+    "role": "Courtier Senior",
+    "photo": "/team/michel-angot.jpg",
+    "email": "michel@gary.ch",
+    "phone": "",
+    "linkedin": "",
+    "quote": "Expérience et fiabilité.",
+    "bio": "Bio à compléter…"
+  }
+]

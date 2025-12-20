@@ -1,0 +1,98 @@
+[
+  
+  {
+    "id": "cap-azur",
+    "type": "Appartement",
+    "name": "Cap Azur",
+    "city": "Nice",
+    "cover": "https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=2000&auto=format&fit=crop",
+    "tagline": "Terrasses sur mer, finitions haute couture.",
+     "specs": {
+    "reference": "AIRÉA-Villa B-09",
+    "pieces": "6.5",
+    "sdb": "3",
+    "chambres": "4",
+    "surface": "170 m²",
+    "surfaceUtile": "261 m²",
+    "terrain": "689 m²",
+    "vue": "Forêt",
+    "etat": "Neuf",
+    "terrasse": "15 m²",
+    "jardin": "485 m²"
+  },
+    "longDescription": "Découvrez ce projet de maison individuelle de haut standing, idéalement située à Cologny, au sein d’un quartier résidentiel paisible. Cette propriété, bénéficiant d’un permis de construire valide, allie luxe et confort de vie optimal. Conçue selon les normes THPE (Très Hautes Performances Énergétiques), elle offre des finitions haut de gamme personnalisables selon vos préférences.",
+    "secondDescription": "L’entrée spacieuse, agrémentée de rangements intégrés, mène à une cuisine moderne ouverte sur la salle à manger dotée d’un impressionnant vide cathédrale, ainsi qu’à un salon lumineux, un WC visiteurs et à une chambre avec salle de douches/WC attenante. Premier étage : La suite parentale est pourvue d’un dressing, d’une salle de bains/WC et d’une terrasse privée. Ce niveau comprend également trois chambres supplémentaires et une salle de bains/WC. Sous-sol : Cet espace de divertissement inclut une salle de cinéma, une salle de sport, une chambre en suite avec salle de douches/WC, ainsi qu’une cave à vins, une buanderie, une cave, un local technique et un abri PC. Extérieur : Profitez d’un magnifique jardin paysagé avec une grande terrasse, une piscine de 3 x 10 mètres, un pool house équipé d’une douche et d’un WC, sans oublier un garage double.", 
+    "media": {
+      "images": [
+            "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?q=80&w=2000&auto=format&fit=crop&landscape",
+        "https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=1400&auto=format&fit=crop&portrait",
+        "https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1400&auto=format&fit=crop&portrait",
+        "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?q=80&w=2000&auto=format&fit=crop&landscape"
+      ]
+    }
+  },
+  
+
+  {
+    "id": "cologny-prestige",
+    "type": "Maison individuelle",
+    "name": "Cologny Prestige",
+    "city": "Cologny (GE)",
+    "cover": "https://images.unsplash.com/photo-1515263487990-61b07816b324?q=80&w=2000&auto=format&fit=crop",
+    "tagline": "THPE, luxe et confort absolu.",
+     "specs": {
+    "reference": "AIRÉA-Villa B-09",
+    "pieces": "6.5",
+    "sdb": "3",
+    "chambres": "4",
+    "surface": "170 m²",
+    "surfaceUtile": "261 m²",
+    "terrain": "689 m²",
+    "vue": "Forêt",
+    "etat": "Neuf",
+    "terrasse": "15 m²",
+    "jardin": "485 m²"
+  },
+    "longDescription": "Découvrez ce projet de maison individuelle de haut standing, idéalement située à Cologny, au sein d’un quartier résidentiel paisible. Cette propriété, bénéficiant d’un permis de construire valide, allie luxe et confort de vie optimal. Conçue selon les normes THPE (Très Hautes Performances Énergétiques), elle offre des finitions haut de gamme personnalisables selon vos préférences.",
+    "secondDescription": "L’entrée spacieuse, agrémentée de rangements intégrés, mène à une cuisine moderne ouverte sur la salle à manger dotée d’un impressionnant vide cathédrale, ainsi qu’à un salon lumineux, un WC visiteurs et à une chambre avec salle de douches/WC attenante. Premier étage : La suite parentale est pourvue d’un dressing, d’une salle de bains/WC et d’une terrasse privée. Ce niveau comprend également trois chambres supplémentaires et une salle de bains/WC. Sous-sol : Cet espace de divertissement inclut une salle de cinéma, une salle de sport, une chambre en suite avec salle de douches/WC, ainsi qu’une cave à vins, une buanderie, une cave, un local technique et un abri PC. Extérieur : Profitez d’un magnifique jardin paysagé avec une grande terrasse, une piscine de 3 x 10 mètres, un pool house équipé d’une douche et d’un WC, sans oublier un garage double.", 
+    "media": {
+      "images": [
+         "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?q=80&w=2000&auto=format&fit=crop&landscape",
+        "https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=1400&auto=format&fit=crop&portrait",
+        "https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1400&auto=format&fit=crop&portrait",
+        "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?q=80&w=2000&auto=format&fit=crop&landscape"
+      ]
+    }
+  },
+  {
+    "id": "villas-airea",
+    "type": "Villas jumelées",
+    "name": "Villas Airéa",
+    "city": "Onex (GE)",
+    "cover": "https://images.unsplash.com/photo-1448630360428-65456885c650?q=80&w=2000&auto=format&fit=crop",
+    "tagline": "Deux villas THPE, lumière et volumes.",
+     "specs": {
+    "reference": "AIRÉA-Villa B-09",
+    "pieces": "6.5",
+    "sdb": "3",
+    "chambres": "4",
+    "surface": "170 m²",
+    "surfaceUtile": "261 m²",
+    "terrain": "689 m²",
+    "vue": "Forêt",
+    "etat": "Neuf",
+    "terrasse": "15 m²",
+    "jardin": "485 m²"
+  },
+    "longDescription": "Découvrez ce projet de maison individuelle de haut standing, idéalement située à Cologny, au sein d’un quartier résidentiel paisible. Cette propriété, bénéficiant d’un permis de construire valide, allie luxe et confort de vie optimal. Conçue selon les normes THPE (Très Hautes Performances Énergétiques), elle offre des finitions haut de gamme personnalisables selon vos préférences.",
+    "secondDescription": "L’entrée spacieuse, agrémentée de rangements intégrés, mène à une cuisine moderne ouverte sur la salle à manger dotée d’un impressionnant vide cathédrale, ainsi qu’à un salon lumineux, un WC visiteurs et à une chambre avec salle de douches/WC attenante. Premier étage : La suite parentale est pourvue d’un dressing, d’une salle de bains/WC et d’une terrasse privée. Ce niveau comprend également trois chambres supplémentaires et une salle de bains/WC. Sous-sol : Cet espace de divertissement inclut une salle de cinéma, une salle de sport, une chambre en suite avec salle de douches/WC, ainsi qu’une cave à vins, une buanderie, une cave, un local technique et un abri PC. Extérieur : Profitez d’un magnifique jardin paysagé avec une grande terrasse, une piscine de 3 x 10 mètres, un pool house équipé d’une douche et d’un WC, sans oublier un garage double.", 
+    "media": {
+      "images": [
+        "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?q=80&w=2000&auto=format&fit=crop&landscape",
+        "https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=1400&auto=format&fit=crop&portrait",
+        "https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1400&auto=format&fit=crop&portrait",
+        "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?q=80&w=2000&auto=format&fit=crop&landscape"
+      ]
+    }
+  }
+]
