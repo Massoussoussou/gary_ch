@@ -1,6 +1,6 @@
 // src/pages/ListingDetail.jsx
 import React, { useEffect, useState, useMemo } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import data from "../data/listings.json";
 import TileToggleButton from "../components/TileToggleButton.jsx";
 
@@ -355,8 +355,6 @@ export default function ListingDetail() {
 
       `}</style>
 
-      
-
       {/* HERO PLEIN ÉCRAN (carrousel) */}
       <section
         className={[
@@ -365,23 +363,6 @@ export default function ListingDetail() {
           "relative w-full h-[calc(100vh-var(--header-h,72px))]",
         ].join(" ")}
       >
-
-        <Link
-  to="/acheter/catalogue"
-  className="close-back-btn"
-  aria-label="Revenir à la page Listings"
-  title="Revenir aux annonces"
->
-  <svg className="close-back-icon" viewBox="0 0 24 24" aria-hidden="true">
-    <path
-      d="M6 6 L18 18 M18 6 L6 18"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-    />
-  </svg>
-</Link>
-
                {/* Images empilées + wipe vertical */}
         <div className="absolute inset-0 overflow-hidden">
           {/* Image en dessous (nouvelle carte) */}
