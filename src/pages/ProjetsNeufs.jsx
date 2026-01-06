@@ -19,7 +19,7 @@ export default function ProjetNeuf() {
     const intro = {
       id: "__intro__",
       name: "Découvrez nos projets",
-      tagline: "Des biens d’exception, signés GARY.",
+      tagline: "Des lieux d’exception, une signature GARY.",
       cover:
         "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2000&auto=format&fit=crop",
     };
@@ -44,101 +44,53 @@ export default function ProjetNeuf() {
     return () => io.disconnect();
   }, []);
 
-const onKey = (e) => {
-  if (lockRef.current) return;
-  if (e.key === "ArrowDown" || e.key === "PageDown") { e.preventDefault(); goTo(idxRef.current + 1); }
-  if (e.key === "ArrowUp" || e.key === "PageUp") { e.preventDefault(); goTo(idxRef.current - 1); }
-};
-
-
   // Scroll piloté (molette / clavier / touch) avec freinage en fin
   useEffect(() => {
     const el = wrapRef.current;
-   const ua = navigator.userAgent;
-const isChrome = /Chrome\//.test(ua) && !/Edg\//.test(ua) && !/OPR\//.test(ua);
-const isMac = /Mac/.test(navigator.platform);
-const isChromeMac = isChrome && isMac;
+    const vh = () => el.clientHeight;
+    const total = slides.length;
 
-if (isChromeMac) el.classList.add("is-chrome-mac");
+    const goTo = (next) => {
+      if (lockRef.current) return;
+      const target = Math.max(0, Math.min(total - 1, next));
+      if (target === idxRef.current) return;
 
+      lockRef.current = true;
+      const start = performance.now();
+      const dur = 980;
+      const startTop = el.scrollTop;
+      const endTop = target * vh();
 
+      const step = (now) => {
+        const t = Math.min(1, (now - start) / dur);
+        const k = easeOutQuint(t);
+        el.scrollTo(0, startTop + (endTop - startTop) * k);
+        if (t < 1) requestAnimationFrame(step);
+        else {
+          idxRef.current = target;
+          lockRef.current = false;
+        }
+      };
+      requestAnimationFrame(step);
+    };
 
-
-const H = () => Math.round(el.clientHeight);
-const total = slides.length;
-
-let cooldownUntil = 0;
-
-const goTo = (next) => {
-  if (lockRef.current) return;
-
-  const target = Math.max(0, Math.min(total - 1, next));
-  if (target === idxRef.current) return;
-
-  lockRef.current = true;
-  const prevSnap = el.style.scrollSnapType;
-if (isChromeMac) el.style.scrollSnapType = "none";
-
-
-  const start = performance.now();
-  const dur = 820; // un peu plus court = moins lourd sur Chrome Mac
-  const startTop = el.scrollTop;
-  const endTop = Math.round(target * H());
-
-  const step = (now) => {
-    const t = Math.min(1, (now - start) / dur);
-    const k = easeOutQuint(t);
-
-    // IMPORTANT: scrollTop (plus stable que scrollTo sur Chrome Mac)
-    el.scrollTop = Math.round(startTop + (endTop - startTop) * k);
-
-    if (t < 1) requestAnimationFrame(step);
-    else {
-      el.scrollTop = endTop;          // finit pile sur le snap
-      idxRef.current = target;
-      lockRef.current = false;
-
-      // IMPORTANT: absorbe l'inertie trackpad qui arrive après l’anim
-      cooldownUntil = performance.now() + 200;
-      if (isChromeMac) {
-  requestAnimationFrame(() => {
-    el.style.scrollSnapType = prevSnap || "";
-  });
-}
-
-    }
-  };
-
-  requestAnimationFrame(step);
-};
-
-const onWheel = (e) => {
-  e.preventDefault();
-
-  // si on est en anim: on bloque
-  if (lockRef.current) return;
-
-  // si on vient juste de finir une anim: on ignore l’inertie résiduelle
-  if (performance.now() < cooldownUntil) return;
-
-  // seuil plus haut pour trackpad (sinon micro wheel = double goTo)
-  if (Math.abs(e.deltaY) < 12) return;
-
-  goTo(idxRef.current + (e.deltaY > 0 ? 1 : -1));
-};
-
-
-let syncT = 0;
-const onScroll = () => {
-  if (lockRef.current) return;
-  clearTimeout(syncT);
-  syncT = setTimeout(() => {
-    const h = H();
-    idxRef.current = Math.max(0, Math.min(total - 1, Math.round(el.scrollTop / h)));
-  }, 120);
-};
-el.addEventListener("scroll", onScroll, { passive: true });
-
+    const onWheel = (e) => {
+      if (lockRef.current) return e.preventDefault();
+      if (Math.abs(e.deltaY) < 6) return;
+      e.preventDefault();
+      goTo(idxRef.current + (e.deltaY > 0 ? 1 : -1));
+    };
+    const onKey = (e) => {
+      if (lockRef.current) return;
+      if (e.key === "ArrowDown" || e.key === "PageDown") {
+        e.preventDefault();
+        goTo(idxRef.current + 1);
+      }
+      if (e.key === "ArrowUp" || e.key === "PageUp") {
+        e.preventDefault();
+        goTo(idxRef.current - 1);
+      }
+    };
 
     // touch
     let touchY = 0;
@@ -207,22 +159,18 @@ const handleKnowMore = (projectId) => {
   }, 3000);
 };
 
+// Petit "tic" de scroll pour déclencher l'anim, sans bloquer le scroll ensuite
 const nudgeScroll = () => {
-  const el = wrapRef.current;
-  if (!el) return;
+  const el = wrapRef.current; // ton conteneur scrollable, sinon fallback fenêtre
+  const delta =
+    el?.clientHeight ? Math.round(Math.min(140, Math.max(80, el.clientHeight * 0.06))) : 120;
 
-  const vh = el.getBoundingClientRect().height;
-  const delta = Math.max(40, vh * 0.12);
-
-  const ua = navigator.userAgent;
-  const isChrome =
-    /Chrome\//.test(ua) && !/Edg\//.test(ua) && !/OPR\//.test(ua);
-  const isMac = /Mac/.test(navigator.platform);
-  const isChromeMac = isChrome && isMac;
-
-  el.scrollBy({ top: delta, left: 0, behavior: isChromeMac ? "auto" : "smooth" });
+  if (el && el.scrollBy) {
+    el.scrollBy({ top: delta, left: 0, behavior: "smooth" });
+  } else {
+    window.scrollBy({ top: delta, left: 0, behavior: "smooth" });
+  }
 };
-
 
 
 
@@ -334,9 +282,10 @@ function CTAEnrollButton(){
         </p>
 
         <h1 className="font-serif tracking-[-0.03em] leading-[0.9] text-[clamp(3.2rem,8.8vw,7.2rem)]">
-          <span className="block">Des biens</span>
+          <span className="block">Des lieux</span>
           d’exception<span className="text-[#FF4A3E]">,</span>
-          <span className="block">signés GARY.</span>
+          <span className="block">une signature</span>
+          <span className="block">GARY.</span>
         </h1>
         <p className="mt-5 text-[clamp(1.1rem,2.1vw,1.4rem)] text-neutral-900/90 max-w-[52ch] mx-auto">
           Sélection stricte, visites en 48h, data-pricing et accompagnement clé en main.
