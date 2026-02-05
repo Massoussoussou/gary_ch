@@ -245,7 +245,13 @@
   /* Offsets/ancres ajustables (indépendants) */
   --title-left: 4vw;
   --title-top: 23vh;
-  --title-maxw: 62vw;
+  /* espace réellement dispo à gauche (on laisse un gap pour respirer) */
+--title-gap: 4vw;
+--title-maxw: min(
+  62vw,
+  calc(100vw - var(--title-left) - var(--aside-right) - var(--aside-width) - var(--title-gap))
+);
+
   --title-size: clamp(72px, 14vw, 172px);
 
   --aside-right: 5vw;
@@ -1852,3 +1858,12 @@
 }
 
 
+/* Empêche de "sauter" plusieurs snaps d'un coup (Chrome trackpad adore skipper) */
+.proj-screen {
+  scroll-snap-stop: always;
+}
+
+/* On désactive le smooth seulement quand on détecte Chrome Mac (classe ajoutée en JS) */
+.proj-wrap.is-chrome-mac {
+  scroll-behavior: auto;
+}

@@ -4,6 +4,7 @@ import team from "../data/team.json";
 import DomeGallery from "../components/DomeGallery";
 import CTAFuturaGlow, { PhoneIcon } from "../components/cta/CTAFuturaGlow.jsx";
 
+
 /* ========== Bande sous le titre (sobre) ========== */
 function TitleWithBand({ children, align = "left" }) {
   const bandColor = "rgba(255,74,62,0.10)";
@@ -514,85 +515,64 @@ function DownNudge() {
 }
 
 export default function About() {
+  const pageRef = useRef(null);
   const teamRef = useRef(null);
   const scrollToTeam = () => teamRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
-  // (inchangé) blocage scroll bas
-  useEffect(() => {
-    const stopOffset = 120;
-    const cta = document.getElementById("cta");
-    if (!cta) return;
-
-    let maxY = Math.max(0, cta.offsetTop + cta.offsetHeight - stopOffset);
-
-    const recalc = () => {
-      maxY = Math.max(0, cta.offsetTop + cta.offsetHeight - stopOffset);
-    };
-
-    window.addEventListener("resize", recalc);
-
-    const onScroll = () => {
-      if (window.scrollY > maxY) {
-        window.scrollTo({ top: maxY });
-      }
-    };
-
-    const blockDown = (e) => {
-      if (window.scrollY >= maxY && (e.deltaY > 0 || e.touches?.length)) {
-        e.preventDefault();
-        e.stopPropagation();
-        window.scrollTo({ top: maxY });
-      }
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("wheel", blockDown, { passive: false });
-    window.addEventListener("touchmove", blockDown, { passive: false });
-
-    return () => {
-      window.removeEventListener("resize", recalc);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("wheel", blockDown);
-      window.removeEventListener("touchmove", blockDown);
-    };
-  }, []);
-
-  // Fin de page manuelle : on s’arrête au marqueur #stop-here
 useEffect(() => {
-  const marker = document.getElementById("stop-here");
-  if (!marker) return;
+  const cta = document.getElementById("cta");
+  if (!cta) return;
 
   let stopY = 0;
+
   const calc = () => {
-    const r = marker.getBoundingClientRect();
-    stopY = window.scrollY + r.top; // stop = haut du marqueur (tenu par le -mt[...] ci-dessus)
+    const vh = window.innerHeight || 800;
+    stopY = Math.max(0, cta.offsetTop + cta.offsetHeight / 2 - vh / 2);
+
+    const biasPx = Math.round(vh * 0.02);
+    stopY += biasPx;
   };
-  calc();
 
   const clamp = () => {
     if (window.scrollY > stopY) window.scrollTo({ top: stopY });
   };
 
   const blockDown = (e) => {
-    const goingDown = e.deltaY > 0 || !!e.touches?.length;
-    if (goingDown && window.scrollY >= stopY) {
+    const goingDown = (e.deltaY ?? 0) > 0 || e.type === "touchmove";
+    if (goingDown && window.scrollY >= stopY - 1) {
       e.preventDefault();
       e.stopPropagation();
       window.scrollTo({ top: stopY });
     }
   };
 
-  // recalc si le layout change ou en resize
+  // ✅ 1) Calcul immédiat
+  calc();
+  clamp();
+
+  // ✅ 2) Re-calculs “post navigation” (le temps que les images/layout se posent)
+  const r1 = requestAnimationFrame(() => { calc(); clamp(); });
+  const r2 = requestAnimationFrame(() => { calc(); clamp(); });
+  const t1 = setTimeout(() => { calc(); clamp(); }, 200);
+  const t2 = setTimeout(() => { calc(); clamp(); }, 700);
+
+  // ✅ 3) Observer le CTA + la PAGE (quand les images chargent, la page change de hauteur)
+  const ro = new ResizeObserver(() => { calc(); clamp(); });
+  ro.observe(cta);
+  if (pageRef.current) ro.observe(pageRef.current);
+
   window.addEventListener("resize", calc);
   window.addEventListener("scroll", clamp, { passive: true });
   window.addEventListener("wheel", blockDown, { passive: false });
   window.addEventListener("touchmove", blockDown, { passive: false });
 
-  // si on arrive déjà trop bas
-  clamp();
-
   return () => {
+    cancelAnimationFrame(r1);
+    cancelAnimationFrame(r2);
+    clearTimeout(t1);
+    clearTimeout(t2);
+    ro.disconnect();
     window.removeEventListener("resize", calc);
     window.removeEventListener("scroll", clamp);
     window.removeEventListener("wheel", blockDown);
@@ -601,8 +581,10 @@ useEffect(() => {
 }, []);
 
 
+
+
   return (
-    <div className="bg-white">
+    <div ref={pageRef} className="bg-white">
       {/* HERO 3 BANDES */}
       <HeroThreeStrips />
 
@@ -670,7 +652,7 @@ Nos experts partagent des valeurs communes : écoute, intégrité, audace et per
       {/* CTA final */}
       <div aria-hidden="true" className="h-[18vh] md:h-[28vh]" />  
       <CTA />
-     <div id="stop-here" className="h-0 -mt-[1100px]" />
+          
       <div className="mb-24 md:mb-36" />
     </div>
   );
