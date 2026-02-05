@@ -1,5 +1,9 @@
 // src/pages/Contact.jsx
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useState } from "react";
+import BackgroundSlideshow from "../components/common/BackgroundSlideshow.jsx";
+import SquareTile from "../components/common/SquareTile.jsx";
+import TabsDemandType from "../components/forms/TabsDemandType.jsx";
+import useSendLead from "../hooks/useSendLead.js";
 
 const ESTIMATE_BG = [
   "https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=2400&auto=format&fit=crop",
@@ -14,187 +18,35 @@ const ESTIMATE_BG = [
 const HERO_BG =
   "https://images.unsplash.com/photo-1515266591878-f93e32bc5937?q=80&w=2400&auto=format&fit=crop";
 
-function BackgroundSlideshow({ images, duration = 6.2 }) {
-  const [idx, setIdx] = useState(0);
-  const [prev, setPrev] = useState(null);
-
-  useEffect(() => {
-    const next = (idx + 1) % images.length;
-
-    // Précharge next (évite flash)
-    const img = new Image();
-    img.decoding = "async";
-    img.src = images[next];
-
-    const t = setTimeout(() => {
-      setPrev(idx);
-      setIdx(next);
-      setTimeout(() => setPrev(null), 900); // durée fade
-    }, duration * 1000);
-
-    return () => clearTimeout(t);
-  }, [idx, images, duration]);
-
-  const current = images[idx];
-  const previous = prev !== null ? images[prev] : null;
-
-  return (
-    <div className="fixed inset-0 -z-10 pointer-events-none select-none overflow-hidden">
-      {/* previous */}
-      {previous && (
-        <div className="absolute inset-0 opacity-0 transition-opacity duration-900">
-          <img
-            src={previous}
-            alt=""
-            aria-hidden
-            className="absolute inset-0 h-full w-full object-cover scale-[1.08]"
-            decoding="async"
-          />
-        </div>
-      )}
-
-      {/* current */}
-      <div className="absolute inset-0 opacity-100 transition-opacity duration-900">
-        <img
-          src={current}
-          alt=""
-          aria-hidden
-          className="absolute inset-0 h-full w-full object-cover scale-[1.10] translate-x-[-2%]"
-          decoding="async"
-          fetchPriority="high"
-        />
-      </div>
-
-      {/* Voiles luxe */}
-      <div aria-hidden className="absolute inset-0">
-        <div className="absolute inset-0 bg-black/18" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/45 via-white/20 to-transparent md:from-white/55 md:via-white/25 md:to-transparent" />
-        <div className="absolute inset-0 md:bg-gradient-to-r md:from-white/55 md:via-white/25 md:to-transparent" />
-      </div>
-    </div>
-  );
-}
-
-function TabsDemandType({ type, onChange }) {
-  const types = ["Achat", "Vente", "Estimation", "Autre"];
-
-  return (
-    <div className="flex justify-center">
-      <div
-        className="
-          inline-flex items-center justify-center
-          flex-wrap gap-2
-          rounded-2xl sm:rounded-full
-          border border-black/10 bg-black/5
-          px-3 py-2
-          max-w-full
-        "
-      >
-        {types.map((t) => {
-          const active = t === type;
-          return (
-            <button
-              key={t}
-              type="button"
-              onClick={() => onChange(t)}
-              className={[
-                "px-4 py-2 rounded-full uppercase tracking-[0.10em] text-[12px] font-semibold",
-                "transition-colors border",
-                active
-                  ? "bg-[#FF4A3E] text-white border-[#FF4A3E]"
-                  : "bg-white/80 text-black/70 border-black/10 hover:bg-white",
-              ].join(" ")}
-            >
-              {t}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-/**
- * Tuile responsive :
- * - mobile (<md) : pleine largeur, hauteur auto, arrondi + blur (premium)
- * - desktop (>=md) : carré (base) qui s'agrandit si le contenu dépasse
- */
-function SquareTile({ base = 780, children }) {
-  const wrapRef = useRef(null);
-  const [side, setSide] = useState(base);
-  const [isMobile, setIsMobile] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia("(max-width: 767px)").matches;
-  });
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mq = window.matchMedia("(max-width: 767px)");
-    const onChange = (e) => setIsMobile(e.matches);
-    if (mq.addEventListener) mq.addEventListener("change", onChange);
-    else mq.addListener(onChange);
-    return () => {
-      if (mq.removeEventListener) mq.removeEventListener("change", onChange);
-      else mq.removeListener(onChange);
-    };
-  }, []);
-
-  useLayoutEffect(() => {
-    if (isMobile) return;
-    if (typeof ResizeObserver === "undefined") return;
-
-    const el = wrapRef.current;
-    const inner = el?.querySelector?.("[data-square-inner]");
-    if (!el || !inner) return;
-
-    const measure = () => {
-      const innerH = inner.scrollHeight;
-      setSide(Math.max(base, innerH + 32));
-    };
-
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(inner);
-    return () => ro.disconnect();
-  }, [base, isMobile]);
-
-  return (
-    <div ref={wrapRef} className="mx-auto w-full grid place-items-center">
-      <div
-        className="
-          relative overflow-hidden shadow-xl
-          border border-black/10 md:border-white/25
-          bg-white/94 md:bg-white
-          backdrop-blur-xl md:backdrop-blur-sm
-          rounded-3xl md:rounded-none
-          w-full max-w-[min(560px,94vw)] md:max-w-none
-          h-auto
-        "
-        style={!isMobile ? { width: side, height: side } : undefined}
-      >
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.35)" }}
-        />
-        {children}
-      </div>
-    </div>
-  );
-}
-
 export default function Contact() {
   const [type, setType] = useState("Estimation");
+  const { send, sending, error, success } = useSendLead();
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    alert("Message envoyé (démo). Branche sur ton API/CRM.");
+    const fd = new FormData(e.target);
+
+    // Honeypot check (champ caché "website")
+    if (fd.get("website")) return;
+
+    const sujet = fd.get("sujet") || "";
+    const message = fd.get("message") || "";
+    const fullMessage = `[${type}]${sujet ? ` ${sujet}` : ""}\n\n${message}`.trim();
+
+    await send({
+      sender_lastname: fd.get("nom") || "",
+      sender_firstname: fd.get("prenom") || "",
+      sender_email: fd.get("email") || "",
+      sender_number: fd.get("tel") || "",
+      sender_message: fullMessage,
+      property_reference: "CONTACT-GENERAL",
+    });
   };
 
   return (
     <div className="relative isolate min-h-screen overflow-x-clip">
       <BackgroundSlideshow images={[HERO_BG, ...ESTIMATE_BG]} duration={6.2} />
 
-      {/* ✅ évite de passer sous le header mobile */}
       <main className="relative z-10 flex justify-center px-4 pt-24 pb-14 sm:py-16">
         <section className="w-full max-w-[min(980px,94vw)]">
           <SquareTile base={780}>
@@ -218,6 +70,20 @@ export default function Contact() {
               </header>
 
               <form onSubmit={onSubmit} className="mt-8 grid gap-5 md:gap-6">
+                {/* Honeypot anti-spam — caché */}
+                <input type="text" name="website" className="hidden" tabIndex={-1} autoComplete="off" />
+
+                {success && (
+                  <div className="rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-green-800 text-sm">
+                    Merci ! Votre message a été envoyé. Nous vous recontactons rapidement.
+                  </div>
+                )}
+                {error && (
+                  <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-red-700 text-sm">
+                    Erreur : {error}. Veuillez réessayer.
+                  </div>
+                )}
+
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
                     <label htmlFor="nom" className="text-sm text-black/70">
@@ -302,16 +168,17 @@ export default function Contact() {
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <p className="text-xs text-black/60 leading-relaxed">
-                    En envoyant ce formulaire, vous acceptez d’être recontacté(e)
+                    En envoyant ce formulaire, vous acceptez d'être recontacté(e)
                     par GARY.
                   </p>
 
                   <button
                     type="submit"
-                    className="group inline-flex items-center justify-center gap-2 px-7 md:px-9 py-3 rounded-2xl text-white shadow-lg transition hover:shadow-xl"
+                    disabled={sending}
+                    className="group inline-flex items-center justify-center gap-2 px-7 md:px-9 py-3 rounded-2xl text-white shadow-lg transition hover:shadow-xl disabled:opacity-60 disabled:cursor-wait"
                     style={{ backgroundColor: "#FF4A3E" }}
                   >
-                    Envoyer
+                    {sending ? "Envoi en cours…" : "Envoyer"}
                     <span
                       aria-hidden
                       className="inline-block translate-x-0 transition-transform duration-200 ease-out group-hover:translate-x-1"

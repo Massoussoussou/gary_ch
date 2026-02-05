@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Header from './components/Header.jsx'
+import Header from './components/layout/Header.jsx'
 import DesignSwitcher from './components/DesignSwitcher.jsx'
-import IntroCover from './components/IntroCover.jsx'
-import ScrollToTop from "./components/ScrollToTop";
+import IntroCover from './components/layout/IntroCover.jsx'
+import ScrollToTop from "./components/layout/ScrollToTop.jsx";
 
 
 import Home from './pages/Home.jsx'
@@ -19,6 +19,7 @@ import TeamMemberDetail from './pages/TeamMemberDetail.jsx'
 
 import ProjetsNeufs from "./pages/ProjetsNeufs";
 import ProjetNeufDetail from "./pages/ProjetNeufDetail";
+import Actualite from './pages/Actualite.jsx';
 
 
 
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
           <Route path="/projets-neufs" element={<ProjetsNeufs />} />
           <Route path="/projets-neufs/:id" element={<ProjetNeufDetail />} />
+          <Route path="/actualites" element={<Actualite />} />
         </Routes>
       </main>
       

@@ -1,10 +1,9 @@
 // src/pages/ListingDetail.jsx
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import data from "../data/listings.json";
+import useProperties from "../hooks/useProperties.js";
 import TileToggleButton from "../components/TileToggleButton.jsx";
 
-// ⬇︎ on ajoute ça
 import team from "../data/team.json";
 import "../styles/projet.css";
 
@@ -30,10 +29,19 @@ function fmtPrice(amount, currency = "CHF") {
 
 export default function ListingDetail() {
   const { id } = useParams();
+  const { data, loading, error } = useProperties();
   const item = pickByIdOrSlug(data, id);
 
   const [isReady, setIsReady] = useState(false);
   const [isTileVisible, setIsTileVisible] = useState(true);
+
+  if (loading) {
+    return (
+      <main className="page-bg min-h-screen text-text flex items-center justify-center">
+        <p className="text-sm text-neutral-500 animate-pulse">Chargement…</p>
+      </main>
+    );
+  }
 
   if (!item) {
     return (

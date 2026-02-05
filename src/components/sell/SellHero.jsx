@@ -1,7 +1,7 @@
 // src/components/sell/SellHero.jsx
 import { useState } from "react";
-import CTAFuturaGlow, { KeyIcon } from "../CTAFuturaGlow.jsx";
-import CTAWhiteSweep from "../CTAWhiteSweep.jsx";
+import CTAFuturaGlow, { KeyIcon } from "../cta/CTAFuturaGlow.jsx";
+import CTAWhiteSweep from "../cta/CTAWhiteSweep.jsx";
 
 export default function SellHero() {
   const [ready, setReady] = useState(false);

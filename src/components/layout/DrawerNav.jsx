@@ -1,9 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink, Link, useLocation } from "react-router-dom";
 
 export default function DrawerNav({ open, onClose }) {
   const { pathname } = useLocation();
   const firstLinkRef = useRef(null);
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   const isPathActive = (to) =>
     pathname === to || (to !== "/" && pathname.startsWith(to + "/"));
@@ -28,17 +29,27 @@ export default function DrawerNav({ open, onClose }) {
     };
   }, [open, onClose]);
 
-  const primary = [
+  // Fermer l'accordéon quand le drawer se ferme
+  useEffect(() => {
+    if (!open) setAboutOpen(false);
+  }, [open]);
+
+  const navItems = [
     { to: "/acheter", label: "ACHETER", sub: "Découvrir nos biens" },
     { to: "/vendre", label: "VENDRE", sub: "Vendre avec GARY" },
     { to: "/estimer", label: "ESTIMER", sub: "Estimation confidentielle" },
+    { to: "/projets-neufs", label: "PROJETS NEUFS", sub: "Programmes immobiliers" },
+    { to: "/actualites", label: "ACTUALITÉS", sub: "Dernières infos GARY" },
   ];
 
-  const secondary = [
-    { to: "/projets-neufs", label: "Projets neufs" },
-    { to: "/a-propos", label: "Qui est GARY ?" },
-    { to: "/contact", label: "Contact" },
+  const aboutSubs = [
+    { to: "/a-propos", label: "Qui est GARY" },
+    { to: "#", label: "Actu" },
+    { to: "#", label: "Presse" },
+    { to: "#", label: "Ressources" },
   ];
+
+  const aboutActive = aboutSubs.some((s) => isPathActive(s.to));
 
   return (
     <div
@@ -84,7 +95,7 @@ export default function DrawerNav({ open, onClose }) {
               to="/"
               onClick={onClose}
               className="flex flex-col"
-              aria-label="Retour à l’accueil"
+              aria-label="Retour à l'accueil"
             >
               <span className="uppercase font-medium text-[13px] tracking-[0.34em] text-black">
                 GARY
@@ -113,16 +124,8 @@ export default function DrawerNav({ open, onClose }) {
 
           {/* Content */}
           <nav className="flex-1 overflow-y-auto px-6 py-6">
-            {/* Section title */}
-            <div className="mb-4 flex items-center gap-3">
-              <p className="text-[11px] uppercase tracking-[0.32em] text-black/70">
-                Navigation
-              </p>
-              <span className="h-px flex-1 bg-black/15" />
-            </div>
-
             <ul className="space-y-3">
-              {primary.map((item, idx) => {
+              {navItems.map((item, idx) => {
                 const active = isPathActive(item.to);
                 return (
                   <li key={item.to}>
@@ -144,7 +147,6 @@ export default function DrawerNav({ open, onClose }) {
                         }
                       `}
                     >
-                      {/* Accent bar */}
                       <span
                         className={`
                           pointer-events-none absolute left-0 top-0 h-full w-[5px]
@@ -157,15 +159,8 @@ export default function DrawerNav({ open, onClose }) {
                           }
                         `}
                       />
-
                       <div className="pl-2">
-                        <div
-                          className="
-                            text-black font-light uppercase leading-none
-                            tracking-[0.26em]
-                            text-[clamp(22px,6.6vw,34px)]
-                          "
-                        >
+                        <div className="text-black font-light uppercase leading-none tracking-[0.26em] text-[clamp(22px,6.6vw,34px)]">
                           {item.label}
                         </div>
                         <div className="mt-2 text-[13px] text-black/70">
@@ -176,51 +171,102 @@ export default function DrawerNav({ open, onClose }) {
                   </li>
                 );
               })}
+
+              {/* A propos — accordéon */}
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setAboutOpen((v) => !v)}
+                  className={`
+                    group relative w-full text-left block rounded-2xl px-5 py-3.5 overflow-hidden
+                    border border-black/12
+                    bg-white/55
+                    transition-all duration-200
+                    hover:bg-white/80 hover:border-black/18
+                    focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/30
+                    ${
+                      aboutActive || aboutOpen
+                        ? "bg-[#FF4A3E]/6 border-black/18 shadow-[0_10px_24px_rgba(0,0,0,0.06),inset_0_0_0_1px_rgba(255,74,62,0.28)]"
+                        : ""
+                    }
+                  `}
+                >
+                  <span
+                    className={`
+                      pointer-events-none absolute left-0 top-0 h-full w-[5px]
+                      bg-[#FF4A3E]
+                      transition-opacity duration-200
+                      ${
+                        aboutActive || aboutOpen
+                          ? "opacity-100"
+                          : "opacity-0 group-hover:opacity-30"
+                      }
+                    `}
+                  />
+                  <div className="pl-2 flex items-center justify-between">
+                    <div>
+                      <div className="text-black font-light uppercase leading-none tracking-[0.26em] text-[clamp(22px,6.6vw,34px)]">
+                        À PROPOS
+                      </div>
+                      <div className="mt-2 text-[13px] text-black/70">
+                        En savoir plus sur GARY
+                      </div>
+                    </div>
+                    <span
+                      className="text-black/40 text-[20px] transition-transform duration-300 ease-out"
+                      style={{ transform: aboutOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                      aria-hidden
+                    >
+                      ▾
+                    </span>
+                  </div>
+                </button>
+
+                {/* Sous-menu dépliable */}
+                <div
+                  className="overflow-hidden transition-all duration-300 ease-out"
+                  style={{
+                    maxHeight: aboutOpen ? `${aboutSubs.length * 56}px` : "0px",
+                    opacity: aboutOpen ? 1 : 0,
+                  }}
+                >
+                  <ul className="mt-2 ml-4 space-y-1.5">
+                    {aboutSubs.map((sub) => {
+                      const subActive = sub.to !== "#" && isPathActive(sub.to);
+                      return (
+                        <li key={sub.label}>
+                          <NavLink
+                            to={sub.to}
+                            onClick={sub.to !== "#" ? onClose : (e) => e.preventDefault()}
+                            className={`
+                              group flex items-center justify-between
+                              rounded-xl px-4 py-3
+                              border border-black/8
+                              bg-white/50
+                              transition-all duration-200
+                              hover:bg-white/80 hover:border-black/15
+                              focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/30
+                              ${
+                                subActive
+                                  ? "bg-[#FF4A3E]/5 border-black/15"
+                                  : ""
+                              }
+                            `}
+                          >
+                            <span className={`text-[15px] ${subActive ? "text-[#FF4A3E]" : "text-black/85"}`}>
+                              {sub.label}
+                            </span>
+                            <span className="text-black/25 group-hover:text-black/45 text-[13px] transition-colors">
+                              →
+                            </span>
+                          </NavLink>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              </li>
             </ul>
-
-            <div className="mt-8">
-              <div className="mb-3 flex items-center gap-3">
-                <p className="text-[11px] uppercase tracking-[0.32em] text-black/70">
-                  À propos
-                </p>
-                <span className="h-px flex-1 bg-black/15" />
-              </div>
-
-              <ul className="space-y-2">
-                {secondary.map((item) => {
-                  const active = isPathActive(item.to);
-                  return (
-                    <li key={item.to}>
-                      <NavLink
-                        to={item.to}
-                        onClick={onClose}
-                        className={`
-                          group flex items-center justify-between
-                          rounded-2xl px-5 py-4
-                          border border-black/12
-                          bg-white/45
-                          transition-all duration-200
-                          hover:bg-white/75 hover:border-black/18
-                          focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/30
-                          ${
-                            active
-                              ? "bg-[#FF4A3E]/4 border-black/18 shadow-[0_10px_22px_rgba(0,0,0,0.05),inset_0_0_0_1px_rgba(255,74,62,0.18)]"
-                              : ""
-                          }
-                        `}
-                      >
-                        <span className="text-[16px] text-black/90">
-                          {item.label}
-                        </span>
-                        <span className="text-black/30 group-hover:text-black/45 transition-colors">
-                          →
-                        </span>
-                      </NavLink>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
           </nav>
 
           {/* Bottom CTA */}

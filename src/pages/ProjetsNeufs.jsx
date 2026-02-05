@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import data from "../data/projects.json";
+import { usePromotionsList } from "../hooks/usePromotions.js";
 import "../styles/projet.css";
-import CTAFuturaGlow, { VillaIcon, InfoIcon } from "../components/CTAFuturaGlow.jsx";
-import CTAWhiteSweep from "../components/CTAWhiteSweep.jsx";
+import CTAFuturaGlow, { VillaIcon, InfoIcon } from "../components/cta/CTAFuturaGlow.jsx";
+import CTAWhiteSweep from "../components/cta/CTAWhiteSweep.jsx";
 
 
 /* Easing qui ralentit bien sur la fin */
@@ -14,18 +14,19 @@ export default function ProjetNeuf() {
   const idxRef = useRef(0);
   const lockRef = useRef(false);
   const navigate = useNavigate();
+  const { data, loading } = usePromotionsList();
 
   const slides = useMemo(() => {
     const intro = {
       id: "__intro__",
       name: "Découvrez nos projets",
-      tagline: "Des lieux d’exception, une signature GARY.",
+      tagline: "Des lieux d'exception, une signature GARY.",
       cover:
         "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2000&auto=format&fit=crop",
     };
     const coming = { id: "__coming__", kind: "coming" };
     return [intro, ...data, coming];
-  }, []);
+  }, [data]);
 
   // Ajoute / retire .is-visible pour déclencher l’anim de texte
   useEffect(() => {

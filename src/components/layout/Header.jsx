@@ -8,7 +8,7 @@ import DrawerNav from './DrawerNav.jsx'
 const NAV_FONT_SCALE = 1; // 1 = inchangé, 1.6 = +60% (mets 1.3, 1.8, 2.0…)
 
 const UI_SCALE   = 1.30            // échelle globale
-const NAV_SPREAD = 2.5             // >1 augmente l’écart entre onglets
+const NAV_SPREAD = 2.0             // >1 augmente l’écart entre onglets
 
 // Bords de page (gros réglages) : contrôlent le “pas collé” gauche/droite
 const EDGE_LEFT  = 24;             // px — augmente pour décoller le logo du bord gauche
@@ -193,6 +193,7 @@ export default function Header(){
             { to: '/vendre',        label: 'Vendre' },
             { to: '/estimer',       label: 'Estimer' },
             { to: '/projets-neufs', label: 'Projets\u00A0neufs' },
+            { to: '/actualites',    label: 'Actualités' },
             { to: '/a-propos',      label: 'Qui\u00A0est\u00A0GARY\u00A0?' },
           ].map(({ to, label }) => (
             <NavLink

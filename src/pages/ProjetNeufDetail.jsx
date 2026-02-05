@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import data from "../data/projects.json";
+import { usePromotionDetail } from "../hooks/usePromotions.js";
 import team from "../data/team.json";
 
 import "../styles/projet.css";
@@ -60,7 +60,7 @@ function SpecIcon({ name }) {
 
 export default function ProjetNeufDetail() {
   const { id } = useParams();
-  const p = useMemo(() => (data || []).find((x) => x.id === id), [id]);
+  const { data: p, loading, error } = usePromotionDetail(id);
   const [isReady, setIsReady] = useState(false);
 
   const specsRef = useRef(null);   // ancre 2e description (juste sous le hero)
@@ -99,6 +99,14 @@ export default function ProjetNeufDetail() {
     io.observe(el);
     return () => io.disconnect();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-sm text-neutral-500 animate-pulse">Chargement du projet…</p>
+      </div>
+    );
+  }
 
   if (!p) {
     return (

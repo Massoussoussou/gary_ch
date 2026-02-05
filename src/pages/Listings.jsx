@@ -1,31 +1,12 @@
 // src/pages/Listings.jsx
 import { useMemo, useState, useEffect } from "react"
 import { useLocation } from "react-router-dom"
-import raw from "../data/listings.json"
+import useProperties from "../hooks/useProperties.js"
 import FiltersBar from "../components/FiltersBar.jsx"
 import ListingGrid from "../components/ListingGrid.jsx"
 import SortMenu from "../components/SortMenu.jsx"
 import DesignSwitcher from "../components/DesignSwitcher.jsx"
 import SpecsCard from "../components/listing/SpecsCard.jsx";
-
-// -------------------- Data prep (inchangé) --------------------
-const data = raw.map(it => ({
-  ...it,
-  ville: it.ville ?? "",
-  canton: it.canton ?? "",
-  type: it.type ?? "",
-  prix: Number(it.prix ?? 0),
-  pieces: Number(it.pieces ?? 0),
-  chambres: Number(it.chambres ?? 0),
-  sdb: Number(it.sdb ?? 0),
-  surface_m2: Number(it.surface_m2 ?? 0),
-  terrain_m2: Number(it.terrain_m2 ?? 0),
-  equipements: Array.isArray(it.equipements) ? it.equipements : [],
-  meuble: !!it.meuble,
-  dispo: it.dispo ?? "",
-  createdAt: it.createdAt ?? "",
-  bandeau: it.bandeau ?? (it.vendu ? "vendu" : null),
-}))
 
 function uniqSorted(arr) {
   return [...new Set(arr.filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b), "fr"))
@@ -156,8 +137,9 @@ function parseSortFromQS(search) {
 // -------------------- Component --------------------
 export default function Listings(){
   const location = useLocation()
+  const { data, loading, error } = useProperties()
 
-  const facets = useMemo(() => deriveFacets(data), [])
+  const facets = useMemo(() => deriveFacets(data), [data])
 
   // init depuis l’URL, et re-sync si l’URL change (back/forward ou navigation depuis BuyIntro)
   const [filters, setFilters] = useState(() => parseFiltersFromQS(location.search))
@@ -168,8 +150,24 @@ export default function Listings(){
     setSort(parseSortFromQS(location.search))
   }, [location.search])
 
-  const filtered   = useMemo(() => sortItems(applyFilters(data, filters), sort), [filters, sort])
+  const filtered   = useMemo(() => sortItems(applyFilters(data, filters), sort), [data, filters, sort])
   const isFiltered = hasActiveFilters(filters)
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-sm text-neutral-500 animate-pulse">Chargement des annonces…</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-sm text-red-500">Erreur de chargement : {error}</p>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen">
