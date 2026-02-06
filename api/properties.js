@@ -3,16 +3,40 @@ import { fetchPropertyLabels } from "./_labels-cache.js";
 // Fallback mappings pour les types de biens courants
 const CATEGORY_FALLBACK = {
   "100": "Appartement",
+  "101": "Studio",
+  "102": "Loft",
+  "103": "Duplex",
+  "104": "Triplex",
+  "105": "Penthouse",
   "110": "Attique",
   "120": "Maison",
+  "121": "Villa",
+  "122": "Villa mitoyenne",
+  "123": "Maison mitoyenne",
+  "124": "Maison de maître",
+  "125": "Maison de ville",
+  "126": "Maison jumelée",
+  "127": "Villa mitoyenne",
+  "128": "Ferme",
+  "129": "Château",
   "130": "Villa",
+  "131": "Villa d'architecte",
+  "139": "Propriété de prestige",
   "140": "Chalet",
   "150": "Terrain",
+  "151": "Terrain constructible",
   "160": "Immeuble",
+  "161": "Immeuble de rapport",
   "170": "Local commercial",
+  "171": "Commerce",
+  "172": "Boutique",
   "180": "Bureau",
+  "181": "Espace de coworking",
   "190": "Parking",
+  "191": "Garage",
+  "192": "Box",
   "200": "Entrepôt",
+  "201": "Dépôt",
 };
 
 // Fallback mappings pour les cantons suisses (par ID)
@@ -22,6 +46,82 @@ const CANTON_FALLBACK = {
   "11": "JU", "12": "LU", "13": "NE", "14": "NW", "15": "OW",
   "16": "SG", "17": "SH", "18": "SO", "19": "SZ", "20": "TG",
   "21": "TI", "22": "VD", "23": "VS", "24": "ZG", "25": "GE", "26": "ZH",
+};
+
+// Mapping codes postaux → noms de villes (Suisse romande principalement)
+const ZIP_TO_CITY = {
+  // Genève
+  "1200": "Genève", "1201": "Genève", "1202": "Genève", "1203": "Genève",
+  "1204": "Genève", "1205": "Genève", "1206": "Genève", "1207": "Genève",
+  "1208": "Genève", "1209": "Genève", "1210": "Genève", "1211": "Genève",
+  "1212": "Grand-Lancy", "1213": "Petit-Lancy", "1214": "Vernier",
+  "1215": "Genève Aéroport", "1216": "Cointrin", "1217": "Meyrin",
+  "1218": "Le Grand-Saconnex", "1219": "Châtelaine", "1220": "Les Avanchets",
+  "1222": "Vésenaz", "1223": "Cologny", "1224": "Chêne-Bougeries",
+  "1225": "Chêne-Bourg", "1226": "Thônex", "1227": "Carouge",
+  "1228": "Plan-les-Ouates", "1231": "Conches", "1232": "Confignon",
+  "1233": "Bernex", "1234": "Vessy", "1236": "Cartigny",
+  "1241": "Puplinge", "1242": "Satigny", "1243": "Presinge",
+  "1244": "Choulex", "1245": "Collonge-Bellerive", "1246": "Corsier",
+  "1247": "Anières", "1248": "Hermance", "1251": "Gy",
+  "1252": "Meinier", "1253": "Vandoeuvres", "1254": "Jussy",
+  "1255": "Veyrier", "1256": "Troinex", "1257": "Croix-de-Rozon",
+  "1258": "Perly", "1290": "Versoix", "1291": "Commugny",
+  "1292": "Chambésy", "1293": "Bellevue", "1294": "Genthod",
+  // Vaud - Lausanne et environs
+  "1000": "Lausanne", "1003": "Lausanne", "1004": "Lausanne",
+  "1005": "Lausanne", "1006": "Lausanne", "1007": "Lausanne",
+  "1008": "Prilly", "1009": "Pully", "1010": "Lausanne",
+  "1011": "Lausanne", "1012": "Lausanne", "1014": "Lausanne",
+  "1015": "Lausanne", "1018": "Lausanne", "1020": "Renens",
+  "1022": "Chavannes-près-Renens", "1023": "Crissier", "1024": "Écublens",
+  "1025": "St-Sulpice", "1026": "Denges", "1027": "Lonay",
+  "1028": "Préverenges", "1029": "Villars-Ste-Croix", "1030": "Bussigny",
+  // Vaud - Riviera
+  "1800": "Vevey", "1801": "Le Mont-Pèlerin", "1802": "Corseaux",
+  "1803": "Chardonne", "1804": "Corsier-sur-Vevey", "1805": "Jongny",
+  "1806": "St-Légier", "1807": "Blonay", "1808": "Les Monts-de-Corsier",
+  "1809": "Fenil-sur-Corsier", "1814": "La Tour-de-Peilz",
+  "1815": "Clarens", "1816": "Chailly-Montreux", "1817": "Brent",
+  "1820": "Montreux", "1822": "Chernex", "1823": "Glion",
+  "1824": "Caux", "1832": "Villard-sur-Chamby", "1833": "Les Avants",
+  // Vaud - Nyon et environs
+  "1260": "Nyon", "1261": "Longirod", "1262": "Eysins",
+  "1263": "Crassier", "1264": "St-Cergue", "1266": "Duillier",
+  "1267": "Coinsins", "1268": "Begnins", "1269": "Bassins",
+  "1270": "Trélex", "1271": "Givrins", "1272": "Genolier",
+  "1273": "Arzier", "1274": "Grens", "1275": "Chéserex",
+  "1276": "Gingins", "1277": "Borex", "1278": "La Rippe",
+  "1279": "Chavannes-de-Bogis", "1280": "Chavannes-des-Bois",
+  "1281": "Russin", "1283": "Dardagny", "1284": "Chancy",
+  "1285": "Athenaz", "1286": "Soral", "1287": "Laconnex",
+  "1288": "Aire-la-Ville", "1295": "Mies", "1296": "Coppet",
+  "1297": "Founex", "1298": "Céligny", "1299": "Crans-près-Céligny",
+  // France voisine
+  "74140": "Chens-sur-Léman", "74160": "Beaumont", "74200": "Thonon-les-Bains",
+  "74500": "Évian-les-Bains", "74100": "Annemasse", "74240": "Gaillard",
+  // Autres villes importantes
+  "1950": "Sion", "3900": "Brig", "3920": "Zermatt",
+  "1870": "Monthey", "1890": "St-Maurice", "1920": "Martigny",
+};
+
+// Fallback pour les équipements/amenities courants
+const AMENITY_FALLBACK = {
+  "2": "Ascenseur", "3": "Balcon", "4": "Terrasse", "5": "Jardin",
+  "6": "Piscine", "7": "Garage", "8": "Parking", "9": "Cave",
+  "10": "Grenier", "11": "Cheminée", "12": "Climatisation",
+  "14": "Alarme", "20": "Interphone", "22": "Vidéophone",
+  "23": "Domotique", "24": "Double vitrage", "25": "Triple vitrage",
+  "26": "Panneaux solaires", "28": "Pompe à chaleur",
+  "30": "Buanderie", "34": "Local vélos", "36": "Vue lac",
+  "40": "Vue montagne", "42": "Vue dégagée", "45": "Jacuzzi",
+  "47": "Sauna", "49": "Fitness", "53": "Conciergerie",
+  "54": "Réception", "60": "Cuisine équipée", "72": "Parquet",
+  "92": "Stores électriques", "95": "Volets roulants",
+  "103": "Fibre optique", "119": "Borne de recharge",
+  "161": "Accès handicapés", "175": "Home cinéma",
+  "266": "Portail électrique", "312": "Salle de sport",
+  "353": "Proche transports", "360": "Proche commerces", "362": "Proche écoles",
 };
 
 // Supprime les balises HTML pour le texte brut
@@ -111,8 +211,8 @@ export default async function handler(req, res) {
     const { cities, categories, amenities } = labels;
 
     const resolveCity = (cityId, zip, cityName) => {
-      // Priorité: nom de ville direct > labels API > ZIP
-      if (cityName && typeof cityName === "string" && !cityName.startsWith("ZIP")) {
+      // Priorité: nom de ville direct > labels API > ZIP mapping > ZIP brut
+      if (cityName && typeof cityName === "string" && !cityName.startsWith("ZIP") && !/^\d+$/.test(cityName)) {
         return cityName;
       }
       const entry = cities[String(cityId)];
@@ -120,6 +220,10 @@ export default async function handler(req, res) {
         const lbl = entry.labels || entry;
         const resolved = lbl[primaryLang] || lbl.fr || lbl.en;
         if (resolved) return resolved;
+      }
+      // Fallback: mapping ZIP → nom de ville
+      if (zip && ZIP_TO_CITY[String(zip)]) {
+        return ZIP_TO_CITY[String(zip)];
       }
       return zip ? `${zip}` : null;
     };
@@ -141,8 +245,12 @@ export default async function handler(req, res) {
 
     const resolveAmenity = (amenityId) => {
       const entry = amenities[String(amenityId)];
-      if (!entry) return String(amenityId);
-      return entry[primaryLang] || entry.fr || entry.en || String(amenityId);
+      if (entry) {
+        const resolved = entry[primaryLang] || entry.fr || entry.en;
+        if (resolved) return resolved;
+      }
+      // Fallback sur notre mapping statique
+      return AMENITY_FALLBACK[String(amenityId)] || null;
     };
 
     // Cache: CDN 5 min, navigateur 0 (force revalidation)
@@ -175,9 +283,9 @@ export default async function handler(req, res) {
       const typeId = p.sub_category_id || p.main_category_id;
       const typeLabel = resolveCategory(p.sub_category_id) || resolveCategory(p.main_category_id);
 
-      // Résolution des amenities (IDs → noms lisibles)
+      // Résolution des amenities (IDs → noms lisibles), filtre les non résolus
       const rawAmenities = Array.isArray(p.amenities) ? p.amenities : [];
-      const equipements = rawAmenities.map((id) => resolveAmenity(id));
+      const equipements = rawAmenities.map((id) => resolveAmenity(id)).filter(Boolean);
 
       return {
         id: p.id,
