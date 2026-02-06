@@ -89,7 +89,7 @@ function normalizeData(items) {
     coordsFake: it.coords || it.coordsFake || { lat: null, lng: null },
     agentSlug: it.broker?.slug || it.agentSlug || null,
     // Coercition numérique
-    prix: +(it.prix || 0),
+    prix: it.prix != null && it.prix !== 0 ? +it.prix : null,
     surface_m2: +(it.surface_m2 || 0),
     pieces: +(it.pieces || 0),
     chambres: +(it.chambres || 0),

@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 const GARY_ORANGE = "#FF4A3E";
 
 function formatCHF(n) {
-  if (typeof n !== "number" || isNaN(n)) return "Prix sur demande";
+  if (typeof n !== "number" || isNaN(n) || n <= 0) return "Prix sur demande";
   return "CHF " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'");
 }
 

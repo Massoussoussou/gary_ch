@@ -5,7 +5,7 @@ const ORANGE = "#FF4A3E";
 const AMBRE  = "#F59E0B";
 
 function formatCHF(n) {
-  if (typeof n !== "number" || isNaN(n)) return null;
+  if (typeof n !== "number" || isNaN(n) || n <= 0) return null;
   return "CHF " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'");
 }
 

@@ -17,7 +17,7 @@ const tileRadiusCls = LUXE_SQUARE ? "rounded-none" : "rounded-md";
    HELPERS
    ========================= */
 function formatCHF(n) {
-  if (typeof n !== "number" || isNaN(n)) return n;
+  if (typeof n !== "number" || isNaN(n) || n <= 0) return null;
   return "CHF " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'");
 }
 function isRecent(d, days = 21) {
