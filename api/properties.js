@@ -145,8 +145,8 @@ export default async function handler(req, res) {
       return entry[primaryLang] || entry.fr || entry.en || String(amenityId);
     };
 
-    // Cache 5 min (pour tests) — passer à s-maxage=7200 en production
-    res.setHeader("Cache-Control", "s-maxage=300, stale-while-revalidate=600");
+    // Cache: CDN 5 min, navigateur 0 (force revalidation)
+    res.setHeader("Cache-Control", "public, max-age=0, s-maxage=300, stale-while-revalidate=600");
 
     // Mapping vers le format front
     const data = (payload.data || []).map((p) => {
