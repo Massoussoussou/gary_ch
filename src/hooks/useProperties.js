@@ -104,5 +104,8 @@ function normalizeData(items) {
     createdAt: it.createdAt || "",
     bandeau: it.bandeau || null,
     tags: it.tags || [],
+    // Description (texte brut + HTML)
+    description: it.description || "",
+    descriptionHtml: it.descriptionHtml || it.description || "",
   }));
 }

@@ -515,7 +515,7 @@ export default function ListingDetail() {
 
       {/* === CONTENU PRINCIPAL : DESCRIPTION + SPECS === */}
       <section className="relative w-full px-[clamp(20px,6vw,140px)] py-[clamp(60px,12vh,160px)] grid grid-cols-1 lg:grid-cols-2 gap-[clamp(40px,6vw,80px)]">
-        {/* DESCRIPTION (à gauche) */}
+        {/* DESCRIPTION (à gauche) — rendue en HTML */}
         <div
           className="
             opacity-0 translate-y-[20px]
@@ -524,10 +524,14 @@ export default function ListingDetail() {
             max-w-[680px]
             leading-[1.6]
             text-[clamp(1rem,1.4vw,1.15rem)]
+            [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-2
+            [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-2
+            [&_li]:mb-1
+            [&_b]:font-semibold [&_strong]:font-semibold
+            [&_p]:mb-3
           "
-        >
-          {item.description}
-        </div>
+          dangerouslySetInnerHTML={{ __html: item.descriptionHtml || item.description || "" }}
+        />
 
         {/* SPECS (à droite) */}
         <div
