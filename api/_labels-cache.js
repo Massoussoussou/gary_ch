@@ -18,7 +18,8 @@ const cache = new Map();
  */
 export async function fetchLabels(type, params = {}) {
   const apiKey = process.env.REALFORCE_PUBLIC_API_KEY;
-  const baseUrl = process.env.REALFORCE_LABELS_BASE_URL || "https://labels.realforce.ch";
+  // Utilise la même base URL que les listings si REALFORCE_LABELS_BASE_URL n'est pas défini
+  const baseUrl = process.env.REALFORCE_LABELS_BASE_URL || process.env.REALFORCE_PUBLIC_BASE_URL || "https://labels.realforce.ch";
 
   if (!apiKey) throw new Error("Missing REALFORCE_PUBLIC_API_KEY");
 

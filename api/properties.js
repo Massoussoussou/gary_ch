@@ -39,11 +39,18 @@ export default async function handler(req, res) {
       if (dateRe.test(d)) url.searchParams.set("update_date_max", d);
     }
 
-    // Fetch listings + labels en parallèle
+    // Fetch listings + labels en parallèle (labels peuvent échouer sans bloquer)
+    console.log("[properties] Fetching from:", url.toString());
+
     const [rfResp, labels] = await Promise.all([
       fetch(url.toString(), { headers: { "X-API-KEY": apiKey } }),
-      fetchPropertyLabels(primaryLang),
+      fetchPropertyLabels(primaryLang).catch((err) => {
+        console.warn("[properties] Labels fetch failed:", err.message);
+        return { cities: {}, categories: {}, amenities: {} };
+      }),
     ]);
+
+    console.log("[properties] Realforce response status:", rfResp.status);
 
     if (!rfResp.ok) {
       const text = await rfResp.text();
@@ -55,6 +62,7 @@ export default async function handler(req, res) {
     }
 
     const payload = await rfResp.json();
+    console.log("[properties] Payload count:", payload.count, "data length:", (payload.data || []).length);
 
     // Helpers de résolution
     const { cities, categories, amenities } = labels;
