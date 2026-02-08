@@ -280,29 +280,32 @@ export default function FiltersBar({
   features = [],
   resultCount = 0,
   onChange,
+  initialFilters = {},
 }) {
   const [openKey, setOpenKey] = useState(null); // 'ville' | 'type' | 'budget' | 'chambres' | 'surface'
   const [advancedOpen, setAdvancedOpen] = useState(false);
 
   // Filtres principaux
-  const [city, setCity] = useState("");
-  const [type, setType] = useState("");
-  const [priceMin, setPriceMin] = useState("");
-  const [priceMax, setPriceMax] = useState("");
-  const [chambresMin, setChambresMin] = useState("");
-  const [sdbMin, setSdbMin] = useState("");
-  const [surfaceMin, setSurfaceMin] = useState("");
-  const [surfaceMax, setSurfaceMax] = useState("");
+  const [city, setCity] = useState(initialFilters.city || "");
+  const [type, setType] = useState(initialFilters.type || "");
+  const [priceMin, setPriceMin] = useState(initialFilters.priceMin || "");
+  const [priceMax, setPriceMax] = useState(initialFilters.priceMax || "");
+  const [chambresMin, setChambresMin] = useState(initialFilters.chambresMin || "");
+  const [sdbMin, setSdbMin] = useState(initialFilters.sdbMin || "");
+  const [surfaceMin, setSurfaceMin] = useState(initialFilters.surfaceMin || "");
+  const [surfaceMax, setSurfaceMax] = useState(initialFilters.surfaceMax || "");
 
   // Avancés
-  const [canton, setCanton] = useState("");
-  const [meuble, setMeuble] = useState(false);
-  const [dispoBefore, setDispoBefore] = useState("");
-  const [terrainMin, setTerrainMin] = useState("");
-  const [atouts, setAtouts] = useState(() =>
-    Object.fromEntries(ATOUTS_LIST.map((a) => [a.key, false]))
-  );
-  const [extraFeatures, setExtraFeatures] = useState([]);
+  const [canton, setCanton] = useState(initialFilters.canton || "");
+  const [meuble, setMeuble] = useState(initialFilters.meuble || false);
+  const [dispoBefore, setDispoBefore] = useState(initialFilters.dispoBefore || "");
+  const [terrainMin, setTerrainMin] = useState(initialFilters.terrainMin || "");
+  const [atouts, setAtouts] = useState(() => {
+    const base = Object.fromEntries(ATOUTS_LIST.map((a) => [a.key, false]));
+    if (initialFilters.atouts) Object.assign(base, initialFilters.atouts);
+    return base;
+  });
+  const [extraFeatures, setExtraFeatures] = useState(initialFilters.extraFeatures || []);
 
   // Remontée au parent (shape identique à avant)
   useEffect(() => {

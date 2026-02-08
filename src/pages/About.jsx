@@ -367,7 +367,7 @@ function AltSection({ title, copy, img, align = "left", onSeeTeam }) {
             onClick={onSeeTeam}
             className="mt-6 inline-flex items-center gap-2 border border-black px-5 py-3 text-black hover:bg-black hover:text-white transition"
           >
-            Voir l’équipe <span aria-hidden>›</span>
+            Voir l'équipe <span aria-hidden>›</span>
           </button>
         )}
       </div>
@@ -376,6 +376,215 @@ function AltSection({ title, copy, img, align = "left", onSeeTeam }) {
         <div className="w-full aspect-[4/3] border border-neutral-300">
           <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
         </div>
+      </div>
+    </section>
+  );
+}
+
+/* ========== Section GARY + KPIs scroll-driven (gauche/droite) ========== */
+const KPIS = [
+  { value: "100+", label: "ventes réalisées en 2025", side: "left" },
+  { value: "90+", label: "avis 5 étoiles sur Google", side: "right", link: "https://g.page/r/gary-immobilier", linkText: "Voir les avis" },
+  { value: "6.6M", label: "de vues sur nos publications", side: "left" },
+  { value: "40k+", label: "followers sur nos réseaux", side: "right" },
+];
+
+function GaryVennKPISection() {
+  const sectionRef = useRef(null);
+  const [logoVisible, setLogoVisible] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  // Détecter quand la section entre → faire apparaître le logo GARY
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !logoVisible) {
+          setLogoVisible(true);
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [logoVisible]);
+
+  // Scroll tracking pour les KPIs
+  useEffect(() => {
+    const onScroll = () => {
+      const el = sectionRef.current;
+      if (!el) return;
+
+      const rect = el.getBoundingClientRect();
+      const viewH = window.innerHeight;
+      const scrollableHeight = el.offsetHeight - viewH;
+
+      if (scrollableHeight <= 0) {
+        setScrollProgress(0);
+        return;
+      }
+
+      const scrolledInSection = -rect.top;
+      const progress = Math.max(0, Math.min(1, scrolledInSection / scrollableHeight));
+      setScrollProgress(progress);
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
+  // Calcul progression pour chaque KPI (apparition échelonnée, lente)
+  const getKpiProgress = (index) => {
+    // Chaque KPI prend 30% du scroll, décalé de 20% entre chaque
+    const start = index * 0.18;
+    const end = start + 0.35;
+    const raw = (scrollProgress - start) / (end - start);
+    return Math.max(0, Math.min(1, raw));
+  };
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative bg-white"
+      style={{ height: "450vh" }} // Long scroll pour animation lente
+    >
+      {/* Container sticky */}
+      <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
+
+        {/* Cercle central GARY - GROS */}
+        <div
+          className="absolute z-10 transition-all duration-1000 ease-out"
+          style={{
+            width: "min(340px, 44vw)",
+            height: "min(340px, 44vw)",
+            left: "50%",
+            top: "50%",
+            transform: `translate(-50%, -50%) scale(${logoVisible ? 1 : 0.5})`,
+            opacity: logoVisible ? 1 : 0,
+          }}
+        >
+          <div
+            className="w-full h-full rounded-full flex items-center justify-center"
+            style={{
+              background: "linear-gradient(145deg, #FF4A3E 0%, #FF5A4A 100%)",
+              boxShadow: "0 40px 120px -25px rgba(255, 74, 62, 0.6)",
+            }}
+          >
+            <img
+              src="/Logo/logo-gary.png"
+              alt="GARY"
+              className="w-[48%] h-auto"
+              style={{ filter: "drop-shadow(0 6px 20px rgba(0,0,0,0.2))" }}
+            />
+          </div>
+        </div>
+
+        {/* KPIs à gauche et à droite */}
+        {KPIS.map((kpi, i) => {
+          const progress = getKpiProgress(i);
+          const isLeft = kpi.side === "left";
+
+          // Position horizontale : vient de l'extérieur vers le bord du cercle
+          // À 0% : hors écran, à 100% : près du cercle central
+          const startX = isLeft ? -60 : 60; // vw, hors écran
+          const endX = isLeft ? -32 : 32;   // vw, près du cercle
+          const currentX = startX + (endX - startX) * progress;
+
+          // Position verticale : légèrement décalée pour chaque KPI
+          const yOffsets = [-15, -5, 5, 15]; // vh
+          const currentY = yOffsets[i] || 0;
+
+          // Ease out cubic pour mouvement plus naturel
+          const easedProgress = 1 - Math.pow(1 - progress, 3);
+
+          return (
+            <div
+              key={i}
+              className="absolute z-20"
+              style={{
+                left: "50%",
+                top: "50%",
+                transform: `translate(calc(-50% + ${currentX}vw), calc(-50% + ${currentY}vh))`,
+                opacity: easedProgress,
+                transition: "transform 80ms linear, opacity 80ms linear",
+              }}
+            >
+              {/* Cercle KPI - GROS */}
+              <div
+                className="flex flex-col items-center"
+                style={{
+                  transform: `scale(${0.6 + 0.4 * easedProgress})`,
+                  transition: "transform 80ms linear",
+                }}
+              >
+                <div
+                  className="rounded-full flex flex-col items-center justify-center text-center"
+                  style={{
+                    width: "min(180px, 26vw)",
+                    height: "min(180px, 26vw)",
+                    background: "linear-gradient(145deg, #FF4A3E 0%, #FF6B5B 100%)",
+                    boxShadow: `0 ${20 * easedProgress}px ${60 * easedProgress}px -15px rgba(255, 74, 62, 0.55)`,
+                  }}
+                >
+                  <span className="text-4xl md:text-5xl font-bold text-white leading-none">
+                    {kpi.value}
+                  </span>
+                  <span className="text-sm md:text-base text-white/90 mt-2 px-4 leading-snug max-w-[150px]">
+                    {kpi.label}
+                  </span>
+                </div>
+
+                {/* Lien si présent */}
+                {kpi.link && progress > 0.7 && (
+                  <a
+                    href={kpi.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 text-sm text-[#FF4A3E] hover:underline whitespace-nowrap transition-opacity"
+                    style={{ opacity: (progress - 0.7) / 0.3 }}
+                  >
+                    {kpi.linkText} →
+                  </a>
+                )}
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Texte baseline en bas */}
+        <div
+          className="absolute bottom-[12%] left-1/2 -translate-x-1/2 text-center max-w-2xl px-6 transition-opacity duration-700"
+          style={{ opacity: logoVisible && scrollProgress < 0.85 ? 1 : 0 }}
+        >
+          <p className="text-xl md:text-2xl text-neutral-500 tracking-wide font-light">
+            Véritables stratèges de la vente immobilière
+          </p>
+        </div>
+
+        {/* Indicateur scroll */}
+        {logoVisible && scrollProgress < 0.05 && (
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+            <svg
+              width="40"
+              height="40"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#FF4A3E"
+              strokeWidth="2"
+              className="animate-bounce"
+            >
+              <path d="M12 5v14M5 12l7 7 7-7" />
+            </svg>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -588,43 +797,8 @@ useEffect(() => {
       {/* HERO 3 BANDES */}
       <HeroThreeStrips />
 
-      {/* SECTIONS (inchangé) */}
-      <AltSection
-        title="NOUS SOMMES GARY"
-        copy={`Une équipe engagée d’experts du métier. Avec plus de 40 ans d’expérience cumulée dans le domaine du courtage immobilier Suisse romand, notre équipe connaît parfaitement le marché et peut s’appuyer sur un réseau puissant. Notre volonté et notre savoir-faire font de chaque projet immobilier un succès.`}
-        img="https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=1600&auto=format&fit=crop"
-        align="left"
-        onSeeTeam={scrollToTeam}
-      />
-
-      <FullBleedImage src="https://images.unsplash.com/photo-1515266591878-f93e32bc5937?q=80&w=2000&auto=format&fit=crop" />
-
-      <AltSection
-        title="LE STYLE GARY"
-        copy={`C’est une approche audacieuse et innovante du conseil et du suivi client. Prospection interactive, visites immersives, conseil personnalisé : notre approche se nourrit des innovations, tendances et technologies actuelles pour vous garantir un accompagnement sur-mesure, fluide et efficace.`}
-        img="https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1600&auto=format&fit=crop"
-        align="right"
-      />
-
-      <FullBleedImage src="https://images.unsplash.com/photo-1496307653780-42ee777d4833?q=80&w=2000&auto=format&fit=crop" />
-
-      <AltSection
-        title="GARY EST UNIQUE"
-        copy={`Tout comme vous. À l’écoute de vos envies et de vos besoins, nous vous aidons à délimiter votre projet immobilier et à prendre les bonnes décisions. Derrière chaque projet il y a une histoire, et c’est en plaçant la confiance au cœur de notre relation que nous vous aidons à le concrétiser.`}
-        img="https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=1600&auto=format&fit=crop"
-        align="left"
-      />
-
-      <FullBleedImage src="https://images.unsplash.com/photo-1448630360428-65456885c650?q=80&w=2000&auto=format&fit=crop" />
-
-      <AltSection
-        title="NOTRE ADN"
-        copy={`Chez GARY, nous avons le sens du travail bien fait. Agiles et engagés, notre mission est de vous aider à réaliser votre projet immobilier.
-
-Nos experts partagent des valeurs communes : écoute, intégrité, audace et performance. Nous ne faisons pas de fausses promesses ; nous construisons des relations de confiance pour toujours mieux vous accompagner.`}
-        img="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=1600&auto=format&fit=crop"
-        align="right"
-      />
+      {/* SECTION VENN + KPIs (nouvelle animation scroll-driven) */}
+      <GaryVennKPISection />
 
       {/* ÉQUIPE */}
       <section ref={teamRef} className="max-w-6xl mx-auto px-4 py-20 text-center">

@@ -1,11 +1,13 @@
 // src/pages/BuyIntro.jsx
-import { useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useMemo, useRef, useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 /* Données & composants */
 import useProperties from "../hooks/useProperties.js";
 import BandCarousel from "../components/BandCarousel.jsx";
-import FiltersBarCompact from "../components/FiltersBarCompact.jsx";
+import FiltersBar from "../components/FiltersBar.jsx";
+import ListingGrid from "../components/ListingGrid.jsx";
+import SortMenu from "../components/SortMenu.jsx";
 import TrustStrip from "../components/TrustStrip.jsx";
 import ProcessSteps from "../components/ProcessSteps.jsx";
 import ToolsBudgetCalc from "../components/ToolsBudgetCalc.jsx";
@@ -26,14 +28,171 @@ import {
   normalizeListingData,
   coerceNum,
 } from "../utils/data.js";
-import { toQS } from "../utils/queryString.js";
 import { pickVideoSrcSimple } from "../utils/video.js";
+
+/* ---------- Fonctions de filtrage / tri (issues de Listings.jsx) ---------- */
+
+function matchesAtouts(equipements = [], atouts = {}) {
+  const has = (needle) =>
+    equipements.some((x) => x?.toString().toLowerCase().includes(needle));
+  let ok = true;
+  if (atouts.jardin) ok = ok && has("jardin");
+  if (atouts.piscine) ok = ok && has("piscine");
+  if (atouts.vue) ok = ok && has("vue");
+  if (atouts.garage) ok = ok && has("garage");
+  if (atouts.parkingInterieur) ok = ok && (has("parking") || has("garage"));
+  if (atouts.parkingExterieur) ok = ok && has("parking");
+  if (atouts.cave) ok = ok && has("cave");
+  if (atouts.balconTerrasse) ok = ok && (has("balcon") || has("terrasse"));
+  return ok;
+}
+
+function applyFilters(items, f) {
+  let res = items;
+  if (f.city) res = res.filter((i) => i.ville === f.city);
+  if (f.canton) res = res.filter((i) => i.canton === f.canton);
+  if (f.type) res = res.filter((i) => i.type === f.type);
+
+  const min = parseInt(f.priceMin || "0", 10);
+  const max = parseInt(f.priceMax || "0", 10);
+  if (min) res = res.filter((i) => i.prix >= min);
+  if (max) res = res.filter((i) => i.prix <= max);
+
+  const piecesMin = parseInt(f.piecesMin || "0", 10);
+  if (piecesMin) res = res.filter((i) => i.pieces >= piecesMin);
+
+  const chMin = parseInt(f.chambresMin || "0", 10);
+  if (chMin) res = res.filter((i) => i.chambres >= chMin);
+
+  const sdbMin = parseInt(f.sdbMin || "0", 10);
+  if (sdbMin) res = res.filter((i) => i.sdb >= sdbMin);
+
+  const sMin = parseInt(f.surfaceMin || "0", 10);
+  const sMax = parseInt(f.surfaceMax || "0", 10);
+  if (sMin) res = res.filter((i) => i.surface_m2 >= sMin);
+  if (sMax) res = res.filter((i) => i.surface_m2 <= sMax);
+
+  const tMin = parseInt(f.terrainMin || "0", 10);
+  if (tMin)
+    res = res.filter((i) => (i.terrain_m2 ? i.terrain_m2 >= tMin : true));
+
+  if (f.meuble) res = res.filter((i) => i.meuble);
+
+  if (f.dispoBefore) {
+    const d = f.dispoBefore;
+    res = res.filter((i) => !i.dispo || i.dispo <= d);
+  }
+
+  if (f.atouts) res = res.filter((i) => matchesAtouts(i.equipements, f.atouts));
+
+  if (Array.isArray(f.extraFeatures) && f.extraFeatures.length) {
+    const want = f.extraFeatures.map((s) => s.toLowerCase());
+    res = res.filter((i) => {
+      const eq = (i.equipements || []).map((s) => s.toLowerCase());
+      return want.every((w) => eq.some((e) => e.includes(w)));
+    });
+  }
+  return res;
+}
+
+function sortItems(items, mode) {
+  const arr = [...items];
+  if (mode === "prix-asc") arr.sort((a, b) => a.prix - b.prix);
+  else if (mode === "prix-desc") arr.sort((a, b) => b.prix - a.prix);
+  else if (mode === "surface")
+    arr.sort((a, b) => b.surface_m2 - a.surface_m2);
+  else if (mode === "recent")
+    arr.sort(
+      (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+    );
+  return arr;
+}
+
+function hasActiveFilters(f) {
+  if (!f) return false;
+  return Object.entries(f).some(([k, v]) => {
+    if (v == null) return false;
+    if (typeof v === "string") return v.trim() !== "";
+    if (typeof v === "number") return !Number.isNaN(v) && v !== 0;
+    if (typeof v === "boolean") return v;
+    if (Array.isArray(v)) return v.length > 0;
+    if (typeof v === "object") return hasActiveFilters(v);
+    return false;
+  });
+}
+
+function parseFiltersFromQS(search) {
+  const p = new URLSearchParams(search);
+  const f = {};
+  const pick = (k) => {
+    const v = p.get(k);
+    if (v !== null && v !== "") f[k] = v;
+  };
+  [
+    "city",
+    "canton",
+    "type",
+    "priceMin",
+    "priceMax",
+    "piecesMin",
+    "chambresMin",
+    "sdbMin",
+    "surfaceMin",
+    "surfaceMax",
+    "terrainMin",
+    "dispoBefore",
+  ].forEach(pick);
+
+  if (p.get("meuble") === "1") f.meuble = true;
+
+  for (const [k, v] of p.entries()) {
+    if (k.startsWith("atouts.") && v === "1") {
+      f.atouts ??= {};
+      f.atouts[k.slice(7)] = true;
+    }
+  }
+
+  const extras = p.getAll("extraFeatures");
+  if (extras.length) f.extraFeatures = extras;
+
+  return f;
+}
+
+function parseSortFromQS(search) {
+  const v = new URLSearchParams(search).get("sort");
+  return v || "recent";
+}
 
 /* ---------- composant principal ---------- */
 export default function BuyIntro() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { data, loading } = useProperties();
   const facets = useMemo(() => deriveFacets(data), [data]);
+
+  /* ---- Filtres & tri (système complet issu de Listings) ---- */
+  const [filters, setFilters] = useState(() =>
+    parseFiltersFromQS(location.search)
+  );
+  const [sort, setSort] = useState(() => parseSortFromQS(location.search));
+
+  // Re-sync si l'URL change (back/forward)
+  useEffect(() => {
+    setFilters(parseFiltersFromQS(location.search));
+    setSort(parseSortFromQS(location.search));
+  }, [location.search]);
+
+  const filtered = useMemo(
+    () => sortItems(applyFilters(data, filters), sort),
+    [data, filters, sort]
+  );
+  const isFiltered = hasActiveFilters(filters);
+
+  /* ---- Scroll vers la grille ---- */
+  const listingsRef = useRef(null);
+  const scrollToListings = () => {
+    listingsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   /* sections data */
   const weekItem = useMemo(() => {
@@ -62,62 +221,8 @@ export default function BuyIntro() {
     () => data.filter((d) => hasTag(d, /vendu/i) || d.vendu),
     [data]
   );
-  const available = useMemo(
-    () => data.filter((d) => !(hasTag(d, /vendu/i) || d.vendu)),
-    [data]
-  );
-
-  /* recherche */
-  const [resultCount, setResultCount] = useState(available.length);
-  const filtersRef = useRef({});
-
-  function filterListings(items, f = {}) {
-    return items.filter((it) => {
-      if (
-        f.city &&
-        String(it.ville || "").toLowerCase() !== String(f.city).toLowerCase()
-      )
-        return false;
-      if (
-        f.type &&
-        String(it.type || "").toLowerCase() !== String(f.type).toLowerCase()
-      )
-        return false;
-      const pMin = coerceNum(f.priceMin),
-        pMax = coerceNum(f.priceMax);
-      const price = +(+it.prix || 0);
-      if (pMin != null && price < pMin) return false;
-      if (pMax != null && price > pMax) return false;
-      const surfMin = coerceNum(f.surfaceMin),
-        surfMax = coerceNum(f.surfaceMax);
-      const surf = +(+it.surface_m2 || 0);
-      if (surfMin != null && surf < surfMin) return false;
-      if (surfMax != null && surf > surfMax) return false;
-      const chambres = +(
-        it.chambres ??
-        it.nb_chambres ??
-        it.bedrooms ??
-        it.pieces ??
-        0
-      );
-      const sdb = +(it.sdb ?? it.salles_de_bain ?? it.bathrooms ?? 0);
-      if (coerceNum(f.chambresMin) != null && chambres < +f.chambresMin)
-        return false;
-      if (coerceNum(f.sdbMin) != null && sdb < +f.sdbMin) return false;
-      return true;
-    });
-  }
-
-  function handleFiltersChange(partial) {
-    filtersRef.current = { ...filtersRef.current, ...partial };
-    const n = filterListings(available, filtersRef.current).length;
-    setResultCount(n);
-  }
-
-  const goCatalogue = (qs = "") => navigate(`/acheter/catalogue${qs}`);
 
   /* reveals */
-  const [filtRef, filtShown] = useRevealOnce({ threshold: 0.01 });
   const [weekRef, weekShown] = useRevealOnce({ threshold: 0.12 });
   const [exRef, exShown] = useRevealOnce();
   const [newRef, newShown] = useRevealOnce();
@@ -220,7 +325,7 @@ export default function BuyIntro() {
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
                   <CTAFuturaGlow
                     label="Voir les annonces"
-                    to="/acheter/catalogue"
+                    onClick={scrollToListings}
                     minWidth={260}
                   />
                   <CTAWhiteSweep to="/contact" label="Contacter GARY" />
@@ -231,45 +336,23 @@ export default function BuyIntro() {
         </div>
       </section>
 
-      {/* 2) Recherche + Trust */}
-      <section className="relative isolate overflow-x-clip">
-        <div aria-hidden className="absolute inset-0 -z-10">
-          <div className="absolute inset-x-0 top-0 h-10 md:h-12 bg-gradient-to-b from-white to-[#FAF6F0]" />
-          <div className="absolute inset-x-0 bottom-0 h-10 md:h-12 bg-gradient-to-t from-white to-[#FAF6F0]" />
-          <div className="absolute inset-x-0 top-10 bottom-10 bg-[#FAF6F0]" />
+      {/* 2) FiltersBar + SortMenu + ListingGrid */}
+      <section ref={listingsRef} className="relative bg-white">
+        <div className="relative">
+          <FiltersBar
+            cities={facets.cities}
+            cantons={facets.cantons}
+            types={facets.types}
+            features={facets.features}
+            resultCount={filtered.length}
+            onChange={setFilters}
+            initialFilters={filters}
+          />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-6 md:px-8">
-          <div ref={filtRef} className="py-0" />
-          <div
-            className={`pt-8 pb-6 md:pt-10 md:pb-8 transition-[clip-path,opacity,transform] duration-[900ms] delay-100 ease-[cubic-bezier(0.22,1,0.36,1)]
-            ${filtShown ? "opacity-100 [clip-path:inset(0_0%_0_0%)]" : "opacity-0 [clip-path:inset(0_50%_0_50%)]"}`}
-          >
-            <div className="mx-auto w-full max-w-[min(1360px,100%)] md:max-w-[min(1440px,100%)]">
-              <div className="px-4 md:px-6 py-4 md:py-6">
-                <FiltersBarCompact
-                  size="2xl"
-                  facets={facets}
-                  onSearch={(filters) => goCatalogue(toQS(filters))}
-                  onChange={handleFiltersChange}
-                  resultCount={resultCount}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        <SortMenu value={sort} onChange={setSort} />
 
-        <div id="filters-under-hero" className="relative">
-          <div className="mt-6 md:mt-8">
-            <TrustStrip
-              size="xl"
-              reviewsLabel="RealAdvisor"
-              reviewsUrl="https://realadvisor.ch/fr/agences-immobilieres/agence-gary"
-              rating={5}
-              reviewsCount={75}
-            />
-          </div>
-        </div>
+        <ListingGrid items={filtered} isFiltered={isFiltered} />
       </section>
 
       {/* 3) Maison de la semaine */}
@@ -303,7 +386,7 @@ export default function BuyIntro() {
             title="Exclusivités"
             items={exclusivites}
             cta="Voir tout"
-            onCta={() => goCatalogue("")}
+            onCta={scrollToListings}
           />
         </div>
       </section>
@@ -321,12 +404,15 @@ export default function BuyIntro() {
             title="Nouveautés"
             items={nouveautes}
             cta="Voir tout"
-            onCta={() => goCatalogue("?sort=recent")}
+            onCta={() => {
+              setSort("recent");
+              scrollToListings();
+            }}
           />
         </div>
       </section>
 
-      {/* 9) Ventes réalisées */}
+      {/* 6) Ventes réalisées */}
       <section
         ref={vendRef}
         className={`relative py-24 bg-white transition-all duration-700 ${vendShown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
@@ -362,7 +448,7 @@ export default function BuyIntro() {
         </div>
       </section>
 
-      {/* 12) Process */}
+      {/* 7) Process */}
       <section
         ref={procRef}
         className={`relative py-24 bg-[#FAF6F0] transition-all duration-700 ${procShown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
@@ -392,7 +478,7 @@ export default function BuyIntro() {
         </div>
       </section>
 
-      {/* 13) Calculette */}
+      {/* 8) Calculette */}
       <section
         ref={calcRef}
         aria-label="Outils d'achat – calculette"
@@ -405,14 +491,18 @@ export default function BuyIntro() {
             defaultDownPayment={200000}
             defaultRate={2.5}
             defaultYears={25}
-            onSearch={(budgetMax) =>
-              goCatalogue(toQS({ priceMax: Math.round(budgetMax) }))
-            }
+            onSearch={(budgetMax) => {
+              setFilters((prev) => ({
+                ...prev,
+                priceMax: String(Math.round(budgetMax)),
+              }));
+              scrollToListings();
+            }}
           />
         </div>
       </section>
 
-      {/* 15) Newsletter / Alertes */}
+      {/* 9) Newsletter / Alertes */}
       <section
         ref={alertsRef}
         className={`relative py-24 bg-white transition-all duration-700 ${alertsShown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
@@ -427,7 +517,16 @@ export default function BuyIntro() {
         </div>
       </section>
 
-      {/* 16) Pont vers VENTE */}
+      {/* 10) TrustStrip */}
+      <TrustStrip
+        size="xl"
+        reviewsLabel="RealAdvisor"
+        reviewsUrl="https://realadvisor.ch/fr/agences-immobilieres/agence-gary"
+        rating={5}
+        reviewsCount={75}
+      />
+
+      {/* 11) Pont vers VENTE */}
       <AlreadyOwner toEstimate="/estimer" toSell="/vendre" />
     </main>
   );
