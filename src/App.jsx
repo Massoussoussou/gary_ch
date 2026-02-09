@@ -20,6 +20,7 @@ import TeamMemberDetail from './pages/TeamMemberDetail.jsx'
 import ProjetsNeufs from "./pages/ProjetsNeufs";
 import ProjetNeufDetail from "./pages/ProjetNeufDetail";
 import Actualite from './pages/Actualite.jsx';
+import ActualiteDetail from './pages/ActualiteDetail.jsx';
 
 
 
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="/projets-neufs" element={<ProjetsNeufs />} />
           <Route path="/projets-neufs/:id" element={<ProjetNeufDetail />} />
           <Route path="/actualites" element={<Actualite />} />
+          <Route path="/actualites/:id" element={<ActualiteDetail />} />
         </Routes>
       </main>
       

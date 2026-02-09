@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import articlesData from "../data/actualites.json";
 
 /* ========== Données réelles depuis GARY.ch ========== */
@@ -15,8 +16,9 @@ function ArticleBand({ article }) {
   const [hovered, setHovered] = useState(false);
 
   return (
-    <article
-      className="relative w-full overflow-hidden cursor-pointer"
+    <Link
+      to={`/actualites/${article.id}`}
+      className="relative w-full overflow-hidden cursor-pointer block"
       style={{ height: "clamp(170px, 24vw, 240px)" }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -88,7 +90,7 @@ function ArticleBand({ article }) {
           {article.description}
         </p>
       </div>
-    </article>
+    </Link>
   );
 }
 
