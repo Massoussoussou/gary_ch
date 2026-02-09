@@ -40,7 +40,7 @@ export default function ListingCardSold({
   return (
     <Link
       to={href}
-      className="group card-hover-sold block rounded-none overflow-hidden border border-zinc-200 bg-white shadow-sm transition"
+      className="group card-hover-sold block rounded-none overflow-hidden border border-zinc-200 bg-white shadow-sm"
       aria-label={(it.titre || `${city} — ${subtitle}`) + " (détails)"}
     >
       {/* IMAGE avec filtre N&B → couleur au hover */}
@@ -52,13 +52,13 @@ export default function ListingCardSold({
           decoding="async"
           className="absolute inset-0 w-full h-full object-cover select-none
                      filter grayscale contrast-[1.05] brightness-[0.98]
-                     card-sold-img transition"
+                     card-sold-img"
           draggable={false}
           onDragStart={(e) => e.preventDefault()}
         />
 
         {/* LÉGER voile + cadre intérieur fin */}
-        <div className="absolute inset-0 bg-black/10 card-sold-overlay transition" />
+        <div className="absolute inset-0 bg-black/10 card-sold-overlay" />
         <div className="absolute inset-[14px] border border-white/80 pointer-events-none" />
 
         {/* TAG haut centré */}

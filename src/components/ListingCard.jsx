@@ -142,7 +142,6 @@ useEffect(() => {
 
   const cardCls =
     `group card-hover relative block h-full ${radiusCls} border border-zinc-200/70 bg-white shadow-sm ` +
-    `transition ` +
     `focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20`;
 
   return (
@@ -157,7 +156,7 @@ useEffect(() => {
         <img
           src={imgs[idx] || ""}
           alt={item.titre || "Annonce"}
-          className={`absolute inset-0 w-full h-full object-cover transition-transform duration-500 card-img ${isSold ? "grayscale" : ""}`}
+          className={`absolute inset-0 w-full h-full object-cover card-img ${isSold ? "grayscale" : ""}`}
           draggable="false"
         />
         {["vendu", "exclu", "nouveau"].includes(ribbonKind) && (
@@ -180,8 +179,7 @@ useEffect(() => {
         {/* PRIX — bas-gauche */}
         <div className="z-20 absolute left-3 md:left-4 bottom-3 md:bottom-4">
           <span
-            className={`inline-block ${tileRadiusCls} badge-price card-price px-3 py-1.5 text-sm md:text-base font-semibold shadow-md min-w-[96px] text-center
-                        transition-colors duration-200`}
+            className={`inline-block ${tileRadiusCls} badge-price card-price px-3 py-1.5 text-sm md:text-base font-semibold shadow-md min-w-[96px] text-center`}
           >
             {item.prix ? formatCHF(item.prix) : "Prix sur demande"}
           </span>
@@ -195,7 +193,6 @@ useEffect(() => {
       absolute left-3 bottom-16
       z-50 hidden md:flex items-center gap-2
       card-reveal opacity-0 translate-y-1 pointer-events-none
-      transition-all duration-200
     "
     role="group"
     aria-label="Contrôles du carrousel"
@@ -205,7 +202,7 @@ useEffect(() => {
       disabled={isFirst}
       aria-disabled={isFirst}
       className="
-        rounded-full p-2.5 transition shadow ring-1 ring-black/10
+        rounded-full p-2.5 shadow ring-1 ring-black/10
         bg-white/70 text-zinc-900/90 opacity-80
         card-ctrl-btn
         disabled:bg-white/40 disabled:text-zinc-400 disabled:opacity-50 disabled:cursor-not-allowed
@@ -221,7 +218,7 @@ useEffect(() => {
       disabled={isLast}
       aria-disabled={isLast}
       className="
-        rounded-full p-2.5 transition shadow ring-1 ring-black/10
+        rounded-full p-2.5 shadow ring-1 ring-black/10
         bg-white/70 text-zinc-900/90 opacity-80
         card-ctrl-btn
         disabled:bg-white/40 disabled:text-zinc-400 disabled:opacity-50 disabled:cursor-not-allowed
@@ -298,7 +295,7 @@ useEffect(() => {
       "shadow-[0_8px_18px_rgba(0,0,0,0.20)] ring-1 ring-black/5 " +
       "text-[11px] font-semibold leading-none whitespace-nowrap " +
       "card-reveal opacity-0 translate-x-2 " +
-      "transition-all duration-200 pointer-events-none";
+      "pointer-events-none";
 
     return (
       <>
@@ -354,7 +351,6 @@ useEffect(() => {
                   ring-1 ring-[#FF5544]/50 shadow-[0_8px_24px_rgba(255,85,68,.25)]
                   px-5 py-4 text-white
                   card-reveal card-panel-m opacity-0 translate-x-2
-                  transition-[opacity,transform,background-color,box-shadow] duration-200
                 "
                 style={{ textShadow: "0 1px 1px rgba(0,0,0,.35)" }}
               >
@@ -473,7 +469,6 @@ useEffect(() => {
             backdrop-blur-sm backdrop-saturate-150
             px-6 py-5
             card-reveal card-panel-lxl opacity-0 translate-x-2
-            transition-[opacity,transform,background-color,box-shadow] duration-200 ease-out
           "
         >
           {/* Localisation */}

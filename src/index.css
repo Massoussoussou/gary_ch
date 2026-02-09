@@ -205,6 +205,29 @@ html[data-bg="dark"] body { background:#0f1115; color:#e6e6e6; }
    On touch devices (hover: none), these never fire,
    so the carousel stays fluid and cards don't "stick".        */
 @media (hover: hover) {
+  /* Enable transitions ONLY on hover-capable devices */
+  .card-hover {
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .card-hover .card-img {
+    transition: transform 0.5s;
+  }
+  .card-hover .card-price {
+    transition: background-color 0.2s, color 0.2s;
+  }
+  .card-hover .card-reveal {
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .card-hover .card-panel-m {
+    transition: opacity 0.2s, transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+  }
+  .card-hover .card-panel-lxl {
+    transition: opacity 0.2s, transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+  }
+  .card-ctrl-btn {
+    transition: background-color 0.2s, color 0.2s, opacity 0.2s;
+  }
+
   /* Card lift + shadow */
   .card-hover:hover {
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -240,6 +263,16 @@ html[data-bg="dark"] body { background:#0f1115; color:#e6e6e6; }
     color: rgb(24, 24, 27);
     opacity: 1;
   }
+  /* Sold card transitions */
+  .card-hover-sold {
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .card-hover-sold .card-sold-img {
+    transition: filter 0.3s;
+  }
+  .card-hover-sold .card-sold-overlay {
+    transition: background-color 0.3s;
+  }
   /* Sold card lift */
   .card-hover-sold:hover {
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -252,6 +285,34 @@ html[data-bg="dark"] body { background:#0f1115; color:#e6e6e6; }
   /* Sold overlay removal */
   .group.card-hover-sold:hover .card-sold-overlay {
     background-color: transparent;
+  }
+
+  /* ListingCardV1 transitions (only on hover-capable devices) */
+  .listing-card-v1 {
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .listing-card-v1 .card-v1-reveal {
+    transition: opacity 0.3s;
+  }
+  .listing-card-v1 .card-v1-lift {
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .listing-card-v1 .card-v1-price {
+    transition: background-color 0.3s;
+  }
+  .listing-card-v1:hover {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    transform: translateY(-2px);
+  }
+  .listing-card-v1:hover .card-v1-reveal {
+    opacity: 1;
+  }
+  .listing-card-v1:hover .card-v1-lift {
+    transform: translateY(-3rem);
+    box-shadow: 0 -10px 18px rgba(0,0,0,0.08);
+  }
+  .listing-card-v1:hover .card-v1-price {
+    background-color: #FF4A3E;
   }
 }
 
