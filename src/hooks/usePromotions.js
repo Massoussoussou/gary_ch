@@ -45,6 +45,7 @@ export function usePromotionsList({ perPage = 50, page = 1, lang = "fr" } = {}) 
         return res.json();
       })
       .then((json) => {
+        console.log("[GARY DEBUG] promotions list raw API:", JSON.stringify(json, null, 2));
         const items = normalizePromotionsList(json.data || []);
         listCache = { data: items };
         listCacheTs = Date.now();
@@ -104,6 +105,7 @@ export function usePromotionDetail(promotionId) {
         return res.json();
       })
       .then((json) => {
+        console.log("[GARY DEBUG] promotion detail raw API:", JSON.stringify(json, null, 2));
         const item = normalizePromotionDetail(json);
         detailCache.set(promotionId, { data: item, ts: Date.now() });
         setData(item);
@@ -124,6 +126,19 @@ export function usePromotionDetail(promotionId) {
 
 /* ===== Normalisation ===== */
 
+/** Extrait une string depuis un champ qui peut être string, objet localisé {fr,en}, ou autre */
+function str(v, lang = "fr") {
+  if (v == null) return "";
+  if (typeof v === "string") return v;
+  if (typeof v === "object") return v[lang] || v.en || v.fr || Object.values(v)[0] || "";
+  return String(v);
+}
+
+/** Retire les balises HTML d'une string */
+function stripHtml(s) {
+  return String(s || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
 /**
  * Adapte la réponse promotions list au format attendu par ProjetsNeufs.jsx
  * (compatible avec l'ancien projects.json).
@@ -132,11 +147,12 @@ function normalizePromotionsList(items) {
   return items.map((p) => ({
     id: p.id,
     type: "Programme neuf",
-    name: p.name || "Promotion",
-    city: p.location || "",
+    name: str(p.name) || "Promotion",
+    city: str(p.location),
     cover: p.photos?.[0]?.url || p.photos?.[0] || "",
-    tagline: `Dès ${fmtPrice(p.price)} ${p.currency || "CHF"}`,
-    reference: p.reference || null,
+    tagline: `Dès ${fmtPrice(p.price)} ${str(p.currency) || "CHF"}`,
+    reference: str(p.reference) || null,
+    description: stripHtml(str(p.description)),
     specs: {
       pieces: p.min_rooms ? `${p.min_rooms} – ${p.max_rooms}` : null,
       chambres: p.min_bedrooms ? `${p.min_bedrooms} – ${p.max_bedrooms}` : null,
@@ -147,7 +163,6 @@ function normalizePromotionsList(items) {
     aptActive: p.apt_active || 0,
     aptSold: p.apt_sold || 0,
     propertyIds: p.property_ids || [],
-    // Garder les données brutes pour le détail
     _raw: p,
   }));
 }
@@ -158,31 +173,27 @@ function normalizePromotionsList(items) {
 function normalizePromotionDetail(p) {
   if (!p || !p.id) return null;
 
-  // L'API retourne description comme string HTML, pas un objet {fr: {...}}
-  const rawDesc = typeof p.description === "string"
-    ? p.description
-    : (p.description?.fr?.promotion_description || p.description?.fr || "");
-  const plainDesc = String(rawDesc).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  const rawDesc = str(p.description);
+  const plainDesc = stripHtml(rawDesc);
 
-  // Séparer la 2e partie (détails par étage) si elle existe dans la description
-  const locDesc = typeof p.description === "object"
-    ? (p.description?.fr?.location_description || "")
+  // Si description est un objet localisé avec sous-champs (promotion_description, location_description)
+  const locDesc = (typeof p.description === "object" && p.description !== null)
+    ? stripHtml(p.description?.fr?.location_description || p.description?.location_description || "")
     : "";
-  const plainLocDesc = String(locDesc).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 
   return {
     id: p.id,
     type: "Programme neuf",
-    name: p.name || "Promotion",
-    city: p.location || "",
+    name: str(p.name) || "Promotion",
+    city: str(p.location),
     cover: p.photos?.[0]?.url || "",
-    tagline: `Dès ${fmtPrice(p.price)} ${p.currency || "CHF"}`,
+    tagline: `Dès ${fmtPrice(p.price)} ${str(p.currency) || "CHF"}`,
     description: plainDesc,
-    reference: p.reference || null,
+    reference: str(p.reference) || null,
     longDescription: plainDesc,
-    secondDescription: plainLocDesc || plainDesc,
+    secondDescription: locDesc || plainDesc,
     specs: {
-      reference: p.reference || null,
+      reference: str(p.reference) || null,
       pieces: p.min_rooms ? `${p.min_rooms} – ${p.max_rooms}` : null,
       sdb: null,
       chambres: p.min_bedrooms ? `${p.min_bedrooms} – ${p.max_bedrooms}` : null,
@@ -204,8 +215,8 @@ function normalizePromotionDetail(p) {
       .map((ph) => ph.url || ph),
     properties: (p.properties || []).map((lot) => ({
       id: lot.id,
-      reference: lot.reference,
-      status: lot.status || null,
+      reference: str(lot.reference),
+      status: str(lot.status) || null,
       statusId: lot.status_id || null,
       rooms: lot.rooms,
       floor: lot.floor,
