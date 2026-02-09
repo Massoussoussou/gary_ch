@@ -201,6 +201,60 @@ html[data-bg="dark"] body { background:#0f1115; color:#e6e6e6; }
 }
 
 
+/* ===== Card hover effects — desktop (pointer) only =====
+   On touch devices (hover: none), these never fire,
+   so the carousel stays fluid and cards don't "stick".        */
+@media (hover: hover) {
+  /* Card lift + shadow */
+  .card-hover:hover {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    transform: translateY(-2px);
+  }
+  /* Image zoom */
+  .group.card-hover:hover .card-img {
+    transform: scale(1.05);
+  }
+  /* Price badge */
+  .group.card-hover:hover .card-price {
+    background-color: #FF4A3E;
+    color: #fff;
+  }
+  /* Reveal elements (panels, chips, controls) */
+  .group.card-hover:hover .card-reveal {
+    opacity: 1;
+    transform: translate(0, 0);
+    pointer-events: auto;
+  }
+  /* M panel background */
+  .group.card-hover:hover .card-panel-m {
+    background-color: rgba(255, 85, 68, 0.65);
+  }
+  /* L/XL panel background + shadow */
+  .group.card-hover:hover .card-panel-lxl {
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+  }
+  /* Carousel arrow buttons */
+  .card-ctrl-btn:hover {
+    background: white;
+    color: rgb(24, 24, 27);
+    opacity: 1;
+  }
+  /* Sold card lift */
+  .card-hover-sold:hover {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    transform: translateY(-1px);
+  }
+  /* Sold image: B&W → color */
+  .group.card-hover-sold:hover .card-sold-img {
+    filter: grayscale(0) saturate(1.1) brightness(1);
+  }
+  /* Sold overlay removal */
+  .group.card-hover-sold:hover .card-sold-overlay {
+    background-color: transparent;
+  }
+}
+
 @layer utilities {
   @keyframes cta-draw {
     0%   { background-size: 0% 2px, 2px 0%, 0% 2px, 2px 0%; }
