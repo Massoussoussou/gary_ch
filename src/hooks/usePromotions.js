@@ -145,7 +145,7 @@ function normalizePromotionsList(items) {
     photos: (p.photos || []).map((ph) => (typeof ph === "string" ? ph : ph.url)),
     aptAvailable: p.apt_available || 0,
     aptActive: p.apt_active || 0,
-    aptReserved: p.apt_reserved || 0,
+    aptSold: p.apt_sold || 0,
     propertyIds: p.property_ids || [],
     // Garder les données brutes pour le détail
     _raw: p,
@@ -158,8 +158,17 @@ function normalizePromotionsList(items) {
 function normalizePromotionDetail(p) {
   if (!p || !p.id) return null;
 
-  const lang = "fr";
-  const desc = p.description?.[lang] || p.description?.en || {};
+  // L'API retourne description comme string HTML, pas un objet {fr: {...}}
+  const rawDesc = typeof p.description === "string"
+    ? p.description
+    : (p.description?.fr?.promotion_description || p.description?.fr || "");
+  const plainDesc = String(rawDesc).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+
+  // Séparer la 2e partie (détails par étage) si elle existe dans la description
+  const locDesc = typeof p.description === "object"
+    ? (p.description?.fr?.location_description || "")
+    : "";
+  const plainLocDesc = String(locDesc).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 
   return {
     id: p.id,
@@ -168,9 +177,10 @@ function normalizePromotionDetail(p) {
     city: p.location || "",
     cover: p.photos?.[0]?.url || "",
     tagline: `Dès ${fmtPrice(p.price)} ${p.currency || "CHF"}`,
+    description: plainDesc,
     reference: p.reference || null,
-    longDescription: desc.promotion_description || "",
-    secondDescription: desc.location_description || "",
+    longDescription: plainDesc,
+    secondDescription: plainLocDesc || plainDesc,
     specs: {
       reference: p.reference || null,
       pieces: p.min_rooms ? `${p.min_rooms} – ${p.max_rooms}` : null,
@@ -205,6 +215,9 @@ function normalizePromotionDetail(p) {
       price: lot.price,
       priceOnRequest: !!lot.price_on_request,
     })),
+    aptAvailable: p.apt_available || 0,
+    aptActive: p.apt_active || 0,
+    aptSold: p.apt_sold || 0,
     contacts: p.contacts || [],
     _raw: p,
   };
