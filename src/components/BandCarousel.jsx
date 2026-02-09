@@ -9,9 +9,15 @@ export default function BandCarousel({ title, items = [], cta, onCta, renderItem
   const scroller = useRef(null)
 
   const [startPad, setStartPad] = useState(16) // padding gauche (aligne la 1re carte)
-  const [endPad, setEndPad]     = useState(16) // padding droit (pour finir “au large”)
+  const [endPad, setEndPad]     = useState(16) // padding droit (pour finir "au large")
   const [dragging, setDragging] = useState(false)
   const Card = renderItem || ListingCardV1;
+
+  // Detect touch device: disable custom drag on touch to allow native momentum scroll
+  const [isTouch, setIsTouch] = useState(false)
+  useEffect(() => {
+    setIsTouch(window.matchMedia("(hover: none)").matches)
+  }, [])
 
   // anti-clic fantôme
   const DRAG_THRESHOLD = 8
@@ -109,24 +115,23 @@ export default function BandCarousel({ title, items = [], cta, onCta, renderItem
       {/* Rail full-bleed, scroll LIBRE (pas de snap) + drag */}
       <div
         ref={scroller}
-        className={`overflow-x-auto flex gap-4 md:gap-5 pb-2 ${dragging ? "cursor-grabbing" : "cursor-grab"} select-none
+        className={`overflow-x-auto flex gap-4 md:gap-5 pb-2 ${!isTouch && dragging ? "cursor-grabbing" : !isTouch ? "cursor-grab" : ""} select-none
                     [-ms-overflow-style:none] [scrollbar-width:none]`}
         style={{
           scrollbarWidth: "none",
           marginLeft:  "calc(50% - 50vw)",
           marginRight: "calc(50% - 50vw)",
-          paddingLeft:  `${startPad}px`,   // même départ qu’actuellement
-          paddingRight: `${endPad}px`,     // >>> ajoute un “coussin” à droite
+          paddingLeft:  `${startPad}px`,   // même départ qu'actuellement
+          paddingRight: `${endPad}px`,     // >>> ajoute un "coussin" à droite
           userSelect: "none",
+          WebkitOverflowScrolling: "touch", // Enable momentum scrolling on iOS
         }}
-        onMouseDown={onDown}
-        onMouseMove={onMove}
-        onMouseUp={onUp}
-        onMouseLeave={onUp}
-        onTouchStart={onDown}
-        onTouchMove={onMove}
-        onTouchEnd={onUp}
-        onClickCapture={onClickCapture}
+        // Only attach drag handlers on non-touch devices (desktop)
+        onMouseDown={!isTouch ? onDown : undefined}
+        onMouseMove={!isTouch ? onMove : undefined}
+        onMouseUp={!isTouch ? onUp : undefined}
+        onMouseLeave={!isTouch ? onUp : undefined}
+        onClickCapture={!isTouch ? onClickCapture : undefined}
         draggable={false}
         onDragStart={(e)=>e.preventDefault()}
       >
