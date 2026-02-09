@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import TeamMemberCard from "../components/TeamMemberCard";
 import team from "../data/team.json";
 import DomeGallery from "../components/DomeGallery";
-import CTAFuturaGlow, { PhoneIcon } from "../components/CTAFuturaGlow";
+import CTAFuturaGlow, { PhoneIcon } from "../components/cta/CTAFuturaGlow.jsx";
 
 
 // --- Scroll lock helpers (used to pause scroll during the Venn animation) ---
