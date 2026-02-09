@@ -119,6 +119,22 @@ export default function ProjetNeufDetail() {
     );
   }
 
+  /* --------- DEBUG: vérifier tous les types avant le render --------- */
+  console.log("[GARY DEBUG] p fields:", {
+    name: typeof p.name, type: typeof p.type, city: typeof p.city,
+    cover: typeof p.cover, tagline: typeof p.tagline,
+    description: typeof p.description, longDescription: typeof p.longDescription,
+    secondDescription: typeof p.secondDescription, reference: typeof p.reference,
+    specs: typeof p.specs, media: typeof p.media,
+    "media.images": Array.isArray(p.media?.images),
+  });
+  // Chercher tout champ qui serait un objet au lieu d'une string
+  for (const [k, v] of Object.entries(p)) {
+    if (v !== null && typeof v === "object" && !Array.isArray(v) && k !== "specs" && k !== "media" && k !== "_raw") {
+      console.error("[GARY DEBUG] ⚠️ OBJECT field found:", k, JSON.stringify(v));
+    }
+  }
+
   /* --------- Images de la galerie --------- */
   const images = (p.media && Array.isArray(p.media.images)) ? p.media.images : [];
   const grouped = useMemo(() => {

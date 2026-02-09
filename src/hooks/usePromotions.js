@@ -107,6 +107,7 @@ export function usePromotionDetail(promotionId) {
       .then((json) => {
         console.log("[GARY DEBUG] promotion detail raw API:", JSON.stringify(json, null, 2));
         const item = normalizePromotionDetail(json);
+        console.log("[GARY DEBUG] normalized detail:", JSON.stringify(item, null, 2));
         detailCache.set(promotionId, { data: item, ts: Date.now() });
         setData(item);
         setLoading(false);
