@@ -7,6 +7,7 @@ const categoryColors = {
   Article: "bg-black/80 text-white",
   Podcast: "bg-[#FF4A3E] text-white",
   Video: "bg-[#1a1a2e] text-white",
+  Presse: "bg-[#2563eb] text-white",
 };
 
 export default function ActualiteDetail() {

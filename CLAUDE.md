@@ -76,27 +76,7 @@ REALFORCE_PUBLIC_DEFAULT_LOCALE=fr
 ## 📋 Tâches à venir (Next Tasks)
 
 ### Actualités - Scraping complet
-**Contexte :** Actuellement, seulement 4 articles ont été scrapés depuis gary.ch et ajoutés dans `/src/data/actualites.json`. Les pages de détail fonctionnent (route dynamique `/actualites/:id`).
-
-**À faire :**
-1. Scraper **TOUTES** les actualités restantes depuis https://gary.ch/actualites/
-   - Utiliser l'API WordPress REST : `https://gary.ch/wp-json/wp/v2/posts?per_page=100&_embed`
-   - Pour chaque article, extraire :
-     - `title.rendered` (titre)
-     - `excerpt.rendered` (description, nettoyer le HTML)
-     - `date` (formater en "DD mois YYYY" en français)
-     - `_embedded['wp:featuredmedia'][0].source_url` (image)
-     - Catégorie (Article/Podcast/Video selon les tags/catégories)
-     - `link` (URL originale)
-   - Scraper le contenu complet de chaque article via l'API (slug)
-2. Mettre à jour `/src/data/actualites.json` avec tous les articles
-3. Assigner des IDs séquentiels (1, 2, 3, ...)
-4. Tester que toutes les pages de détail fonctionnent
-
-**Méthode optimale :**
-- Faire un seul appel API pour récupérer tous les posts
-- Ensuite, pour chaque post, faire un appel avec le slug pour obtenir le contenu complet
-- Parser le contenu en markdown-style (## pour titres, etc.)
+✅ **TERMINÉE** - 17 articles scrapés depuis gary.ch via l'API WordPress REST (`wp-json/wp/v2/posts?per_page=100&_embed`). Contenu complet en markdown, images réelles, catégories (Article, Podcast, Presse). Articles EN dédupliqués. Route `/actualites/:id` fonctionnelle pour tous les articles.
 
 ### API Leads - Vérification
 **Contexte :** L'API leads existe dans `/api/leads.js` mais n'a pas été testée en production.
