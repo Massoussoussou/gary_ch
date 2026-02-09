@@ -126,11 +126,31 @@ export function usePromotionDetail(promotionId) {
 
 /* ===== Normalisation ===== */
 
-/** Extrait une string depuis un champ qui peut être string, objet localisé {fr,en}, ou autre */
+/**
+ * Extrait une string depuis un champ qui peut être :
+ * - string directe : "hello"
+ * - objet localisé simple : {fr: "bonjour", en: "hello"}
+ * - objet localisé imbriqué : {fr: {promotion_description: "..."}, en: {...}}
+ * Descend récursivement jusqu'à trouver une string.
+ */
 function str(v, lang = "fr") {
   if (v == null) return "";
   if (typeof v === "string") return v;
-  if (typeof v === "object") return v[lang] || v.en || v.fr || Object.values(v)[0] || "";
+  if (typeof v === "number") return String(v);
+  if (typeof v === "object") {
+    // Essayer la langue demandée, puis en, puis fr
+    const picked = v[lang] ?? v.en ?? v.fr;
+    if (picked == null) return "";
+    if (typeof picked === "string") return picked;
+    // Si c'est encore un objet (ex: {promotion_description: "..."})
+    if (typeof picked === "object") {
+      // Chercher le premier champ non-vide
+      for (const val of Object.values(picked)) {
+        if (typeof val === "string" && val.trim()) return val;
+      }
+    }
+    return "";
+  }
   return String(v);
 }
 
@@ -140,31 +160,61 @@ function stripHtml(s) {
 }
 
 /**
+ * Extrait description depuis les deux formats de l'API Realforce :
+ * - Liste : description = "HTML string" (texte tronqué)
+ * - Détail : description = {fr: {promotion_description, location_description, ...}, ...}
+ */
+function extractDescriptions(desc) {
+  if (desc == null) return { promo: "", location: "" };
+
+  // Format liste : string HTML directe
+  if (typeof desc === "string") {
+    return { promo: stripHtml(desc), location: "" };
+  }
+
+  // Format détail : objet localisé {fr: {promotion_description, location_description}}
+  if (typeof desc === "object") {
+    const langObj = desc.fr || desc.en || {};
+    if (typeof langObj === "string") {
+      return { promo: stripHtml(langObj), location: "" };
+    }
+    return {
+      promo: stripHtml(langObj.promotion_description || ""),
+      location: stripHtml(langObj.location_description || ""),
+    };
+  }
+
+  return { promo: "", location: "" };
+}
+
+/**
  * Adapte la réponse promotions list au format attendu par ProjetsNeufs.jsx
- * (compatible avec l'ancien projects.json).
  */
 function normalizePromotionsList(items) {
-  return items.map((p) => ({
-    id: p.id,
-    type: "Programme neuf",
-    name: str(p.name) || "Promotion",
-    city: str(p.location),
-    cover: p.photos?.[0]?.url || p.photos?.[0] || "",
-    tagline: `Dès ${fmtPrice(p.price)} ${str(p.currency) || "CHF"}`,
-    reference: str(p.reference) || null,
-    description: stripHtml(str(p.description)),
-    specs: {
-      pieces: p.min_rooms ? `${p.min_rooms} – ${p.max_rooms}` : null,
-      chambres: p.min_bedrooms ? `${p.min_bedrooms} – ${p.max_bedrooms}` : null,
-      surface: p.min_surface ? `${p.min_surface} – ${p.max_surface} m²` : null,
-    },
-    photos: (p.photos || []).map((ph) => (typeof ph === "string" ? ph : ph.url)),
-    aptAvailable: p.apt_available || 0,
-    aptActive: p.apt_active || 0,
-    aptSold: p.apt_sold || 0,
-    propertyIds: p.property_ids || [],
-    _raw: p,
-  }));
+  return items.map((p) => {
+    const { promo } = extractDescriptions(p.description);
+    return {
+      id: p.id,
+      type: "Programme neuf",
+      name: str(p.name) || "Promotion",
+      city: str(p.location),
+      cover: p.photos?.[0]?.url || p.photos?.[0] || "",
+      tagline: p.price ? `Dès ${fmtPrice(p.price)} ${str(p.currency) || "CHF"}` : "",
+      reference: str(p.reference) || null,
+      description: promo,
+      specs: {
+        pieces: p.min_rooms ? `${p.min_rooms} – ${p.max_rooms}` : null,
+        chambres: p.min_bedrooms ? `${p.min_bedrooms} – ${p.max_bedrooms}` : null,
+        surface: p.min_surface ? `${p.min_surface} – ${p.max_surface} m²` : null,
+      },
+      photos: (p.photos || []).map((ph) => (typeof ph === "string" ? ph : ph.url)),
+      aptAvailable: p.apt_available || 0,
+      aptActive: p.apt_active || 0,
+      aptSold: p.apt_sold || 0,
+      propertyIds: p.property_ids || [],
+      _raw: p,
+    };
+  });
 }
 
 /**
@@ -173,13 +223,7 @@ function normalizePromotionsList(items) {
 function normalizePromotionDetail(p) {
   if (!p || !p.id) return null;
 
-  const rawDesc = str(p.description);
-  const plainDesc = stripHtml(rawDesc);
-
-  // Si description est un objet localisé avec sous-champs (promotion_description, location_description)
-  const locDesc = (typeof p.description === "object" && p.description !== null)
-    ? stripHtml(p.description?.fr?.location_description || p.description?.location_description || "")
-    : "";
+  const { promo, location } = extractDescriptions(p.description);
 
   return {
     id: p.id,
@@ -187,11 +231,13 @@ function normalizePromotionDetail(p) {
     name: str(p.name) || "Promotion",
     city: str(p.location),
     cover: p.photos?.[0]?.url || "",
-    tagline: `Dès ${fmtPrice(p.price)} ${str(p.currency) || "CHF"}`,
-    description: plainDesc,
+    tagline: p.price ? `Dès ${fmtPrice(p.price)} ${str(p.currency) || "CHF"}` : "",
+    description: promo,
     reference: str(p.reference) || null,
-    longDescription: plainDesc,
-    secondDescription: locDesc || plainDesc,
+    longDescription: promo,
+    secondDescription: location || promo,
+    longitude: p.longitude || null,
+    latitude: p.latitude || null,
     specs: {
       reference: str(p.reference) || null,
       pieces: p.min_rooms ? `${p.min_rooms} – ${p.max_rooms}` : null,
@@ -219,10 +265,15 @@ function normalizePromotionDetail(p) {
       status: str(lot.status) || null,
       statusId: lot.status_id || null,
       rooms: lot.rooms,
+      bedrooms: lot.bedrooms,
       floor: lot.floor,
       surface: lot.habitable || lot.dimensions_habitable || null,
+      surfaceUsable: lot.dimensions_usable || null,
+      surfaceLand: lot.dimensions_land || null,
+      surfaceWeighted: lot.dimensions_weighted || null,
       balcony: lot.balcony || lot.dimensions_balcony || null,
       terrace: lot.terrace || lot.dimensions_terrace || null,
+      garden: lot.garden || lot.dimensions_garden || null,
       price: lot.price,
       priceOnRequest: !!lot.price_on_request,
     })),
