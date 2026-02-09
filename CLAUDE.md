@@ -78,12 +78,10 @@ REALFORCE_PUBLIC_DEFAULT_LOCALE=fr
 ### Terminées
 - ✅ **Actualités - Scraping complet** - 17 articles scrapés depuis gary.ch, routes `/actualites/:id` fonctionnelles.
 - ✅ **Page Acheter** - Carousel fluide sur mobile, animations hover OK.
+- ✅ **Menu hamburger** - Doublon Actualités supprimé. Nav principale : Acheter, Vendre, Estimer, Projets Neufs. Sous-menu À propos : Qui est GARY, Actualités, Presse, Ressources.
+- ✅ **Header desktop** - Supprimé les offsets manuels (LOGO_OFFSET_X, NAV_OFFSET_X, CTA_OFFSET_X) et les media queries de compensation. La grille CSS centre maintenant naturellement : logo gauche, nav centrée, CTA droite. Padding symétrique 32px.
 
 ---
-
-### Header desktop
-- Mieux centrer les boutons de navigation, le logo Gary et le bouton "Contactez Gary"
-- Revoir l'alignement et l'espacement global du header sur grand écran
 
 ### Vidéos hero
 - Remplacer par de vraies vidéos optimisées
@@ -147,5 +145,3 @@ REALFORCE_PUBLIC_DEFAULT_LOCALE=fr
 - Relier les avis Google en direct sur le site
 - Afficher les avis de manière dynamique
 
-### Menu hamburger (mobile)
-- Corriger le doublon du bouton "Actualités" dans le menu

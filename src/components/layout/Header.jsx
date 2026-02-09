@@ -1,4 +1,3 @@
-// Header scalé + placements fins (logo à gauche non-collé, CTA à droite)
 import { useState, useRef } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import DrawerNav from './DrawerNav.jsx'
@@ -10,15 +9,9 @@ const NAV_FONT_SCALE = 1; // 1 = inchangé, 1.6 = +60% (mets 1.3, 1.8, 2.0…)
 const UI_SCALE   = 1.30            // échelle globale
 const NAV_SPREAD = 2.0             // >1 augmente l’écart entre onglets
 
-// Bords de page (gros réglages) : contrôlent le “pas collé” gauche/droite
-const EDGE_LEFT  = 24;             // px — augmente pour décoller le logo du bord gauche
-const EDGE_RIGHT = 28;             // px — augmente pour décoller le CTA du bord droit
-
-// Micro-réglages “au millimètre”
-const LOGO_OFFSET_X = 60;           // px — décale le bloc logo+vidéo (←/→)
-const LOGO_OFFSET_Y = 0;           // px — (↑/↓)
-const NAV_OFFSET_X  = 190;           // px — décale la nav (optionnel)
-const CTA_OFFSET_X  = 200;           // px — décale le bloc CTA (→ positif, ← négatif)
+// Bords de page : contrôlent le padding gauche/droite
+const EDGE_LEFT  = 32;             // px
+const EDGE_RIGHT = 32;             // px
 
 // ⚠️ À ne pas toucher sauf micro-correction de l’overlay vidéo
 const VIDEO_TWEAK_X = 0;
@@ -29,10 +22,6 @@ const VIDEO_SCALE   = 1.98;
 const UNDERLINE_THICKNESS = 1;     // px (ex: 2, 3)
 const UNDERLINE_OFFSET    = -3;     // px sous la baseline (ex: 4~8)
 const UNDERLINE_DURATION  = 250;   // ms (ex: 200, 300)
-
-// Effet "logo en fond" sur le bouton
-const BTN_LOGO_OPACITY = 0.18;   // intensité du logo en fond (0.12–0.25 recommandé)
-const BTN_LOGO_HOVER_SCALE = 1.02; // petit zoom du calque au hover (1 = aucun)
 
 /* Bases */
 const BASE = {
@@ -148,7 +137,6 @@ export default function Header(){
           to="/"
           aria-label="Accueil"
           className="justify-self-start inline-block"
-          style={{ marginLeft: LOGO_OFFSET_X, marginTop: LOGO_OFFSET_Y }}
         >
           <LogoWithHoverAnim />
         </Link>
@@ -176,15 +164,14 @@ export default function Header(){
             .nav-link[aria-current="page"] .nav-item::after { transform: scaleX(1); }
 
             .nav-desktop {
-              margin-left: ${NAV_OFFSET_X}px;
               white-space: nowrap;
               gap: ${S.navGap}px;
             }
             @media (max-width: 1600px) {
-              .nav-desktop { margin-left: ${NAV_OFFSET_X - 120}px; gap: ${Math.round(S.navGap * 0.8)}px; }
+              .nav-desktop { gap: ${Math.round(S.navGap * 0.8)}px; }
             }
             @media (max-width: 1440px) {
-              .nav-desktop { margin-left: ${NAV_OFFSET_X - 210}px; gap: ${Math.round(S.navGap * 0.65)}px; }
+              .nav-desktop { gap: ${Math.round(S.navGap * 0.65)}px; }
             }
           `}</style>
 
@@ -223,10 +210,6 @@ export default function Header(){
           style={{ gap: `${S.rightGap}px` }}
         >
           <style>{`
-            .header-cta { margin-right: ${CTA_OFFSET_X}px; }
-            @media (max-width: 1600px) { .header-cta { margin-right: ${CTA_OFFSET_X - 60}px; } }
-            @media (max-width: 1440px) { .header-cta { margin-right: ${CTA_OFFSET_X - 110}px; } }
-            @media (max-width: 1279px) { .header-cta { margin-right: 0px; } }
 
             .btn-gary { position: relative; overflow: hidden; }
             .logo-reveal {
