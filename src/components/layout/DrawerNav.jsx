@@ -39,14 +39,13 @@ export default function DrawerNav({ open, onClose }) {
     { to: "/vendre", label: "VENDRE", sub: "Vendre avec GARY" },
     { to: "/estimer", label: "ESTIMER", sub: "Estimation confidentielle" },
     { to: "/projets-neufs", label: "PROJETS NEUFS", sub: "Programmes immobiliers" },
-    { to: "/actualites", label: "ACTUALITÉS", sub: "Dernières infos GARY" },
   ];
 
   const aboutSubs = [
     { to: "/a-propos", label: "Qui est GARY" },
-    { to: "#", label: "Actu" },
-    { to: "#", label: "Presse" },
-    { to: "#", label: "Ressources" },
+    { to: "/actualites", label: "Actualités" },
+    { to: "/actualites", label: "Presse" },
+    { to: "/actualites", label: "Ressources" },
   ];
 
   const aboutActive = aboutSubs.some((s) => isPathActive(s.to));
@@ -232,12 +231,12 @@ export default function DrawerNav({ open, onClose }) {
                 >
                   <ul className="mt-2 ml-4 space-y-1.5">
                     {aboutSubs.map((sub) => {
-                      const subActive = sub.to !== "#" && isPathActive(sub.to);
+                      const subActive = isPathActive(sub.to);
                       return (
                         <li key={sub.label}>
                           <NavLink
                             to={sub.to}
-                            onClick={sub.to !== "#" ? onClose : (e) => e.preventDefault()}
+                            onClick={onClose}
                             className={`
                               group flex items-center justify-between
                               rounded-xl px-4 py-3
