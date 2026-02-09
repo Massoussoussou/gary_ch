@@ -28,7 +28,8 @@ export default function ProjetNeuf() {
     return [intro, ...data, coming];
   }, [data]);
 
-  // Ajoute / retire .is-visible pour déclencher l’anim de texte
+  // Ajoute / retire .is-visible pour déclencher l'anim de texte
+  // Doit se relancer quand les slides changent (chargement API)
   useEffect(() => {
     const root = wrapRef.current;
     const secs = root?.querySelectorAll(".proj-screen") ?? [];
@@ -43,7 +44,7 @@ export default function ProjetNeuf() {
     );
     secs.forEach((s) => io.observe(s));
     return () => io.disconnect();
-  }, []);
+  }, [slides.length]);
 
   // Scroll piloté (molette / clavier / touch) avec freinage en fin
   useEffect(() => {
