@@ -425,6 +425,7 @@ export default function BuyIntro() {
             onCta={() => navigate("/ventes")}
             renderItem={ListingCardSold}
           />
+          {/*
           <div className="mt-6 grid grid-cols-3 gap-3 md:gap-6 text-center">
             <div>
               <div className="text-3xl md:text-4xl font-medium tabular-nums">
@@ -445,10 +446,13 @@ export default function BuyIntro() {
               <div className="text-sm text-zinc-600">off-market</div>
             </div>
           </div>
+          */}
         </div>
       </section>
 
+      
       {/* 7) Process */}
+      {/*
       <section
         ref={procRef}
         className={`relative py-24 bg-[#FAF6F0] transition-all duration-700 ${procShown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
@@ -476,9 +480,10 @@ export default function BuyIntro() {
             onCallClick={() => {}}
           />
         </div>
-      </section>
+      </section> */}
 
       {/* 8) Calculette */}
+      {/*
       <section
         ref={calcRef}
         aria-label="Outils d'achat – calculette"
@@ -501,8 +506,11 @@ export default function BuyIntro() {
           />
         </div>
       </section>
+      */}
 
       {/* 9) Newsletter / Alertes */}
+
+      {/*
       <section
         ref={alertsRef}
         className={`relative py-24 bg-white transition-all duration-700 ${alertsShown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
@@ -516,6 +524,7 @@ export default function BuyIntro() {
           />
         </div>
       </section>
+      */}
 
       {/* 10) TrustStrip */}
       <TrustStrip
