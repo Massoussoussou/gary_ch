@@ -2,7 +2,30 @@ import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import TeamMemberCard from "../components/TeamMemberCard";
 import team from "../data/team.json";
 import DomeGallery from "../components/DomeGallery";
-import CTAFuturaGlow, { PhoneIcon } from "../components/cta/CTAFuturaGlow.jsx";
+import CTAFuturaGlow, { PhoneIcon } from "../components/CTAFuturaGlow";
+
+
+// --- Scroll lock helpers (used to pause scroll during the Venn animation) ---
+function lockScroll() {
+  const scrollY = window.scrollY;
+  document.body.dataset.scrollLockY = String(scrollY);
+  document.body.style.position = "fixed";
+  document.body.style.top = `-${scrollY}px`;
+  document.body.style.left = "0";
+  document.body.style.right = "0";
+  document.body.style.width = "100%";
+}
+
+function unlockScroll() {
+  const y = Number(document.body.dataset.scrollLockY || "0");
+  document.body.style.position = "";
+  document.body.style.top = "";
+  document.body.style.left = "";
+  document.body.style.right = "";
+  document.body.style.width = "";
+  delete document.body.dataset.scrollLockY;
+  window.scrollTo(0, y);
+}
 
 
 /* ========== Bande sous le titre (sobre) ========== */
@@ -33,6 +56,421 @@ function FullBleedImage({ src, alt = "" }) {
     </div>
   );
 }
+
+
+/* ========== Section Venn améliorée avec fusion des cercles ========== */
+function GaryVennSection({
+  copy = "Véritables stratèges de la vente immobilière, GARY combine une connaissance fine du marché immobilier local, forgée par plus de 60 ans d'expérience cumulée, à une expertise marketing nouvelle génération, innovante et performante.",
+  leftLabel = "Courtiers jeunes",
+  rightLabel = "Grande expertise",
+  // déclenchement: "scroll" (comportement original) ou "mount" (dès chargement)
+  trigger = "scroll",
+  // lock scroll pendant l'anim
+  lockScrollOnStart = true,
+  // afficher ou non le texte sous l'animation
+  showCopy = true,
+  // mode hero (plein écran, utilisé quand les bandes passent par dessus)
+  hero = false,
+} = {}) {
+  // --- Tuning knobs (micro-adjustments) ---
+  const CENTER_TOLERANCE_PX = 18;  // how close to center we require (px)
+  const CENTER_BIAS_PX = 120;      // + pushes the circles LOWER in the viewport, - pushes higher
+  const LOCK_MS = 2000;            // how long to lock scroll once the animation starts
+
+  const [wrapRef, seen] = useInViewOnce({ threshold: 0.25 });
+
+  const sectionRef = useRef(null);
+  const circlesRef = useRef(null);
+
+  const didRunRef = useRef(false);
+  const rafRef = useRef(0);
+  const unlockTimerRef = useRef(0);
+
+  const [startAnim, setStartAnim] = useState(false);
+
+  useEffect(() => {
+    // mode "mount" : on lance direct, sans recentrage
+    if (trigger === "mount") {
+      setStartAnim(true);
+      if (lockScrollOnStart) {
+        lockScroll();
+        unlockTimerRef.current = window.setTimeout(() => unlockScroll(), LOCK_MS);
+      }
+      return () => {
+        if (unlockTimerRef.current) window.clearTimeout(unlockTimerRef.current);
+        unlockScroll();
+      };
+    }
+
+    if (!seen) return;
+    if (didRunRef.current) return;
+
+    // Respect "Reduce motion" accessibility setting
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    if (reduceMotion) {
+      setStartAnim(true);
+      return;
+    }
+
+    didRunRef.current = true;
+
+    const el = circlesRef.current || sectionRef.current;
+    if (!el) return;
+
+    const isCentered = () => {
+      const r = el.getBoundingClientRect();
+      const elCenterY = r.top + r.height / 2;
+      const viewCenterY = window.innerHeight / 2 + CENTER_BIAS_PX;
+      return Math.abs(elCenterY - viewCenterY) <= CENTER_TOLERANCE_PX;
+    };
+
+    const scrollToTarget = () => {
+      const r = el.getBoundingClientRect();
+      const elCenterAbs = window.scrollY + r.top + r.height / 2;
+      const targetY = elCenterAbs - (window.innerHeight / 2 + CENTER_BIAS_PX);
+
+      const maxY = document.documentElement.scrollHeight - window.innerHeight;
+      const clampedY = Math.max(0, Math.min(targetY, maxY));
+
+      window.scrollTo({ top: clampedY, behavior: "smooth" });
+    };
+
+    // Start centering
+    scrollToTarget();
+
+    const tick = () => {
+      if (isCentered()) {
+        // Start the animation AND lock scroll at the same moment
+        setStartAnim(true);
+        if (lockScrollOnStart) lockScroll();
+
+        unlockTimerRef.current = window.setTimeout(() => {
+          unlockScroll();
+        }, LOCK_MS);
+
+        return;
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (unlockTimerRef.current) window.clearTimeout(unlockTimerRef.current);
+      unlockScroll();
+    };
+  }, [seen, trigger, lockScrollOnStart]);
+
+  return (
+    <section
+      ref={(node) => {
+        wrapRef.current = node;
+        sectionRef.current = node;
+      }}
+      className={hero ? "relative min-h-[100svh] flex items-center justify-center pt-8 pb-20 md:pt-10 md:pb-24" : "relative pt-20 pb-16 md:pt-32 md:pb-24"}
+    >
+      <style>{`
+        @keyframes vennLeftSlide {
+          0%   { transform: translate3d(-200%, 0, 0); opacity: 0; }
+          100% { transform: translate3d(0, 0, 0); opacity: 1; }
+        }
+        @keyframes vennRightSlide {
+          0%   { transform: translate3d(200%, 0, 0); opacity: 0; }
+          100% { transform: translate3d(0, 0, 0); opacity: 1; }
+        }
+        @keyframes vennMergeLeft {
+          0%   { transform: translate3d(0, 0, 0); }
+          100% { transform: translate3d(26%, 0, 0); }
+        }
+        @keyframes vennMergeRight {
+          0%   { transform: translate3d(0, 0, 0); }
+          100% { transform: translate3d(-26%, 0, 0); }
+        }
+        @keyframes logoReveal {
+          0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.5); filter: blur(10px); }
+          100% { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: blur(0px); }
+        }
+        @keyframes labelFade {
+          0%   { opacity: 1; }
+          100% { opacity: 0; }
+        }
+
+        /* Make transforms stable */
+        .vennCircle {
+          will-change: transform, opacity;
+          transform: translate3d(0, 0, 0);
+          backface-visibility: hidden;
+          transform-style: preserve-3d;
+        }
+
+        .vennMergeLeft, .vennMergeRight {
+          animation-fill-mode: both;
+        }
+      `}</style>
+
+      <div className={"mx-auto max-w-6xl px-4 flex flex-col items-center " + (hero ? " -translate-y-6 md:-translate-y-10" : "")}>
+        <div
+          ref={circlesRef}
+          className="relative w-full max-w-[1100px] mx-auto overflow-visible h-[460px] md:h-[620px]"
+        >
+          {/* Cercle gauche */}
+          <div className="absolute left-0 top-1/2 -translate-y-1/2">
+            <div
+              className="w-[340px] h-[340px] md:w-[520px] md:h-[520px] rounded-full bg-gradient-to-br from-[#FF4A3E] to-[#FF6B5E] shadow-2xl
+                         flex items-center justify-center text-center px-10 transition-all duration-1000 vennCircle"
+              style={{
+                opacity: startAnim ? 1 : 0,
+                transform: startAnim ? undefined : "translate3d(-200%, 0, 0)",
+                animation: startAnim
+                  ? "vennLeftSlide 1s cubic-bezier(.34,.46,.34,1) 0s both, vennMergeLeft 1.2s cubic-bezier(.34,.46,.34,1) 1.2s both"
+                  : undefined,
+              }}
+            >
+              <div
+                className="text-2xl md:text-4xl font-semibold text-white leading-tight"
+                style={{
+                  animation: startAnim ? "labelFade 0.6s ease-out 1.8s both" : "none",
+                }}
+              >
+                {leftLabel}
+              </div>
+            </div>
+          </div>
+
+          {/* Cercle droite */}
+          <div className="absolute right-0 top-1/2 -translate-y-1/2">
+            <div
+              className="w-[340px] h-[340px] md:w-[520px] md:h-[520px] rounded-full bg-gradient-to-bl from-[#FF7A6E]/70 to-[#FFB3A8]/60 shadow-2xl
+                         flex items-center justify-center text-center px-10 transition-all duration-1000 vennCircle"
+              style={{
+                opacity: startAnim ? 1 : 0,
+                transform: startAnim ? undefined : "translate3d(200%, 0, 0)",
+                animation: startAnim
+                  ? "vennRightSlide 1s cubic-bezier(.34,.46,.34,1) 0.2s both, vennMergeRight 1.2s cubic-bezier(.34,.46,.34,1) 1.2s both"
+                  : undefined,
+              }}
+            >
+              <div
+                className="text-2xl md:text-4xl font-semibold text-neutral-900 leading-tight"
+                style={{
+                  animation: startAnim ? "labelFade 0.6s ease-out 1.8s both" : "none",
+                }}
+              >
+                {rightLabel}
+              </div>
+            </div>
+          </div>
+
+          {/* Logo GARY au centre */}
+          <img
+            src="/Logo/logo-gary.png"
+            alt="GARY"
+            className="absolute left-1/2 top-1/2 w-[140px] md:w-[200px] h-auto z-10"
+            style={{
+              animation: startAnim ? "logoReveal 1s cubic-bezier(.34,.46,.34,1) 2s both" : "none",
+            }}
+          />
+        </div>
+
+        {/* Texte descriptif */}
+        {showCopy && (
+        <div
+          className={[
+            "mt-10 w-full flex flex-col items-center",
+            "transition-all duration-700 ease-out",
+            startAnim ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3",
+          ].join(" ")}
+          style={{ transitionDelay: "2.6s" }}
+        >
+          <p className={(hero ? "mt-4" : "mt-6") + " text-xl md:text-2xl text-neutral-800 leading-relaxed text-center max-w-4xl"}>
+            {copy}
+          </p>
+        </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+
+
+
+/* ========== Section Chiffres Clés avec cercles animés au scroll ========== */
+function KeyNumbersSection() {
+  const [containerRef, containerSeen] = useInViewOnce({ threshold: 0.15 });
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    if (!containerRef.current || !containerSeen) return;
+
+    const handleScroll = () => {
+      const rect = containerRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      const elementHeight = rect.height;
+      
+      // Calculer la progression du scroll (0 à 1)
+      const start = windowHeight - rect.top;
+      const progress = Math.max(0, Math.min(1, start / (windowHeight + elementHeight * 0.5)));
+      
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Initial call
+    
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [containerSeen, containerRef]);
+
+  const keyNumbers = [
+    {
+      number: "60+",
+      label: "Années d'expérience",
+      description: "Un savoir-faire transmis et perfectionné",
+      color: "from-[#FF4A3E] to-[#FF6B5E]",
+      delay: 0
+    },
+    {
+      number: "200M+",
+      label: "En transactions",
+      description: "Des projets d'exception réalisés",
+      color: "from-[#FF6B5E] to-[#FF8A7E]",
+      delay: 0.15
+    },
+    {
+      number: "95%",
+      label: "Clients satisfaits",
+      description: "La confiance comme moteur",
+      color: "from-[#FF8A7E] to-[#FFB3A8]",
+      delay: 0.3
+    }
+  ];
+
+  return (
+    <section ref={containerRef} className="relative py-20 md:py-32 overflow-hidden">
+      <style>{`
+        @keyframes floatCircle {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-20px) scale(1.05); }
+        }
+        @keyframes numberPop {
+          0% { opacity: 0; transform: scale(0.5); }
+          50% { transform: scale(1.1); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes textSlide {
+          0% { opacity: 0; transform: translateY(20px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="text-center mb-16 md:mb-24">
+          <h2 className="text-4xl md:text-6xl font-serif text-neutral-900 mb-4">
+            GARY en chiffres
+          </h2>
+          <p className="text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto">
+            Des résultats qui parlent d'eux-mêmes
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
+          {keyNumbers.map((item, idx) => {
+            const progress = Math.max(0, Math.min(1, (scrollProgress - item.delay) / 0.3));
+            const isVisible = progress > 0;
+            const scale = 0.8 + (progress * 0.2);
+            const opacity = progress;
+            const translateY = (1 - progress) * 50;
+
+            return (
+              <div
+                key={idx}
+                className="relative flex flex-col items-center"
+                style={{
+                  opacity,
+                  transform: `translateY(${translateY}px)`,
+                  transition: "opacity 0.6s ease-out, transform 0.6s ease-out"
+                }}
+              >
+                {/* Cercle avec gradient */}
+                <div className="relative w-[280px] h-[280px] md:w-[320px] md:h-[320px] mb-8">
+                  <div
+                    className={`absolute inset-0 rounded-full bg-gradient-to-br ${item.color} shadow-2xl flex items-center justify-center`}
+                    style={{
+                      transform: `scale(${scale})`,
+                      animation: isVisible ? "floatCircle 4s ease-in-out infinite" : "none",
+                      animationDelay: `${item.delay * 2}s`
+                    }}
+                  >
+                    <div className="text-center">
+                      <div 
+                        className="text-6xl md:text-7xl font-bold text-white mb-2"
+                        style={{
+                          animation: isVisible ? `numberPop 0.6s cubic-bezier(.34,.46,.34,1) ${item.delay + 0.3}s both` : "none"
+                        }}
+                      >
+                        {item.number}
+                      </div>
+                      <div 
+                        className="text-xl md:text-2xl font-semibold text-white/90"
+                        style={{
+                          animation: isVisible ? `textSlide 0.6s ease-out ${item.delay + 0.5}s both` : "none"
+                        }}
+                      >
+                        {item.label}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Effet de lueur */}
+                  <div 
+                    className={`absolute inset-0 rounded-full bg-gradient-to-br ${item.color} opacity-20 blur-2xl`}
+                    style={{
+                      transform: `scale(${scale * 1.2})`,
+                      transition: "transform 0.6s ease-out"
+                    }}
+                  />
+                </div>
+
+                {/* Description */}
+                <p 
+                  className="text-center text-lg md:text-xl text-neutral-700 max-w-[280px] leading-relaxed"
+                  style={{
+                    animation: isVisible ? `textSlide 0.6s ease-out ${item.delay + 0.7}s both` : "none"
+                  }}
+                >
+                  {item.description}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+
+
+function useInViewOnce(options = { threshold: 0.35 }) {
+  const ref = useRef(null);
+  const [seen, setSeen] = useState(false);
+
+  useEffect(() => {
+    if (!ref.current || seen) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setSeen(true);
+    }, options);
+
+    obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [seen, options]);
+
+  return [ref, seen];
+}
+
+
 
 /* ========== STRIP auto-défilante, drag-only, bords carrés ========== */
 function AutoScrollStrip({
@@ -159,33 +597,49 @@ function AutoScrollStrip({
   );
 }
 
-/* ========== HERO à 3 BANDES collées plein écran ========== */
-function HeroThreeStrips() {
+/* ========== HERO 3 STRIPS ========== */
+function HeroThreeStrips({ hideTitle = false, startHidden = false, overlayFadeInPx = 40, children = null } = {}) {
   const ref = useRef(null);
   const [local, setLocal] = useState(0);
   const [sectionVh, setSectionVh] = useState(180);
 
-  // ↓↓↓ Moins de scroll pour faire toute l’animation
-  const ENTER_SPAN = 380;   // 700 → 380
-  const ACCEL_SPAN = 520;   // 900 → 520
-  const HOLD_PX    = 60;    // 100 → 60
-  const BIG_GARY_FADE_PX = 180; // 280 → 180
+  // Timeline (en px de scroll) — pensée pour ton nouveau scénario
+  // 1) La bande du milieu monte et passe AU-DESSUS du logo
+  // 2) Les deux autres bandes arrivent en 2e & 3e position
+  // 3) Le gros logo GARY apparaît au-dessus des 3 bandes
+  const LIFT_SPAN  = 260;
+  const STACK_SPAN = 360;
+  const BIG_SPAN   = 90;
+
+  // Gain de scroll (1.0 = normal, >1 = l’anim avance plus vite)
+  const SCROLL_GAIN = 1.35;
+
 
   const clamp01  = (x) => Math.max(0, Math.min(1, x));
   const remap01  = (x, a, b) => clamp01((x - a) / (b - a));
+  const lerp     = (a, b, t) => a + (b - a) * t;
   const easeOutC = (x) => 1 - Math.pow(1 - x, 3);
+  const easeInOutC = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 
-  // Calcule une hauteur de section plus courte (moins de défilement)
+  // Calcule une hauteur de section suffisante pour que toute la timeline se déroule
+  // (sinon, le gros logo n’atteint jamais 100% quand on accélère le scroll).
   useEffect(() => {
     const recompute = () => {
-      const ih = typeof window !== "undefined" ? window.innerHeight : 800;
-      const extra = (ENTER_SPAN + ACCEL_SPAN + HOLD_PX) / Math.max(1, ih) * 90; // 100 → 90 pour compresser un peu
-      setSectionVh(100 + Math.round(extra));
+      const vh = typeof window !== "undefined" ? window.innerHeight : 800;
+      const totalSpan = LIFT_SPAN + STACK_SPAN + BIG_SPAN;
+
+      // local = scrollPx * SCROLL_GAIN → scroll réel nécessaire = totalSpan / SCROLL_GAIN
+      const neededScrollPx = (totalSpan / SCROLL_GAIN) * 1.08; // marge
+      const neededVh = 100 * (1 + neededScrollPx / Math.max(1, vh));
+
+      // Valeur mini pour éviter un rendu trop “sec” sur grands écrans.
+      setSectionVh(Math.max(140, Math.ceil(neededVh)));
     };
     recompute();
     window.addEventListener("resize", recompute);
     return () => window.removeEventListener("resize", recompute);
   }, []);
+
 
   useEffect(() => {
     const onScroll = () => {
@@ -195,7 +649,8 @@ function HeroThreeStrips() {
       const vh  = window.innerHeight;
       const totalLocal = Math.max(1, el.offsetHeight - vh);
       const l = Math.min(Math.max(0, window.scrollY - top), totalLocal);
-      setLocal(l);
+      setLocal(l * SCROLL_GAIN);
+
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -207,25 +662,51 @@ function HeroThreeStrips() {
   }, []);
 
   // Progressions
-  const pEnter   = easeOutC(remap01(local, 0, ENTER_SPAN));
-  const pAccel   = remap01(local, ENTER_SPAN * 0.35, ENTER_SPAN + ACCEL_SPAN);
-  const pBigGary = (t => 1 - Math.pow(1 - t, 3))(
-    Math.max(0, Math.min(1, (local - ENTER_SPAN) / BIG_GARY_FADE_PX))
-  );
+  const pLift  = easeOutC(remap01(local, 0, LIFT_SPAN));
+  const pStack = easeInOutC(remap01(local, LIFT_SPAN, LIFT_SPAN + STACK_SPAN));
+  const pBig   = easeOutC(remap01(local, LIFT_SPAN + STACK_SPAN, LIFT_SPAN + STACK_SPAN + BIG_SPAN));
 
-  // Vitesse : de 1x → 8x (avant 1→6)
-  const speedMult = 1 + 7 * pAccel;
+  // Bandes latérales : présentes dès le départ mais hors écran (donc invisibles)
+  // Opacité optionnelle (évite un pop si le scroll est micro)
+  const stackAlpha = clamp01(pStack / 0.02);
 
-  // Transform d’entrée des bandes
+  // NEW: au tout début, on peut masquer l'overlay (cercles visibles), puis fade-in dès qu'on scroll
+  const overlayOpacity = startHidden ? clamp01(local / Math.max(1, overlayFadeInPx)) : 1;
+
+
+  // Vitesse auto-défilante : 1x → 10x au fur et à mesure qu’on empile les bandes
+  const speedMult = 1 + 6.5 * (0.35 * pLift + 0.65 * pStack);
+
+  // Positions verticales (en vh)
   const rowH = 100 / 3;
-  const topTransform = `translate3d(${(-30 + 30 * pEnter)}px, ${(-rowH) * (1 - pEnter)}vh, 0)`;
-  const midTransform = `translate3d(0, 0, 0)`;
-  const botTransform = `translate3d(${(30 - 30 * pEnter)}px, ${(rowH) * (1 - pEnter)}vh, 0)`;
+  const Y_TOP = 0;
+  const Y_MID = rowH;
+  const Y_BOT = rowH * 2;
 
-  const titleOpacity = 1 - clamp01(pEnter * 1.2);
+  const yMid = lerp(Y_MID, Y_TOP, pLift);
 
-  const bigGaryOpacity = pBigGary;
-  const bigGaryScale   = 0.9 + 0.1 * pBigGary;
+  // Les 2 autres bandes arrivent en "phase 2" par les côtés (entrée horizontale),
+  // et se placent ensuite en 2e & 3e position (milieu + bas).
+  const yTop = Y_MID;
+  const yBot = Y_BOT;
+
+    const xTopVw = lerp(-100, 0, pStack); // arrive depuis la gauche (hors écran au départ)
+    const xBotVw = lerp(100, 0, pStack);  // arrive depuis la droite (hors écran au départ)
+
+  // Transforms
+    const topTransform = `translate3d(${xTopVw}vw, ${yTop}vh, 0)`;
+  const midTransform = `translate3d(0, ${yMid}vh, 0)`;
+    const botTransform = `translate3d(${xBotVw}vw, ${yBot}vh, 0)`;
+
+  // Petit logo + baseline : on le laisse au début, puis on le fait disparaître
+  const titleOpacity = 1 - clamp01((pLift - 0.08) / 0.18);
+
+  // Gros logo au-dessus des 3 bandes
+  const bigGaryOpacity = pBig;
+  const bigGaryScale   = 0.92 + 0.08 * pBig;
+
+  // Z-index : la bande du milieu passe AU-DESSUS du logo dès qu’on scroll un peu
+  const midZ = (pLift > 0 && pLift < 0.98) ? 30 : 12;
 
   const STRIP_IMAGES = [
     "https://images.pexels.com/photos/2583494/pexels-photo-2583494.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=1600&h=900",
@@ -246,30 +727,39 @@ function HeroThreeStrips() {
   return (
     <section ref={ref} className="relative" style={{ height: `${sectionVh}vh` }}>
       <div className="sticky top-0 h-screen bg-white overflow-hidden">
-        {/* Petit titre + phrase (logo + baseline) */}
-        <div
-          className="max-w-6xl mx-auto px-4 pt-16 md:pt-24 text-center pointer-events-none"
-          style={{ opacity: titleOpacity, transition: "opacity 160ms linear" }}
-        >
-          <div className="flex items-center justify-center gap-4 md:gap-6">
-            <img
-              src="/Logo/logo-gary-orange.png"
-              alt="GARY"
-              className="h-[56px] md:h-[96px] w-auto object-contain"
-              loading="eager"
-            />
-          </div>
-          <p className="mt-3 text-lg md:text-2xl text-neutral-800">Groupe immobilier d’excellence — Suisse</p>
+        {/* Contenu derrière l'overlay (ex: cercles) */}
+        <div className="absolute inset-0 z-[0]">
+          {children}
         </div>
+        {/* Petit titre + phrase (logo + baseline) */}
+        {!hideTitle && (
+          <div
+            className="relative z-[20] max-w-6xl mx-auto px-4 pt-16 md:pt-24 text-center pointer-events-none"
+            style={{ opacity: titleOpacity, transition: "opacity 160ms linear" }}
+          >
+            <div className="flex items-center justify-center gap-4 md:gap-6">
+              <img
+                src="/Logo/logo-gary-orange.png"
+                alt="GARY"
+                className="h-[56px] md:h-[96px] w-auto object-contain"
+                loading="eager"
+              />
+            </div>
+            <p className="mt-3 text-lg md:text-2xl text-neutral-800">Groupe immobilier d’excellence — Suisse</p>
+          </div>
+        )}
 
         {/* 3 bandes qui remplissent l’écran */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 z-[10]" style={{ opacity: overlayOpacity, transition: "opacity 140ms linear" }}>
           {/* Bande du haut */}
-          <div className="absolute left-0 right-0" style={{ top: 0, transform: topTransform, transition: "transform 80ms linear" }}>
+          <div
+            className="absolute left-0 right-0 top-0"
+            style={{ transform: topTransform, opacity: stackAlpha, transition: "transform 140ms linear, opacity 140ms linear", zIndex: 12, overflow: "hidden", width: "100vw" }}
+          >
             <AutoScrollStrip
               images={STRIP_IMAGES}
               direction={1}
-              speed={0.2}           // 0.30 → 0.45 pour accentuer la vitesse
+              speed={0.22}           // 0.30 → 0.45 pour accentuer la vitesse
               speedMultiplier={speedMult}
               rowHeightVh={100 / 3}
               tileW={460}
@@ -277,11 +767,14 @@ function HeroThreeStrips() {
           </div>
 
           {/* Bande du milieu */}
-          <div className="absolute left-0 right-0" style={{ top: "33.3333vh", transform: midTransform }}>
+          <div
+            className="absolute left-0 right-0 top-0"
+            style={{ transform: midTransform, transition: "transform 120ms linear", zIndex: midZ }}
+          >
             <AutoScrollStrip
               images={STRIP_IMAGES}
               direction={-1}
-              speed={0.2}
+              speed={0.22}
               speedMultiplier={speedMult}
               rowHeightVh={100 / 3}
               tileW={460}
@@ -289,11 +782,14 @@ function HeroThreeStrips() {
           </div>
 
           {/* Bande du bas */}
-          <div className="absolute left-0 right-0" style={{ top: "66.6667vh", transform: botTransform, transition: "transform 80ms linear" }}>
+          <div
+            className="absolute left-0 right-0 top-0"
+            style={{ transform: botTransform, opacity: stackAlpha, transition: "transform 140ms linear, opacity 140ms linear", zIndex: 12, overflow: "hidden", width: "100vw" }}
+          >
             <AutoScrollStrip
               images={STRIP_IMAGES}
-              direction={1}
-              speed={0.2}
+              direction={-1}
+              speed={0.22}
               speedMultiplier={speedMult}
               rowHeightVh={100 / 3}
               tileW={460}
@@ -306,7 +802,7 @@ function HeroThreeStrips() {
           className="pointer-events-none absolute left-0 right-0 flex justify-center"
           style={{
             top: "calc(66.6667vh + 100px)",
-            opacity: 1 - Math.min(1, pEnter * 1.2),
+            opacity: 1 - clamp01(local / (LIFT_SPAN * 0.75)),
             transition: "opacity 160ms linear",
           }}
         >
@@ -341,7 +837,7 @@ function HeroThreeStrips() {
         {/* Logo GARY géant par-dessus, remplace le texte géant */}
         <div
           className="absolute inset-0 flex items-center justify-center pointer-events-none"
-          style={{ opacity: bigGaryOpacity, transition: "opacity 160ms linear" }}
+          style={{ opacity: bigGaryOpacity, transition: "opacity 160ms linear", zIndex: 50 }}
         >
           <img
             src="/Logo/logo-gary-orange.png"
@@ -367,7 +863,7 @@ function AltSection({ title, copy, img, align = "left", onSeeTeam }) {
             onClick={onSeeTeam}
             className="mt-6 inline-flex items-center gap-2 border border-black px-5 py-3 text-black hover:bg-black hover:text-white transition"
           >
-            Voir l'équipe <span aria-hidden>›</span>
+            Voir l’équipe <span aria-hidden>›</span>
           </button>
         )}
       </div>
@@ -381,224 +877,9 @@ function AltSection({ title, copy, img, align = "left", onSeeTeam }) {
   );
 }
 
-/* ========== Section GARY + KPIs scroll-driven (gauche/droite) ========== */
-const KPIS = [
-  { value: "100+", label: "ventes réalisées en 2025", side: "left" },
-  { value: "90+", label: "avis 5 étoiles sur Google", side: "right", link: "https://g.page/r/gary-immobilier", linkText: "Voir les avis" },
-  { value: "6.6M", label: "de vues sur nos publications", side: "left" },
-  { value: "40k+", label: "followers sur nos réseaux", side: "right" },
-];
-
-function GaryVennKPISection() {
-  const sectionRef = useRef(null);
-  const [logoVisible, setLogoVisible] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
-
-  // Détecter quand la section entre → faire apparaître le logo GARY
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !logoVisible) {
-          setLogoVisible(true);
-        }
-      },
-      { threshold: 0.2 }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [logoVisible]);
-
-  // Scroll tracking pour les KPIs
-  useEffect(() => {
-    const onScroll = () => {
-      const el = sectionRef.current;
-      if (!el) return;
-
-      const rect = el.getBoundingClientRect();
-      const viewH = window.innerHeight;
-      const scrollableHeight = el.offsetHeight - viewH;
-
-      if (scrollableHeight <= 0) {
-        setScrollProgress(0);
-        return;
-      }
-
-      const scrolledInSection = -rect.top;
-      const progress = Math.max(0, Math.min(1, scrolledInSection / scrollableHeight));
-      setScrollProgress(progress);
-    };
-
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, []);
-
-  // Calcul progression pour chaque KPI (apparition échelonnée, lente)
-  const getKpiProgress = (index) => {
-    // Chaque KPI prend 30% du scroll, décalé de 20% entre chaque
-    const start = index * 0.18;
-    const end = start + 0.35;
-    const raw = (scrollProgress - start) / (end - start);
-    return Math.max(0, Math.min(1, raw));
-  };
-
-  return (
-    <section
-      ref={sectionRef}
-      className="relative bg-white"
-      style={{ height: "450vh" }} // Long scroll pour animation lente
-    >
-      {/* Container sticky */}
-      <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
-
-        {/* Cercle central GARY - GROS */}
-        <div
-          className="absolute z-10 transition-all duration-1000 ease-out"
-          style={{
-            width: "min(340px, 44vw)",
-            height: "min(340px, 44vw)",
-            left: "50%",
-            top: "50%",
-            transform: `translate(-50%, -50%) scale(${logoVisible ? 1 : 0.5})`,
-            opacity: logoVisible ? 1 : 0,
-          }}
-        >
-          <div
-            className="w-full h-full rounded-full flex items-center justify-center"
-            style={{
-              background: "linear-gradient(145deg, #FF4A3E 0%, #FF5A4A 100%)",
-              boxShadow: "0 40px 120px -25px rgba(255, 74, 62, 0.6)",
-            }}
-          >
-            <img
-              src="/Logo/logo-gary.png"
-              alt="GARY"
-              className="w-[48%] h-auto"
-              style={{ filter: "drop-shadow(0 6px 20px rgba(0,0,0,0.2))" }}
-            />
-          </div>
-        </div>
-
-        {/* KPIs à gauche et à droite */}
-        {KPIS.map((kpi, i) => {
-          const progress = getKpiProgress(i);
-          const isLeft = kpi.side === "left";
-
-          // Position horizontale : vient de l'extérieur vers le bord du cercle
-          // À 0% : hors écran, à 100% : près du cercle central
-          const startX = isLeft ? -60 : 60; // vw, hors écran
-          const endX = isLeft ? -32 : 32;   // vw, près du cercle
-          const currentX = startX + (endX - startX) * progress;
-
-          // Position verticale : légèrement décalée pour chaque KPI
-          const yOffsets = [-15, -5, 5, 15]; // vh
-          const currentY = yOffsets[i] || 0;
-
-          // Ease out cubic pour mouvement plus naturel
-          const easedProgress = 1 - Math.pow(1 - progress, 3);
-
-          return (
-            <div
-              key={i}
-              className="absolute z-20"
-              style={{
-                left: "50%",
-                top: "50%",
-                transform: `translate(calc(-50% + ${currentX}vw), calc(-50% + ${currentY}vh))`,
-                opacity: easedProgress,
-                transition: "transform 80ms linear, opacity 80ms linear",
-              }}
-            >
-              {/* Cercle KPI - GROS */}
-              <div
-                className="flex flex-col items-center"
-                style={{
-                  transform: `scale(${0.6 + 0.4 * easedProgress})`,
-                  transition: "transform 80ms linear",
-                }}
-              >
-                <div
-                  className="rounded-full flex flex-col items-center justify-center text-center"
-                  style={{
-                    width: "min(180px, 26vw)",
-                    height: "min(180px, 26vw)",
-                    background: "linear-gradient(145deg, #FF4A3E 0%, #FF6B5B 100%)",
-                    boxShadow: `0 ${20 * easedProgress}px ${60 * easedProgress}px -15px rgba(255, 74, 62, 0.55)`,
-                  }}
-                >
-                  <span className="text-4xl md:text-5xl font-bold text-white leading-none">
-                    {kpi.value}
-                  </span>
-                  <span className="text-sm md:text-base text-white/90 mt-2 px-4 leading-snug max-w-[150px]">
-                    {kpi.label}
-                  </span>
-                </div>
-
-                {/* Lien si présent */}
-                {kpi.link && progress > 0.7 && (
-                  <a
-                    href={kpi.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-4 text-sm text-[#FF4A3E] hover:underline whitespace-nowrap transition-opacity"
-                    style={{ opacity: (progress - 0.7) / 0.3 }}
-                  >
-                    {kpi.linkText} →
-                  </a>
-                )}
-              </div>
-            </div>
-          );
-        })}
-
-        {/* Texte baseline en bas */}
-        <div
-          className="absolute bottom-[12%] left-1/2 -translate-x-1/2 text-center max-w-2xl px-6 transition-opacity duration-700"
-          style={{ opacity: logoVisible && scrollProgress < 0.85 ? 1 : 0 }}
-        >
-          <p className="text-xl md:text-2xl text-neutral-500 tracking-wide font-light">
-            Véritables stratèges de la vente immobilière
-          </p>
-        </div>
-
-        {/* Indicateur scroll */}
-        {logoVisible && scrollProgress < 0.05 && (
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-            <svg
-              width="40"
-              height="40"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#FF4A3E"
-              strokeWidth="2"
-              className="animate-bounce"
-            >
-              <path d="M12 5v14M5 12l7 7 7-7" />
-            </svg>
-          </div>
-        )}
-      </div>
-    </section>
-  );
-}
-
 function CTA() {
-  const btnRef = React.useRef(null);
-
   return (
-    <section
-      id="cta"
-      className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden mb-20 md:mb-28 min-h-[130vh]"
-    >
-      {/* Dôme en arrière-plan */}
+    <section id="cta" className="relative overflow-hidden bg-white" style={{ height: "100vh" }}>
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[120vw] h-full">
         <DomeGallery
           className="w-full h-full"
@@ -607,33 +888,21 @@ function CTA() {
           padFactor={0.16}
           speedDegPerSec={6}
           grayscale={false}
-          /* >>> bande blanche retirée (cf. §2) <<< */
           overlayBlurColor="transparent"
         />
         
-        {/* Vignette top/bottom pour opacifier les bords */}
-<div aria-hidden className="pointer-events-none absolute inset-0 z-[2]">
-  <div className="absolute inset-x-0 top-0 h-24 md:h-40 bg-gradient-to-b from-white to-transparent" />
-  <div className="absolute inset-x-0 bottom-0 h-24 md:h-40 bg-gradient-to-t from-white to-transparent" />
-</div>
-
+        <div aria-hidden className="pointer-events-none absolute inset-0 z-[2]">
+          <div className="absolute inset-x-0 top-0 h-24 md:h-40 bg-gradient-to-b from-white to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-24 md:h-40 bg-gradient-to-t from-white to-transparent" />
+        </div>
       </div>
 
-      {/* Bloc “HERO Estimer” cloné (tuile opaque + titre + 2 boutons) */}
       <div className="absolute inset-0 z-10 flex items-center justify-center px-4">
         <div className="relative mx-auto w-full max-w-7xl px-6 md:px-8 py-20 md:py-28 pointer-events-none">
           <div className="relative flex justify-start">
-            <div
-              className="
-                relative w-full max-w-[min(900px,84vw)]
-                md:translate-x-[165px]
-                md:-translate-y-[0px]
-              "
-            >
-              {/* Tuile verre derrière le contenu */}
+            <div className="relative w-full max-w-[min(900px,84vw)] md:translate-x-[165px]">
               <div className="absolute -inset-y-6 -left-6 -right-6 bg-white/55 backdrop-blur-sm" />
 
-              {/* Contenu */}
               <div className="relative z-10 text-center text-black pointer-events-auto">
                 <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-neutral-600 mb-3">
                   GARY
@@ -641,26 +910,21 @@ function CTA() {
 
                 <h3 className="font-serif tracking-[-0.03em] leading-[0.9] text-[clamp(3.2rem,8vw,6rem)]">
                   Un projet <span className="text-[#FF4A3E]">immobilier</span><br />
-                  d’exception&nbsp;?
+                  d'exception&nbsp;?
                 </h3>
 
                 <p className="mt-5 text-[clamp(1.05rem,2.1vw,1.35rem)] text-neutral-900/90 max-w-[52ch] mx-auto">
-                  Parlons-en aujourd’hui. Mise en valeur, commercialisation&nbsp;: on s’occupe de tout.
+                  Parlons-en aujourd'hui. Mise en valeur, commercialisation&nbsp;: on s'occupe de tout.
                 </p>
 
-                {/* CTAs (mêmes styles que Estimer) */}
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-                      {/* Bouton orange (nouveau CTA + nouvelle icône) */}
-         <CTAFuturaGlow
-  to="/contact"
-  label="Contactez-nous"
-  Icon={(p) => <PhoneIcon {...p} angle={-90} />}
-  iconOffsetX="12px"   // ajuste si tu veux pousser 1–2 px à droite
-  iconOffsetY="-1px"
-  
-/>
-
-    
+                  <CTAFuturaGlow
+                    to="/contact"
+                    label="Contactez-nous"
+                    Icon={(p) => <PhoneIcon {...p} angle={-90} />}
+                    iconOffsetX="12px"
+                    iconOffsetY="-1px"
+                  />
                 </div>
               </div>
             </div>
@@ -729,76 +993,80 @@ export default function About() {
   const scrollToTeam = () => teamRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
-useEffect(() => {
-  const cta = document.getElementById("cta");
-  if (!cta) return;
+  useEffect(() => {
+    const cta = document.getElementById("cta");
+    if (!cta) return;
 
-  let stopY = 0;
+    let stopY = 0;
 
-  const calc = () => {
-    const vh = window.innerHeight || 800;
-    stopY = Math.max(0, cta.offsetTop + cta.offsetHeight / 2 - vh / 2);
+    const calc = () => {
+      const vh = window.innerHeight || 800;
+      stopY = Math.max(0, cta.offsetTop + cta.offsetHeight / 2 - vh / 2);
+      const biasPx = Math.round(vh * 0.02);
+      stopY += biasPx;
+    };
 
-    const biasPx = Math.round(vh * 0.02);
-    stopY += biasPx;
-  };
+    const clamp = () => {
+      if (window.scrollY > stopY) window.scrollTo({ top: stopY });
+    };
 
-  const clamp = () => {
-    if (window.scrollY > stopY) window.scrollTo({ top: stopY });
-  };
+    const blockDown = (e) => {
+      const goingDown = (e.deltaY ?? 0) > 0 || e.type === "touchmove";
+      if (goingDown && window.scrollY >= stopY - 1) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.scrollTo({ top: stopY });
+      }
+    };
 
-  const blockDown = (e) => {
-    const goingDown = (e.deltaY ?? 0) > 0 || e.type === "touchmove";
-    if (goingDown && window.scrollY >= stopY - 1) {
-      e.preventDefault();
-      e.stopPropagation();
-      window.scrollTo({ top: stopY });
-    }
-  };
+    calc();
+    clamp();
 
-  // ✅ 1) Calcul immédiat
-  calc();
-  clamp();
+    const r1 = requestAnimationFrame(() => { calc(); clamp(); });
+    const r2 = requestAnimationFrame(() => { calc(); clamp(); });
+    const t1 = setTimeout(() => { calc(); clamp(); }, 200);
+    const t2 = setTimeout(() => { calc(); clamp(); }, 700);
 
-  // ✅ 2) Re-calculs “post navigation” (le temps que les images/layout se posent)
-  const r1 = requestAnimationFrame(() => { calc(); clamp(); });
-  const r2 = requestAnimationFrame(() => { calc(); clamp(); });
-  const t1 = setTimeout(() => { calc(); clamp(); }, 200);
-  const t2 = setTimeout(() => { calc(); clamp(); }, 700);
+    const ro = new ResizeObserver(() => { calc(); clamp(); });
+    ro.observe(cta);
+    if (pageRef.current) ro.observe(pageRef.current);
 
-  // ✅ 3) Observer le CTA + la PAGE (quand les images chargent, la page change de hauteur)
-  const ro = new ResizeObserver(() => { calc(); clamp(); });
-  ro.observe(cta);
-  if (pageRef.current) ro.observe(pageRef.current);
+    window.addEventListener("resize", calc);
+    window.addEventListener("scroll", clamp, { passive: true });
+    window.addEventListener("wheel", blockDown, { passive: false });
+    window.addEventListener("touchmove", blockDown, { passive: false });
 
-  window.addEventListener("resize", calc);
-  window.addEventListener("scroll", clamp, { passive: true });
-  window.addEventListener("wheel", blockDown, { passive: false });
-  window.addEventListener("touchmove", blockDown, { passive: false });
-
-  return () => {
-    cancelAnimationFrame(r1);
-    cancelAnimationFrame(r2);
-    clearTimeout(t1);
-    clearTimeout(t2);
-    ro.disconnect();
-    window.removeEventListener("resize", calc);
-    window.removeEventListener("scroll", clamp);
-    window.removeEventListener("wheel", blockDown);
-    window.removeEventListener("touchmove", blockDown);
-  };
-}, []);
-
-
-
+    return () => {
+      cancelAnimationFrame(r1);
+      cancelAnimationFrame(r2);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      ro.disconnect();
+      window.removeEventListener("resize", calc);
+      window.removeEventListener("scroll", clamp);
+      window.removeEventListener("wheel", blockDown);
+      window.removeEventListener("touchmove", blockDown);
+    };
+  }, []);
 
   return (
     <div ref={pageRef} className="bg-white">
-      {/* HERO 3 BANDES */}
-      <HeroThreeStrips />
+      {/* HERO (cercles au chargement) + bandes qui recouvrent au scroll */}
+      <HeroThreeStrips hideTitle startHidden overlayFadeInPx={36}>
+        <GaryVennSection
+          trigger="mount"
+          lockScrollOnStart={false}
+          showCopy={true}
+          hero
+          copy="Véritables stratèges de la vente immobilière, GARY combine une connaissance fine du marché immobilier local, forgée par plus de 60 ans d'expérience cumulée, à une expertise marketing nouvelle génération, innovante et performante."
+          leftLabel="Courtiers jeunes"
+          rightLabel="Grande expertise"
+        />
+      </HeroThreeStrips>
 
-      {/* SECTION VENN + KPIs (nouvelle animation scroll-driven) */}
-      <GaryVennKPISection />
+
+      {/* NOUVELLE SECTION CHIFFRES CLÉS */}
+      <KeyNumbersSection />
 
       {/* ÉQUIPE */}
       <section ref={teamRef} className="max-w-6xl mx-auto px-4 py-20 text-center">
