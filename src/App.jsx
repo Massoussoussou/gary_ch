@@ -1,29 +1,24 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import React, { Suspense } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Header from './components/layout/Header.jsx'
-import DesignSwitcher from './components/DesignSwitcher.jsx'
 import IntroCover from './components/layout/IntroCover.jsx'
 import ScrollToTop from "./components/layout/ScrollToTop.jsx";
 
-
 import Home from './pages/Home.jsx'
-// Listings.jsx kept as reference but no longer routed directly
-import BuyIntro from './pages/BuyIntro.jsx'
-import ListingDetail from './pages/ListingDetail.jsx'
-import Sell from './pages/Sell.jsx'
-import Estimate from './pages/Estimate.jsx'
-import About from './pages/About.jsx'
-import Contact from './pages/Contact.jsx'
-import NotFound from './pages/NotFound.jsx'
 
-import TeamMemberDetail from './pages/TeamMemberDetail.jsx'
-
-import ProjetsNeufs from "./pages/ProjetsNeufs";
-import ProjetNeufDetail from "./pages/ProjetNeufDetail";
-import Actualite from './pages/Actualite.jsx';
-import ActualiteDetail from './pages/ActualiteDetail.jsx';
-
-
-
+/* ---- Lazy-loaded pages (code-splitting) ---- */
+const BuyIntro = React.lazy(() => import('./pages/BuyIntro.jsx'));
+const ListingDetail = React.lazy(() => import('./pages/ListingDetail.jsx'));
+const Sell = React.lazy(() => import('./pages/Sell.jsx'));
+const Estimate = React.lazy(() => import('./pages/Estimate.jsx'));
+const About = React.lazy(() => import('./pages/About.jsx'));
+const Contact = React.lazy(() => import('./pages/Contact.jsx'));
+const TeamMemberDetail = React.lazy(() => import('./pages/TeamMemberDetail.jsx'));
+const ProjetsNeufs = React.lazy(() => import('./pages/ProjetsNeufs.jsx'));
+const ProjetNeufDetail = React.lazy(() => import('./pages/ProjetNeufDetail.jsx'));
+const Actualite = React.lazy(() => import('./pages/Actualite.jsx'));
+const ActualiteDetail = React.lazy(() => import('./pages/ActualiteDetail.jsx'));
+const NotFound = React.lazy(() => import('./pages/NotFound.jsx'));
 
 export default function App() {
   return (
@@ -32,26 +27,29 @@ export default function App() {
       <IntroCover />
       <ScrollToTop behavior="auto" />
       <main className="flex-1">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/acheter" element={<BuyIntro />} />
-          <Route path="/acheter/catalogue" element={<Navigate to="/acheter" replace />} />
-          <Route path="/annonce/:id" element={<ListingDetail />} />
-          <Route path="/vendre" element={<Sell />} />
-          <Route path="/estimer" element={<Estimate />} />
-          <Route path="/a-propos" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/a-propos" element={<About />} />
-          <Route path="/equipe/:slug" element={<TeamMemberDetail />} />
-          <Route path="*" element={<NotFound />} />
-          <Route path="/projets-neufs" element={<ProjetsNeufs />} />
-          <Route path="/projets-neufs/:id" element={<ProjetNeufDetail />} />
-          <Route path="/actualites" element={<Actualite />} />
-          <Route path="/actualites/:id" element={<ActualiteDetail />} />
-        </Routes>
+        <Suspense fallback={
+          <div className="min-h-screen flex items-center justify-center">
+            <p className="text-sm text-neutral-500 animate-pulse">Chargement…</p>
+          </div>
+        }>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/acheter" element={<BuyIntro />} />
+            <Route path="/acheter/catalogue" element={<Navigate to="/acheter" replace />} />
+            <Route path="/annonce/:id" element={<ListingDetail />} />
+            <Route path="/vendre" element={<Sell />} />
+            <Route path="/estimer" element={<Estimate />} />
+            <Route path="/a-propos" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/equipe/:slug" element={<TeamMemberDetail />} />
+            <Route path="/projets-neufs" element={<ProjetsNeufs />} />
+            <Route path="/projets-neufs/:id" element={<ProjetNeufDetail />} />
+            <Route path="/actualites" element={<Actualite />} />
+            <Route path="/actualites/:id" element={<ActualiteDetail />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </main>
-      
     </div>
-  
   )
 }

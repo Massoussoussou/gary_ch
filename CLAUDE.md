@@ -82,51 +82,8 @@ REALFORCE_PUBLIC_DEFAULT_LOCALE=fr
 - ✅ **Header desktop** - Supprimé les offsets manuels. Grille CSS `auto 1fr auto` centre naturellement. Fichier : `src/components/layout/Header.jsx`.
 - ✅ **Nettoyage CSS projet.css** - Consolidé de 1869 → 1037 lignes (-44%). Supprimé : 3x `@keyframes reveal-left` dupliqués, 5x itérations specs-aside/grid/chip, classes mortes (coming-*, btn-contact, btn-cta-animated, detail-specs--overlay, proj-veil-intro). CSS bundle : 128 kB → 121 kB.
 - ✅ **Intégration Projets Neufs (liste)** - Le mapping dans `src/hooks/usePromotions.js` → `normalizePromotionsList()` est correct. L'API `/api/promotions` renvoie les données, la page `/projets-neufs` les affiche.
-
----
-
-### 🔴 EN COURS — Intégration ProjetNeufDetail (page détail)
-
-**Problème identifié :** Le normalizer `normalizePromotionDetail()` dans `src/hooks/usePromotions.js` s'attend à ce que `description` soit un objet `{ fr: { promotion_description, location_description } }`, mais l'API renvoie une **string HTML** directe.
-
-**Exemple de réponse API `/api/promotion?id=XXX` :**
-```json
-{
-  "id": "670fd3b905865-...",
-  "name": "Villas Pleiades",
-  "reference": "PLEIADES",
-  "status": "Actuelle",
-  "location": "Vandoeuvres",
-  "description": "<b>Introduction<br></b>Située au cœur d'un quartier...",
-  "apt_available": 3,
-  "apt_sold": 2,
-  "apt_active": 1,
-  "price": 3990000,
-  "currency": "CHF",
-  "min_surface": 194, "max_surface": 194,
-  "min_rooms": 7, "max_rooms": 8,
-  "min_bedrooms": 3, "max_bedrooms": 4,
-  "photos": [
-    { "url": "https://images.realforce.ch/...", "title": "", "is_plan": false, "tags": "" }
-  ],
-  "property_ids": ["670fb3185c44d-..."]
-}
-```
-
-**À faire :**
-1. Lire `src/pages/ProjetNeufDetail.jsx` pour comprendre quels champs la page attend
-2. Appeler `/api/promotion?id=XXX` pour voir la réponse complète du détail (peut différer de la liste)
-3. Corriger `normalizePromotionDetail()` dans `src/hooks/usePromotions.js` — notamment :
-   - `description` : string HTML → parser directement au lieu de `p.description?.fr?.promotion_description`
-   - `apt_sold` existe dans l'API mais `apt_reserved` non (le normalizer utilise `apt_reserved`)
-   - Vérifier les champs `properties` (lots), `contacts`, `plans`
-4. Ajuster le design de la page si nécessaire
-
-**Fichiers clés :**
-- `src/pages/ProjetNeufDetail.jsx` (393 lignes) — page détail
-- `src/hooks/usePromotions.js` — hooks + normalizers (à corriger)
-- `api/promotion.js` — proxy API détail
-- `src/styles/projet.css` — CSS partagé (nettoyé)
+- ✅ **ProjetNeufDetail (page détail)** - Normalizer corrigé (`extractDescriptions` gère string HTML + objet localisé). Description hero retirée (seule la 2e description reste). Specs agrégées depuis les lots (`aggregateRange`). Mobile responsive : hero flex column à 860px, galerie stack à 768px, specs aside margin fix à 980px.
+- ✅ **Performances — Code-splitting** - Bundle passé de 596 kB (1 chunk) → chunk principal 25 kB. Routes lazy-loadées via `React.lazy()` + `Suspense`. Vendor chunks séparés : react (141 kB), framer-motion (124 kB), router (22 kB). Warning Vite > 500 kB éliminé. Fichiers : `src/App.jsx`, `vite.config.js`.
 
 ---
 
@@ -141,9 +98,8 @@ REALFORCE_PUBLIC_DEFAULT_LOCALE=fr
 - Fichiers les plus lourds restants : FiltersBarCompact.jsx (891), FiltersBar.jsx (807), CTAFuturaGlow.jsx (594), ListingCard.jsx (534)
 
 ### Performances du site
-- Audit général des performances (Lighthouse, bundle size)
-- JS bundle actuel : 595 kB (warning Vite > 500 kB) → envisager code-splitting
-- Optimiser les images, les vidéos
+- ✅ Code-splitting fait (React.lazy + Suspense + manualChunks)
+- Reste à faire : optimiser les images, les vidéos, audit Lighthouse
 
 ### Filtres des biens immobiliers
 - Faire fonctionner correctement les filtres sur la page acheter/catalogue
