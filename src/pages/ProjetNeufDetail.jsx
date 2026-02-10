@@ -191,19 +191,6 @@ export default function ProjetNeufDetail() {
             <h1 className="proj-serif">{p.name || "Projet"}</h1>
           </header>
 
-          <aside className="detail-hero__aside">
-            <div className="aside-inner">
-              {(p.type || p.city) && (
-                <div className="aside-city text-sm opacity-90 mb-1">
-                  {p.type ? `${p.type}` : ""}{p.type && p.city ? " — " : ""}{p.city || ""}
-                </div>
-              )}
-
-              {/* Bouton -> BAS DE PAGE (carte + vendeur) */}
-             
-            </div>
-          </aside>
-
           {/* Flèche -> 2e description (juste sous le hero) */}
           <button className="detail-hero__cta" onClick={scrollToSpecs} aria-label="Découvrir le bien">
             <span className="cta-label">Découvrir le bien</span>
