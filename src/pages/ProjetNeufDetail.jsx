@@ -199,12 +199,6 @@ export default function ProjetNeufDetail() {
                 </div>
               )}
 
-              <div className="aside-desc">
-                {((p.longDescription || p.description || p.tagline || "") + "")
-                  .split("\n")
-                  .map((line, i) => (line.trim() ? <p key={i}>{line}</p> : <div key={i} className="h-2" />))}
-              </div>
-
               {/* Bouton -> BAS DE PAGE (carte + vendeur) */}
              
             </div>
@@ -228,18 +222,14 @@ export default function ProjetNeufDetail() {
 
         {/* ======= 2e DESCRIPTION (fond page, pas d'overlay) ======= */}
         <section ref={specsRef} className="detail-specs detail-specs--plain hero-like-anim">
-          {p.secondDescription && p.secondDescription.trim() ? (
-            <article className="specs-copy overlay-copy">
-              {secondSections.map((s, idx) => (
-                <section key={idx} className="specs-section">
-                  <h3 className="specs-title hero-anim-item">{s.title}</h3>
-                  <p className="specs-body hero-anim-item">{s.body}</p>
-                </section>
-              ))}
-            </article>
-          ) : (
-            <div />
-          )}
+          <article className="specs-copy overlay-copy">
+            {secondSections.map((s, idx) => (
+              <section key={idx} className="specs-section">
+                <h3 className="specs-title hero-anim-item">{s.title}</h3>
+                <p className="specs-body hero-anim-item">{s.body}</p>
+              </section>
+            ))}
+          </article>
             <aside className="specs-aside" aria-label="Caractéristiques du bien">
     {(() => {
       const specs = p.specs || {};

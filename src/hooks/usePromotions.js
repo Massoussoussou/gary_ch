@@ -233,7 +233,7 @@ function normalizePromotionDetail(p) {
     description: promo,
     reference: str(p.reference) || null,
     longDescription: promo,
-    secondDescription: location || "",
+    secondDescription: location || promo,
     longitude: p.longitude || null,
     latitude: p.latitude || null,
     specs: {
