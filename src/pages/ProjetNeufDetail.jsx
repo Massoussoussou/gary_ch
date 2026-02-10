@@ -100,6 +100,41 @@ export default function ProjetNeufDetail() {
     return () => io.disconnect();
   }, []);
 
+  /* --------- Images de la galerie (hook AVANT les early returns) --------- */
+  const images = (p?.media && Array.isArray(p.media.images)) ? p.media.images : [];
+  const grouped = useMemo(() => {
+    const out = [];
+    let i = 0;
+    const isPortrait = (url) => /portrait|portr|vert/i.test(url);
+    const isLandscape = (url) => /landscape|pays|hori/i.test(url);
+    while (i < images.length) {
+      const a = images[i];
+      const portraitA = isPortrait(a) && !isLandscape(a);
+      if (portraitA && i + 1 < images.length) {
+        const b = images[i + 1];
+        const portraitB = isPortrait(b) && !isLandscape(b);
+        if (portraitB) { out.push({ kind: "pair", items: [a, b] }); i += 2; continue; }
+      }
+      out.push({ kind: "single", items: [a] }); i += 1;
+    }
+    return out;
+  }, [images]);
+
+  /* --------- Agent depuis team.json (hook AVANT les early returns) --------- */
+  const agent = useMemo(() => {
+    if (p?.agentSlug) {
+      const found = (team || []).find((t) => t.slug === p.agentSlug);
+      if (found) return found;
+    }
+    return (team || [])[0] || {
+      name: "Conseiller GARY",
+      role: "Conseiller immobilier",
+      email: "contact@gary.ch",
+      phone: "+41 22 557 07 00",
+      photo: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=1000&auto=format&fit=crop",
+    };
+  }, [p]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -119,58 +154,7 @@ export default function ProjetNeufDetail() {
     );
   }
 
-  /* --------- DEBUG: vérifier tous les types avant le render --------- */
-  console.log("[GARY DEBUG] p fields:", {
-    name: typeof p.name, type: typeof p.type, city: typeof p.city,
-    cover: typeof p.cover, tagline: typeof p.tagline,
-    description: typeof p.description, longDescription: typeof p.longDescription,
-    secondDescription: typeof p.secondDescription, reference: typeof p.reference,
-    specs: typeof p.specs, media: typeof p.media,
-    "media.images": Array.isArray(p.media?.images),
-  });
-  // Chercher tout champ qui serait un objet au lieu d'une string
-  for (const [k, v] of Object.entries(p)) {
-    if (v !== null && typeof v === "object" && !Array.isArray(v) && k !== "specs" && k !== "media" && k !== "_raw") {
-      console.error("[GARY DEBUG] ⚠️ OBJECT field found:", k, JSON.stringify(v));
-    }
-  }
-
-  /* --------- Images de la galerie --------- */
-  const images = (p.media && Array.isArray(p.media.images)) ? p.media.images : [];
-  const grouped = useMemo(() => {
-    const out = [];
-    let i = 0;
-    const isPortrait = (url) => /portrait|portr|vert/i.test(url);
-    const isLandscape = (url) => /landscape|pays|hori/i.test(url);
-    while (i < images.length) {
-      const a = images[i];
-      const portraitA = isPortrait(a) && !isLandscape(a);
-      if (portraitA && i + 1 < images.length) {
-        const b = images[i + 1];
-        const portraitB = isPortrait(b) && !isLandscape(b);
-        if (portraitB) { out.push({ kind: "pair", items: [a, b] }); i += 2; continue; }
-      }
-      out.push({ kind: "single", items: [a] }); i += 1;
-    }
-    return out;
-  }, [images]);
-
   const address = p.address || `${p.name || ""}${p.city ? ", " + p.city : ""}`.trim();
-
-  /* --------- Agent depuis team.json via agentSlug (fallback = 1er agent) --------- */
-  const agent = useMemo(() => {
-    if (p.agentSlug) {
-      const found = (team || []).find((t) => t.slug === p.agentSlug);
-      if (found) return found;
-    }
-    return (team || [])[0] || {
-      name: "Conseiller GARY",
-      role: "Conseiller immobilier",
-      email: "contact@gary.ch",
-      phone: "+41 22 557 07 00",
-      photo: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=1000&auto=format&fit=crop",
-    };
-  }, [p]);
 
   /* --------- Scroll handlers --------- */
   const scrollToSpecs = () => specsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });

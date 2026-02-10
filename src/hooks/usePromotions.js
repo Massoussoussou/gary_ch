@@ -45,7 +45,6 @@ export function usePromotionsList({ perPage = 50, page = 1, lang = "fr" } = {}) 
         return res.json();
       })
       .then((json) => {
-        console.log("[GARY DEBUG] promotions list raw API:", JSON.stringify(json, null, 2));
         const items = normalizePromotionsList(json.data || []);
         listCache = { data: items };
         listCacheTs = Date.now();
@@ -105,9 +104,7 @@ export function usePromotionDetail(promotionId) {
         return res.json();
       })
       .then((json) => {
-        console.log("[GARY DEBUG] promotion detail raw API:", JSON.stringify(json, null, 2));
         const item = normalizePromotionDetail(json);
-        console.log("[GARY DEBUG] normalized detail:", JSON.stringify(item, null, 2));
         detailCache.set(promotionId, { data: item, ts: Date.now() });
         setData(item);
         setLoading(false);
