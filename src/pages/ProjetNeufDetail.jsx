@@ -228,14 +228,18 @@ export default function ProjetNeufDetail() {
 
         {/* ======= 2e DESCRIPTION (fond page, pas d'overlay) ======= */}
         <section ref={specsRef} className="detail-specs detail-specs--plain hero-like-anim">
-          <article className="specs-copy overlay-copy">
-            {secondSections.map((s, idx) => (
-              <section key={idx} className="specs-section">
-                <h3 className="specs-title hero-anim-item">{s.title}</h3>
-                <p className="specs-body hero-anim-item">{s.body}</p>
-              </section>
-            ))}
-          </article>
+          {p.secondDescription && p.secondDescription.trim() ? (
+            <article className="specs-copy overlay-copy">
+              {secondSections.map((s, idx) => (
+                <section key={idx} className="specs-section">
+                  <h3 className="specs-title hero-anim-item">{s.title}</h3>
+                  <p className="specs-body hero-anim-item">{s.body}</p>
+                </section>
+              ))}
+            </article>
+          ) : (
+            <div />
+          )}
             <aside className="specs-aside" aria-label="Caractéristiques du bien">
     {(() => {
       const specs = p.specs || {};

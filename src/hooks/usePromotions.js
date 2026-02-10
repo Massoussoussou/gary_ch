@@ -233,7 +233,7 @@ function normalizePromotionDetail(p) {
     description: promo,
     reference: str(p.reference) || null,
     longDescription: promo,
-    secondDescription: location || promo,
+    secondDescription: location || "",
     longitude: p.longitude || null,
     latitude: p.latitude || null,
     specs: {
@@ -242,12 +242,14 @@ function normalizePromotionDetail(p) {
       sdb: null,
       chambres: p.min_bedrooms ? `${p.min_bedrooms} – ${p.max_bedrooms}` : null,
       surface: p.min_surface ? `${p.min_surface} – ${p.max_surface} m²` : null,
-      surfaceUtile: null,
-      terrain: null,
+      surfaceUtile: aggregateRange(p.properties, "dimensions_usable"),
+      terrain: aggregateRange(p.properties, "dimensions_land"),
       vue: null,
       etat: "Neuf",
-      terrasse: null,
-      jardin: null,
+      terrasse: aggregateRange(p.properties, "dimensions_terrace")
+        || aggregateRange(p.properties, "terrace"),
+      jardin: aggregateRange(p.properties, "dimensions_garden")
+        || aggregateRange(p.properties, "garden"),
     },
     media: {
       images: (p.photos || [])
@@ -281,6 +283,27 @@ function normalizePromotionDetail(p) {
     contacts: p.contacts || [],
     _raw: p,
   };
+}
+
+/**
+ * Agrège min/max d'un champ numérique depuis les lots (properties).
+ * Retourne "X – Y m²" ou valeur unique, ou null si aucun lot n'a le champ.
+ */
+function aggregateRange(properties, fieldName, unit = "m²") {
+  const values = (properties || [])
+    .map((lot) => {
+      const v = lot[fieldName];
+      return v != null ? Number(v) : NaN;
+    })
+    .filter((n) => !isNaN(n) && n > 0);
+
+  if (values.length === 0) return null;
+
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+
+  if (min === max) return `${min} ${unit}`;
+  return `${min} – ${max} ${unit}`;
 }
 
 function fmtPrice(n) {

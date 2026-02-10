@@ -973,6 +973,13 @@
     grid-template-columns: 1fr;
   }
 
+  .detail-specs .specs-aside {
+    grid-column: 1;
+    margin-top: 0;
+    margin-left: 0;
+    transform: none;
+  }
+
   .agent-card {
     grid-template-columns: 90px 1fr;
   }
@@ -1005,20 +1012,71 @@
 
   .hero-pane {
     --hero-linger: 14svh;
-    --title-left: 20px;
-    --title-top: 9vh;
-    --title-maxw: 86vw;
-    --aside-right: 20px;
-    --aside-top: 9vh;
-    --aside-width: 88vw;
-    --aside-maxh: 50vh;
-    --aside-size: clamp(1rem, 3.6vw, 1.15rem);
-    --cta-bottom: 64vh;
+    --title-size: clamp(48px, 12vw, 72px);
+    --aside-size: clamp(0.95rem, 3.6vw, 1.15rem);
+    --cta-bottom: 4vh;
     --cta-x: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12vh 20px 0;
+    min-height: calc(100svh + var(--hero-linger));
+  }
+
+  .hero-pane .detail-hero__title {
+    position: relative;
+    top: auto;
+    left: auto;
+  }
+
+  .hero-pane .detail-hero__title h1 {
+    max-width: 90vw;
+  }
+
+  .hero-pane .detail-hero__aside {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: 100%;
+    max-height: none;
+    margin-top: 3vh;
+  }
+
+  .hero-pane .detail-hero__cta {
+    position: relative;
+    left: 50%;
+    bottom: auto;
+    margin-top: auto;
+    padding-bottom: 4vh;
+  }
+
+  .close-back-btn {
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
   }
 
   .cta-coming-form {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .catalogue-slide--pair {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: 100svh;
+  }
+
+  .catalogue-slide--pair .catalogue-img--half {
+    height: 50svh;
+  }
+
+  .catalogue-slide {
+    height: auto;
+    min-height: 60svh;
+    max-height: 100svh;
   }
 }
 
