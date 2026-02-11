@@ -26,6 +26,13 @@ function isRecent(d, days = 21) {
   if (isNaN(dt)) return false;
   return Date.now() - dt.getTime() <= days * 86400 * 1000;
 }
+function composeMeta(item) {
+  const parts = [];
+  if (item?.pieces) parts.push(`${item.pieces} pièces`);
+  if (item?.surface_m2) parts.push(`${item.surface_m2} m²`);
+  if (item?.chambres) parts.push(`${item.chambres} ch.`);
+  return parts.join(" • ");
+}
 function normalizeBanner(b) {
   if (!b) return "";
   const s = String(b).toLowerCase().replace(/\s+/g, "-");
@@ -141,14 +148,14 @@ useEffect(() => {
   };
 
   const cardCls =
-    `group card-hover relative block h-full ${radiusCls} border border-zinc-200/70 bg-white shadow-sm ` +
+    `group card-hover relative block ${radiusCls} border border-zinc-200/70 bg-white shadow-sm ` +
     `focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20`;
 
   return (
     <Link to={`/annonce/${item.id}`} className={cardCls} aria-label={item.titre}>
       {/* CLIPPER */}
       <div
-        className={`relative ${isS && MAKE_S_TILE_1_1 ? "aspect-square" : "h-full"} ${radiusCls} overflow-hidden`}
+        className={`relative aspect-[4/3] ${radiusCls} overflow-hidden`}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
@@ -175,15 +182,6 @@ useEffect(() => {
             {badgeLabel}
           </span>
         )}
-
-        {/* PRIX — bas-gauche */}
-        <div className="z-20 absolute left-3 md:left-4 bottom-3 md:bottom-4">
-          <span
-            className={`inline-block ${tileRadiusCls} badge-price card-price px-3 py-1.5 text-sm md:text-base font-semibold shadow-md min-w-[96px] text-center`}
-          >
-            {item.prix ? formatCHF(item.prix) : "Prix sur demande"}
-          </span>
-</div>
 
 
         {/* Carousel (M/L/XL) */}
@@ -528,6 +526,23 @@ useEffect(() => {
 
           </>
         )}
+      </div>
+
+      {/* --- Zone texte sous l'image --- */}
+      <div className="p-4">
+        <h3 className="text-[16px] leading-snug font-medium text-[#0F1115] line-clamp-2">
+          {item.titre ?? "Propriété"}
+        </h3>
+        <p className="mt-1 text-[13px] text-[#61646B]">
+          {composeMeta(item)}
+        </p>
+        <div className="mt-3">
+          <span
+            className={`inline-block ${tileRadiusCls} badge-price card-price px-3 py-1.5 text-[15px] font-semibold shadow-md min-w-[96px] text-center`}
+          >
+            {item.prix ? formatCHF(item.prix) : "Prix sur demande"}
+          </span>
+        </div>
       </div>
     </Link>
   );

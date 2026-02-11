@@ -46,8 +46,6 @@ export default function ListingGrid({ items = [] }) {
         w-full max-w-[1500px] 2xl:max-w-[1600px] mx-auto px-4 lg:px-6 py-10
         grid gap-6
         grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4
-        [--row:220px] sm:[--row:240px] md:[--row:260px] lg:[--row:280px]
-        [grid-auto-rows:var(--row)]
       "
     >
       {items.map((it, i) => {
