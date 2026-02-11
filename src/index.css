@@ -207,7 +207,8 @@ html[data-bg="dark"] body { background:#0f1115; color:#e6e6e6; }
 @media (hover: hover) {
   /* Enable transitions ONLY on hover-capable devices */
   .card-hover {
-    transition: box-shadow 0.2s, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .card-hover .card-img {
     transition: transform 0.5s;
@@ -230,8 +231,8 @@ html[data-bg="dark"] body { background:#0f1115; color:#e6e6e6; }
 
   /* Card lift + shadow */
   .card-hover:hover {
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    transform: translateY(-2px);
+    box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.18), 0 8px 16px -4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-6px);
   }
   /* Image zoom */
   .group.card-hover:hover .card-img {
