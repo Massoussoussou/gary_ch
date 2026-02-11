@@ -277,48 +277,6 @@ useEffect(() => {
               })()}
             </div>
 
-            {/* Desktop : 3 pastilles orange à droite */}
-            <div
-  className="hidden md:flex flex-col items-end gap-2
-             absolute top-1/2 right-3 -translate-y-1/2 z-30
-             pointer-events-none"
-  aria-hidden="true"
->
-  {(() => {
-    const chipBase =
-      "inline-flex items-center gap-1.5 px-2.5 py-1.5 " +
-      "rounded-full bg-[#FF5544] text-white " +
-      "shadow-[0_8px_18px_rgba(0,0,0,0.20)] ring-1 ring-black/5 " +
-      "text-[11px] font-semibold leading-none whitespace-nowrap " +
-      "card-reveal opacity-0 translate-x-2 " +
-      "pointer-events-none";
-
-    return (
-      <>
-        {Number.isFinite(item.pieces) && (
-          <div className={`${chipBase} delay-75`}>
-            <Home className="w-3.5 h-3.5" />
-            <span>{item.pieces} p</span>
-          </div>
-        )}
-
-        {Number.isFinite(item.surface_m2) && (
-          <div className={`${chipBase} delay-150`}>
-            <Ruler className="w-3.5 h-3.5" />
-            <span>{item.surface_m2} m²</span>
-          </div>
-        )}
-
-        {Number.isFinite(item.chambres) && (
-          <div className={`${chipBase} delay-200`}>
-            <BedDouble className="w-3.5 h-3.5" />
-            <span>{item.chambres} ch</span>
-          </div>
-        )}
-      </>
-    );
-  })()}
-</div>
 
             {/* Gradient discret sous le prix */}
             <div
