@@ -490,7 +490,7 @@ useEffect(() => {
 
       {/* --- Zone texte sous l'image --- */}
       <div className="p-4">
-        <h3 className="text-[16px] leading-snug font-medium text-[#0F1115] line-clamp-2">
+        <h3 className="text-[16px] leading-snug font-medium text-[#0F1115] line-clamp-2 min-h-[2.75rem]">
           {item.titre ?? "Propriété"}
         </h3>
         <p className="mt-1 text-[13px] text-[#61646B]">
