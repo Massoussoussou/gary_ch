@@ -212,6 +212,9 @@ html[data-bg="dark"] body { background:#0f1115; color:#e6e6e6; }
   }
   .card-hover .card-img {
     transition: transform 0.5s;
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
   .card-hover .card-price {
     transition: background-color 0.2s, color 0.2s;
@@ -234,10 +237,7 @@ html[data-bg="dark"] body { background:#0f1115; color:#e6e6e6; }
     box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.18), 0 8px 16px -4px rgba(0, 0, 0, 0.1);
     transform: translateY(-6px);
   }
-  /* Image zoom */
-  .group.card-hover:hover .card-img {
-    transform: scale(1.05);
-  }
+  /* Image zoom (désactivé pour garder la netteté) */
   /* Price badge */
   .group.card-hover:hover .card-price {
     background-color: #FF4A3E;
