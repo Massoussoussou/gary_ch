@@ -102,9 +102,7 @@ REALFORCE_PUBLIC_DEFAULT_LOCALE=fr
 - Reste à faire : optimiser les images, les vidéos, audit Lighthouse
 
 ### Filtres des biens immobiliers
-- Faire fonctionner correctement les filtres sur la page acheter/catalogue
-- Vérifier les données retournées par l'API Realforce (quels champs sont disponibles)
-- Adapter les filtres aux données réelles de la BDD
+- ✅ Système complet : 5 filtres principaux (Ville, Type, Budget, Chambres & SDB, Surface) + modal Avancés (Canton, Dispo, Terrain, Meublé, 8 Atouts, Équipements). API vérifié : 11 biens avec données complètes (6 types, 8 villes, 2 cantons).
 
 ### Page Vendre
 - **En attente** : Gary donnera ses demandes directement sur la page
