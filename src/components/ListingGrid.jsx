@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 // import ListingCard from "./ListingCard.jsx";
-import ListingCardSold from "./cards/ListingCardSold.jsx";
+import ListingCardV1 from "./cards/ListingCardV1.jsx";
 
 // Map tailles -> spans (colonnes, lignes) pour desktop
 const SPANS = {
@@ -70,7 +70,7 @@ export default function ListingGrid({ items = [] }) {
 
         return (
           <div key={it.id ?? i} className={`${colCls} ${rowCls}`}>
-            <ListingCardSold listing={it} mode="sold" />
+            <ListingCardV1 listing={it} />
           </div>
         );
       })}
