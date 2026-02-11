@@ -161,7 +161,11 @@ useEffect(() => {
         <img
           src={imgs[idx] || ""}
           alt={item.titre || "Annonce"}
+          loading="lazy"
+          decoding="async"
+          sizes="(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
           className={`absolute inset-0 w-full h-full object-cover card-img ${isSold ? "grayscale" : ""}`}
+          style={{ imageRendering: "auto" }}
           draggable="false"
         />
         {["vendu", "exclu"].includes(ribbonKind) && (
@@ -494,7 +498,7 @@ useEffect(() => {
         </p>
         <div className="mt-3">
           <span
-            className={`inline-block ${tileRadiusCls} badge-price card-price px-3 py-1.5 text-[15px] font-semibold shadow-md min-w-[96px] text-center`}
+            className={`inline-block ${tileRadiusCls} bg-[#0F1115] text-white card-price px-3 py-1.5 text-[15px] font-semibold shadow-md min-w-[96px] text-center`}
           >
             {item.prix ? formatCHF(item.prix) : "Prix sur demande"}
           </span>
