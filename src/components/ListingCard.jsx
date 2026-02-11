@@ -40,7 +40,6 @@ function normalizeBanner(b) {
   if (s.includes("réserv") || s.includes("reserve")) return "reserve";
   if (s.includes("coming")) return "coming-soon";
   if (s.includes("exclu")) return "exclu";
-  if (s.includes("nouveau") || s.includes("nouveaute") || s.includes("new")) return "nouveau";
   return s;
 }
 
@@ -55,7 +54,6 @@ function TopStatusTag({ kind }) {
     vendu: "VENDU",
     reserve: "RÉSERVÉ",
     exclu: "EXCLUSIF",
-    nouveau: "NOUVEAUTÉ",
     "coming-soon": "COMING SOON",
   };
   const label = map[kind];
@@ -129,10 +127,10 @@ useEffect(() => {
   const hasExclu = (item.tags || []).some((t) => /exclu/i.test(String(t)));
   const recent = isRecent(item.createdAt);
   const status = normalizeBanner(item.bandeau || (item.vendu ? "vendu" : ""));
-  const ribbonKind = status || (hasExclu ? "exclu" : recent ? "nouveau" : "");
+  const ribbonKind = status || (hasExclu ? "exclu" : "");
   const badgeLabel = ribbonKind
     ? null
-    : item.badge || (hasExclu ? "EXCLUSIVITÉ" : recent ? "NOUVEAUTÉ" : null);
+    : item.badge || (hasExclu ? "EXCLUSIVITÉ" : null);
   const isSold = status === "vendu";
 
   
@@ -166,7 +164,7 @@ useEffect(() => {
           className={`absolute inset-0 w-full h-full object-cover card-img ${isSold ? "grayscale" : ""}`}
           draggable="false"
         />
-        {["vendu", "exclu", "nouveau"].includes(ribbonKind) && (
+        {["vendu", "exclu"].includes(ribbonKind) && (
           <div
             className="absolute inset-3 md:inset-4 z-20 pointer-events-none"
             style={{ border: "1px solid rgba(255,255,255,0.85)", borderRadius: "inherit" }}
