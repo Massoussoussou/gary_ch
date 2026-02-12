@@ -492,7 +492,7 @@ useEffect(() => {
         <p className="text-[12px] font-semibold uppercase tracking-wide text-[#61646B]">
           {item.ville}{item.canton ? ` · ${item.canton}` : ""}
         </p>
-        <h3 className="mt-1 text-[16px] leading-snug font-medium text-[#0F1115] line-clamp-2 min-h-[2.75rem]">
+        <h3 className="mt-1 text-[16px] leading-snug font-medium text-[#0F1115] truncate">
           {item.titre ?? "Propriété"}
         </h3>
         <p className="mt-1 text-[13px] text-[#61646B]">
