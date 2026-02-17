@@ -2,6 +2,31 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Workflow Git — Synchronisation au démarrage
+
+**OBLIGATOIRE — À faire au début de chaque session avant de coder :**
+
+Ce repo est collaboratif. Deux développeurs travaillent dessus, chacun sur sa propre branche :
+
+| Développeur | GitHub        | Branche de travail |
+|-------------|---------------|--------------------|
+| Massi       | TrigznOva     | `dev`              |
+| Tom         | TrigzV        | sa branche perso   |
+
+**Procédure au lancement :**
+
+1. Identifier la branche courante (`git branch --show-current`)
+2. `git fetch origin main` — récupérer les derniers commits de `main`
+3. `git merge origin/main` — fusionner `main` dans la branche courante
+4. **Préserver les fichiers en cours** — si l'utilisateur a des modifications locales non commitées, les sauvegarder avant le merge et les restaurer après (demander quels fichiers garder)
+
+**Règles :**
+- **Ne jamais push sur `main`** — chacun push uniquement sur sa branche
+- **Ne jamais modifier `main` directement** — `main` est la branche de référence commune
+- **Remote :** `origin` → `https://github.com/TrigznOva/SiteGARY.git`
+- **Modifications de code** : pas besoin de demander confirmation, modifier librement
+- **Actions git (push, commit, etc.)** : toujours demander confirmation avant
+
 ## Build & Development Commands
 
 ```bash
@@ -82,8 +107,51 @@ REALFORCE_PUBLIC_DEFAULT_LOCALE=fr
 - ✅ **Header desktop** - Supprimé les offsets manuels. Grille CSS `auto 1fr auto` centre naturellement. Fichier : `src/components/layout/Header.jsx`.
 - ✅ **Nettoyage CSS projet.css** - Consolidé de 1869 → 1037 lignes (-44%). Supprimé : 3x `@keyframes reveal-left` dupliqués, 5x itérations specs-aside/grid/chip, classes mortes (coming-*, btn-contact, btn-cta-animated, detail-specs--overlay, proj-veil-intro). CSS bundle : 128 kB → 121 kB.
 - ✅ **Intégration Projets Neufs (liste)** - Le mapping dans `src/hooks/usePromotions.js` → `normalizePromotionsList()` est correct. L'API `/api/promotions` renvoie les données, la page `/projets-neufs` les affiche.
-- ✅ **ProjetNeufDetail (page détail)** - Normalizer corrigé (`extractDescriptions` gère string HTML + objet localisé). Description hero retirée (seule la 2e description reste). Specs agrégées depuis les lots (`aggregateRange`). Mobile responsive : hero flex column à 860px, galerie stack à 768px, specs aside margin fix à 980px.
-- ✅ **Performances — Code-splitting** - Bundle passé de 596 kB (1 chunk) → chunk principal 25 kB. Routes lazy-loadées via `React.lazy()` + `Suspense`. Vendor chunks séparés : react (141 kB), framer-motion (124 kB), router (22 kB). Warning Vite > 500 kB éliminé. Fichiers : `src/App.jsx`, `vite.config.js`.
+
+---
+
+### 🔴 EN COURS — Intégration ProjetNeufDetail (page détail)
+
+**Problème identifié :** Le normalizer `normalizePromotionDetail()` dans `src/hooks/usePromotions.js` s'attend à ce que `description` soit un objet `{ fr: { promotion_description, location_description } }`, mais l'API renvoie une **string HTML** directe.
+
+**Exemple de réponse API `/api/promotion?id=XXX` :**
+```json
+{
+  "id": "670fd3b905865-...",
+  "name": "Villas Pleiades",
+  "reference": "PLEIADES",
+  "status": "Actuelle",
+  "location": "Vandoeuvres",
+  "description": "<b>Introduction<br></b>Située au cœur d'un quartier...",
+  "apt_available": 3,
+  "apt_sold": 2,
+  "apt_active": 1,
+  "price": 3990000,
+  "currency": "CHF",
+  "min_surface": 194, "max_surface": 194,
+  "min_rooms": 7, "max_rooms": 8,
+  "min_bedrooms": 3, "max_bedrooms": 4,
+  "photos": [
+    { "url": "https://images.realforce.ch/...", "title": "", "is_plan": false, "tags": "" }
+  ],
+  "property_ids": ["670fb3185c44d-..."]
+}
+```
+
+**À faire :**
+1. Lire `src/pages/ProjetNeufDetail.jsx` pour comprendre quels champs la page attend
+2. Appeler `/api/promotion?id=XXX` pour voir la réponse complète du détail (peut différer de la liste)
+3. Corriger `normalizePromotionDetail()` dans `src/hooks/usePromotions.js` — notamment :
+   - `description` : string HTML → parser directement au lieu de `p.description?.fr?.promotion_description`
+   - `apt_sold` existe dans l'API mais `apt_reserved` non (le normalizer utilise `apt_reserved`)
+   - Vérifier les champs `properties` (lots), `contacts`, `plans`
+4. Ajuster le design de la page si nécessaire
+
+**Fichiers clés :**
+- `src/pages/ProjetNeufDetail.jsx` (393 lignes) — page détail
+- `src/hooks/usePromotions.js` — hooks + normalizers (à corriger)
+- `api/promotion.js` — proxy API détail
+- `src/styles/projet.css` — CSS partagé (nettoyé)
 
 ---
 
@@ -94,18 +162,27 @@ REALFORCE_PUBLIC_DEFAULT_LOCALE=fr
 ### Nettoyage du code / organisation des composants
 - ✅ CSS projet.css nettoyé
 - Reste à faire : ranger les composants dans les bons dossiers, alléger les pages lourdes (extraire sous-composants)
-- **About.jsx** (1101 lignes) — pris en charge par un collègue, NE PAS TOUCHER
+- **About.jsx** — pris en charge par Massi, NE PAS TOUCHER
 - Fichiers les plus lourds restants : FiltersBarCompact.jsx (891), FiltersBar.jsx (807), CTAFuturaGlow.jsx (594), ListingCard.jsx (534)
 
 ### Performances du site
-- ✅ Code-splitting fait (React.lazy + Suspense + manualChunks)
-- Reste à faire : optimiser les images, les vidéos, audit Lighthouse
+- Audit général des performances (Lighthouse, bundle size)
+- JS bundle actuel : 595 kB (warning Vite > 500 kB) → envisager code-splitting
+- Optimiser les images, les vidéos
 
 ### Filtres des biens immobiliers
-- ✅ Système complet : 5 filtres principaux (Ville, Type, Budget, Chambres & SDB, Surface) + modal Avancés (Canton, Dispo, Terrain, Meublé, 8 Atouts, Équipements). API vérifié : 11 biens avec données complètes (6 types, 8 villes, 2 cantons).
+- Faire fonctionner correctement les filtres sur la page acheter/catalogue
+- Vérifier concrètement les données retournées par l'API Realforce (quels champs sont disponibles)
+- Adapter les filtres aux données réelles de la BDD
+
+### Intégration Projets Neufs + API
+- Connecter la page `/projets-neufs` à l'API Realforce (promotions)
+- Faire le mapping entre les données de l'API et les données attendues par nos composants
+- Vérifier l'affichage des détails `/projets-neufs/:id`
 
 ### Page Vendre
 - **En attente** : Gary donnera ses demandes directement sur la page
+- Il y a déjà des instructions existantes à relire avant de commencer
 
 ### Page Estimer
 - Rendre la page plus solide et professionnelle
@@ -117,19 +194,25 @@ REALFORCE_PUBLIC_DEFAULT_LOCALE=fr
 - Vérifier que les leads arrivent correctement dans Realforce
 - Tester les différents formulaires (contact, estimation, vente)
 - Valider le honeypot anti-spam
+- Vérifier les messages d'erreur en cas de problème API
 
 ### Page "Qui est Gary" (À propos)
 - Retravailler entièrement la page, le rendu actuel n'est pas satisfaisant
 
 ### Mentions légales + Politique de confidentialité
-- Créer les pages + ajouter les liens dans le footer
+- Créer la page mentions légales
+- Créer la page politique de confidentialité
+- Ajouter les liens dans le footer
 
 ### Cookies
 - Vérifier quels cookies sont utilisés par le site
 - Déterminer si un bandeau cookies est nécessaire (RGPD)
+- À clarifier : qui est responsable de cette partie
 
 ### Intégration Instagram
 - Afficher les vidéos Instagram de Gary en bas de certaines pages
+- Intégrer le feed ou des posts spécifiques
 
 ### Avis Google
 - Relier les avis Google en direct sur le site
+- Afficher les avis de manière dynamique

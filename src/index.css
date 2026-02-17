@@ -120,6 +120,12 @@ html[data-bg="image"] .page-bg {
   }
 }
 
+/* Bouton Découvrez — pulse glow mobile */
+@keyframes btnPulse {
+  0%, 100% { box-shadow: 0 0 18px rgba(255,74,62,0.5), 0 0 50px rgba(255,74,62,0.2); transform: scale(1); }
+  50% { box-shadow: 0 0 28px rgba(255,74,62,0.7), 0 0 70px rgba(255,74,62,0.3); transform: scale(1.04); }
+}
+
 /* Classes utilitaires branchées sur variables */
 .text-brand { color: var(--brand); }
 .bg-accent  { background-color: var(--accent); }

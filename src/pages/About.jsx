@@ -33,624 +33,339 @@ function useInViewOnce(options = { threshold: 0.35 }) {
   return [ref, seen];
 }
 
-/* ========== Trait blanc amande — contour unique qui suit les cercles ========== */
-function LensOutline({ show, fadeOut, vertical = false }) {
-  const svgRef = useRef(null);
-  const animRef = useRef(null);
-
-  /* --- Mobile : path fermé unique --- */
-  const [mobilePath, setMobilePath] = useState("");
-  const mobilePathRef = useRef(null);
-  const mobileGRef = useRef(null);
-
-  const computeAmandePath = useCallback((w, h, halfDistVh) => {
-    // Utilise window.innerHeight pour matcher exactement les unités CSS vh
-    const vh = window.innerHeight / 100;
-    const R = 55 * vh;        // 110vh / 2 — exactement comme le CSS
-    const d = halfDistVh * vh; // en vh aussi
-    const cx = w / 2;
-    const cy = 0.42 * h;
-    const val = R * R - d * d;
-    if (val <= 0) return "";
-    const dx = Math.sqrt(val);
-    const leftX = cx - dx;
-    const rightX = cx + dx;
-    return `M ${leftX} ${cy} A ${R} ${R} 0 0 1 ${rightX} ${cy} A ${R} ${R} 0 0 1 ${leftX} ${cy} Z`;
-  }, []);
-
-  /* --- Desktop : 4 demi-arcs pour split gauche/droite --- */
-  const [arcs, setArcs] = useState(["", "", "", ""]);
-
-  // Calcul initial
+/* ========== Hook : compteur animé (incrémente de 0 à target) ========== */
+function useCountUp(target, duration = 2000, start = false) {
+  const [value, setValue] = useState(0);
   useEffect(() => {
-    const compute = () => {
-      const el = svgRef.current;
-      if (!el) return;
-      const { width: w, height: h } = el.getBoundingClientRect();
-
-      if (vertical) {
-        setMobilePath(computeAmandePath(w, h, 45));
-      } else {
-        const R = 0.75 * h;
-        const cx = w / 2;
-        const cy = 0.45 * h;
-        const d = 0.55 * h;
-        const dy = Math.sqrt(R * R - d * d);
-        const topY = cy - dy;
-        const botY = cy + dy;
-        const midRightX = cx + d - R;
-        const midLeftX = cx - d + R;
-        setArcs([
-          `M ${cx} ${topY} A ${R} ${R} 0 0 1 ${midLeftX} ${cy}`,
-          `M ${cx} ${botY} A ${R} ${R} 0 0 0 ${midLeftX} ${cy}`,
-          `M ${cx} ${topY} A ${R} ${R} 0 0 0 ${midRightX} ${cy}`,
-          `M ${cx} ${botY} A ${R} ${R} 0 0 1 ${midRightX} ${cy}`,
-        ]);
-      }
-    };
-    compute();
-    window.addEventListener("resize", compute);
-    return () => window.removeEventListener("resize", compute);
-  }, [vertical, computeAmandePath]);
-
-  // Mobile fadeOut : anime le path unique frame par frame (suit les cercles)
-  useEffect(() => {
-    if (!vertical || !fadeOut) return;
-    const el = svgRef.current;
-    if (!el) return;
-    const { width: w, height: h } = el.getBoundingClientRect();
-    const vh = window.innerHeight / 100;
-    const R_vh = 55;              // rayon en vh (110vh / 2)
-    const startD_vh = 45;         // offset initial en vh
-    const endD_vh = 120;          // offset final en vh
-    const duration = 1200;
-    const start = performance.now();
-
+    if (!start) { setValue(0); return; }
+    const t0 = performance.now();
+    let raf;
     const tick = (now) => {
-      const rawT = Math.min((now - start) / duration, 1);
-      const progress = rawT * rawT * rawT;
-      const d_vh = startD_vh + (endD_vh - startD_vh) * progress;
-
-      if (d_vh >= R_vh) {
-        if (mobileGRef.current) mobileGRef.current.style.opacity = "0";
-        return;
-      }
-
-      const newPath = computeAmandePath(w, h, d_vh);
-      if (mobilePathRef.current && newPath) {
-        mobilePathRef.current.setAttribute("d", newPath);
-      }
-
-      const fadeProgress = (d_vh - startD_vh) / (R_vh - startD_vh);
-      if (mobileGRef.current) {
-        mobileGRef.current.style.opacity = String(1 - fadeProgress);
-      }
-
-      animRef.current = requestAnimationFrame(tick);
+      const p = Math.min((now - t0) / duration, 1);
+      const eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+      setValue(eased * target);
+      if (p < 1) raf = requestAnimationFrame(tick);
     };
-    animRef.current = requestAnimationFrame(tick);
-    return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
-  }, [vertical, fadeOut, computeAmandePath]);
-
-  const drawn = show && !fadeOut;
-
-  const desktopPathProps = (idx) => ({
-    d: arcs[idx],
-    pathLength: "1",
-    fill: "none",
-    stroke: "white",
-    strokeWidth: "2.5",
-    strokeDasharray: "1",
-    strokeDashoffset: drawn ? 0 : 1,
-    style: { transition: `stroke-dashoffset ${drawn ? "1.4s ease-out 0s" : "1s ease-in 0s"}` },
-  });
-
-  return (
-    <svg
-      ref={svgRef}
-      className="absolute inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: 8, overflow: "visible" }}
-    >
-      {vertical ? (
-        /* Mobile : contour amande unique, animé frame par frame au fadeOut */
-        <g ref={mobileGRef}>
-          <path
-            ref={mobilePathRef}
-            d={mobilePath}
-            pathLength="1"
-            fill="none"
-            stroke="white"
-            strokeWidth="2.5"
-            strokeDasharray="1"
-            strokeDashoffset={show ? 0 : 1}
-            style={{
-              transition: fadeOut
-                ? "none"
-                : `stroke-dashoffset ${show ? "1.4s ease-out 0s" : "1s ease-in 0s"}`,
-            }}
-          />
-        </g>
-      ) : (
-        /* Desktop : le contour se divise gauche/droite avec les cercles */
-        <>
-          <g style={{
-            transform: fadeOut ? "translateX(-85vh)" : "translate(0,0)",
-            opacity: fadeOut ? 0 : 1,
-            transition: fadeOut
-              ? "transform 1.2s cubic-bezier(0.5, 0, 0.75, 0), opacity 0.8s ease-in 0.6s"
-              : "transform 0.3s ease-out, opacity 0.3s ease-out",
-          }}>
-            <path {...desktopPathProps(0)} />
-            <path {...desktopPathProps(1)} />
-          </g>
-          <g style={{
-            transform: fadeOut ? "translateX(85vh)" : "translate(0,0)",
-            opacity: fadeOut ? 0 : 1,
-            transition: fadeOut
-              ? "transform 1.2s cubic-bezier(0.5, 0, 0.75, 0), opacity 0.8s ease-in 0.6s"
-              : "transform 0.3s ease-out, opacity 0.3s ease-out",
-          }}>
-            <path {...desktopPathProps(2)} />
-            <path {...desktopPathProps(3)} />
-          </g>
-        </>
-      )}
-    </svg>
-  );
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [start, target, duration]);
+  return value;
 }
 
-/* ========== Trait blanc cercle autour du logo (cross-fade depuis amande) ========== */
-function CircleOutline({ show }) {
-  return (
-    <div
-      className="absolute left-1/2 rounded-full pointer-events-none"
-      style={{
-        top: "45%",
-        width: "320px",
-        height: "320px",
-        zIndex: 8,
-        border: "2.5px solid white",
-        opacity: show ? 1 : 0,
-        transform: show
-          ? "translate(-50%, -50%) scale(1)"
-          : "translate(-50%, -50%) scale(1.4, 2.0)",
-        transition: show
-          ? "opacity 1.2s ease-in-out, transform 1.2s cubic-bezier(0.25, 1, 0.5, 1)"
-          : "opacity 0.4s ease-in, transform 0.4s ease-in",
-      }}
-    />
-  );
-}
-
-/* ========== Remplissage coloré de l'amande — disparaît quand les cercles s'écartent ========== */
-function LensFill({ show, fill = "#FFFFFF", style: extraStyle = {}, horizontal = false }) {
-  const svgRef = useRef(null);
-  const [path, setPath] = useState("");
-
+/* ========== Hook : progression du scroll dans un container ========== */
+function useScrollProgress(ref) {
+  const [progress, setProgress] = useState(0);
   useEffect(() => {
-    const compute = () => {
-      const el = svgRef.current;
+    const onScroll = () => {
+      const el = ref.current;
       if (!el) return;
-      const { width: w, height: h } = el.getBoundingClientRect();
-
-      if (horizontal) {
-        // Amande couchée — utilise vh pour matcher exactement les cercles CSS (110vh)
-        const vh = window.innerHeight / 100;
-        const R = 55 * vh;       // 110vh / 2
-        const cx = w / 2;
-        const cy = 0.42 * h;
-        const d = 45 * vh;       // 45vh offset
-        const dx = Math.sqrt(R * R - d * d);
-        const leftX = cx - dx;
-        const rightX = cx + dx;
-        setPath(
-          `M ${leftX} ${cy} A ${R} ${R} 0 0 1 ${rightX} ${cy} A ${R} ${R} 0 0 1 ${leftX} ${cy} Z`
-        );
-      } else {
-        // Amande verticale — basée sur la hauteur
-        const R = 0.75 * h;
-        const cx = w / 2;
-        const cy = 0.45 * h;
-        const d = 0.55 * h;
-        const dy = Math.sqrt(R * R - d * d);
-        const topY = cy - dy;
-        const botY = cy + dy;
-        setPath(
-          `M ${cx} ${topY} A ${R} ${R} 0 0 1 ${cx} ${botY} A ${R} ${R} 0 0 1 ${cx} ${topY} Z`
-        );
-      }
+      const rect = el.getBoundingClientRect();
+      const scrollable = rect.height - window.innerHeight;
+      if (scrollable <= 0) { setProgress(0); return; }
+      const p = Math.max(0, Math.min(1, -rect.top / scrollable));
+      setProgress(p);
     };
-
-    compute();
-    window.addEventListener("resize", compute);
-    return () => window.removeEventListener("resize", compute);
-  }, [horizontal]);
-
-  return (
-    <svg
-      ref={svgRef}
-      className="absolute inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: 6, ...extraStyle }}
-    >
-      <path
-        d={path}
-        fill={fill}
-        opacity={show ? 1 : 0}
-        style={{ transition: `opacity ${show ? "0.8s ease-out 0s" : "0.5s ease-in 0s"}` }}
-      />
-    </svg>
-  );
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [ref]);
+  return progress;
 }
 
-/* ========== Ligne décorative dessinée (SVG stroke-dashoffset) ========== */
-function DrawnLine({ width = 120, show, delay = 1.2, strokeWidth = 0.8, color = "#FF4A3E", className = "", style: extraStyle }) {
-  return (
-    <svg width={width} height="2" className={`block ${className}`} style={extraStyle}>
-      <path
-        d={`M 0 1 L ${width} 1`}
-        pathLength="1"
-        fill="none"
-        stroke={color}
-        strokeWidth={strokeWidth}
-        strokeDasharray="1"
-        strokeDashoffset={show ? 0 : 1}
-        style={{ transition: `stroke-dashoffset ${show ? `0.9s ease-out ${delay}s` : "0.5s ease-in 0s"}` }}
-      />
-    </svg>
-  );
-}
+/* ========== Chiffres clés 2025 ========== */
+const KEY_FIGURES = [
+  { value: 100, suffix: "+", label: "ventes en 2025", prefix: "" },
+  { value: 90, suffix: "+", label: "avis 5 étoiles sur Google", prefix: "", link: "https://www.google.com/maps/place/GARY+Real+Estate", linkText: "voir ici" },
+  { value: 6.6, suffix: "M", label: "de vues sur nos publications", prefix: "", decimals: 1 },
+  { value: 40, suffix: "k+", label: "followers sur nos réseaux", prefix: "" },
+];
 
-/* ========== Texte avec lignes décoratives (whiteMode = sans fond, tout blanc) ========== */
-function CircleText({ title, lines, show, style, whiteMode = false, minHeight }) {
+function KeyFigures() {
+  const [sectionRef, seen] = useInViewOnce({ threshold: 0.2 });
+
   return (
-    <div
-      className="absolute z-10 text-center pointer-events-none flex flex-col items-center"
-      style={style}
-    >
-      <div
-        className="relative px-4 py-3 md:px-10 md:py-8 flex flex-col items-center justify-center"
-        style={{
-          minHeight: minHeight || "auto",
-          opacity: show ? 1 : 0,
-          transform: show ? "scale(1)" : "scale(0.92)",
-          transition: "opacity 0.9s ease-out, transform 0.9s ease-out",
-        }}
-      >
-        {/* Fond opaque — masqué en whiteMode, plus compact sur mobile */}
+    <div ref={sectionRef} className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 lg:px-16 pb-24 md:pb-32 pt-8 md:pt-12">
+      {/* Ligne décorative orange au-dessus */}
+      <div className="flex justify-center mb-10 md:mb-14">
         <div
-          className="absolute inset-0 -inset-y-2 -inset-x-1 md:-inset-y-4 md:-inset-x-3 bg-white/55 backdrop-blur-sm shadow-[0_22px_70px_-45px_rgba(0,0,0,0.3)]"
+          className="h-px bg-[#FF4A3E]/40"
           style={{
-            opacity: whiteMode ? 0 : 1,
-            transition: "opacity 0.8s ease-out",
+            width: seen ? "180px" : "0px",
+            transition: "width 1s cubic-bezier(0.22, 1, 0.36, 1)",
           }}
         />
+      </div>
 
-        <h2
-          className="relative z-10 font-serif text-3xl md:text-5xl lg:text-6xl tracking-wide leading-tight"
+      {/* Titre */}
+      <h3
+        className="text-center font-serif text-3xl md:text-5xl lg:text-6xl tracking-wide mb-4 md:mb-5"
+        style={{
+          color: "white",
+          opacity: seen ? 1 : 0,
+          transform: seen ? "translateY(0)" : "translateY(20px)",
+          transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
+        }}
+      >
+        Quelques chiffres de <span className="text-[#FF4A3E]">2025</span>
+      </h3>
+
+      {/* Sous-ligne orange */}
+      <div className="flex justify-center mb-14 md:mb-20">
+        <div
+          className="h-px bg-[#FF4A3E]/30"
           style={{
-            color: whiteMode ? "white" : "#171717",
-            transition: "color 0.8s ease-out",
+            width: seen ? "100px" : "0px",
+            transition: "width 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s",
           }}
-        >
-          {title}
-        </h2>
+        />
+      </div>
 
-        {/* Ligne horizontale — tracée à l'ouverture, disparaît en whiteMode */}
-        <svg
-          width="140" height="2"
-          className="relative z-10 mt-6 mb-4 block"
-          style={{
-            opacity: whiteMode ? 0 : 1,
-            transition: "opacity 0.6s ease-out",
-          }}
-        >
-          <path
-            d="M 0 1 L 140 1"
-            pathLength="1"
-            fill="none"
-            stroke="#525252"
-            strokeWidth="0.5"
-            strokeDasharray="1"
-            strokeDashoffset={show ? 0 : 1}
-            style={{ transition: `stroke-dashoffset ${show ? "0.8s ease-out 0.3s" : "0.4s ease-in 0s"}` }}
-          />
-        </svg>
-
-        {lines.map((line, i) => (
-          <p
-            key={i}
-            className="relative z-10 text-sm md:text-lg lg:text-xl leading-relaxed tracking-wider uppercase mt-1"
-            style={{
-              color: whiteMode ? "rgba(255,255,255,0.85)" : "#525252",
-              opacity: whiteMode ? 0 : 1,
-              maxHeight: whiteMode ? 0 : "3em",
-              overflow: "hidden",
-              transition: "color 0.6s ease-out, opacity 0.6s ease-out, max-height 0.6s ease-out",
-            }}
-          >
-            {line}
-          </p>
+      {/* Grille de chiffres */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-12 md:gap-y-16 gap-x-10 md:gap-x-16 lg:gap-x-20">
+        {KEY_FIGURES.map((fig, i) => (
+          <FigureItem key={i} fig={fig} index={i} active={seen} />
         ))}
-
-        {/* Trait blanc décoratif — se dessine en whiteMode (même animation que l'amande) */}
-        <svg
-          width="160" height="2"
-          className="relative z-10 mt-6 block"
-          style={{
-            opacity: whiteMode && show ? 1 : 0,
-            transition: `opacity ${whiteMode ? "0.3s ease-out" : "0.3s ease-in"}`,
-          }}
-        >
-          <path
-            d="M 0 1 L 160 1"
-            pathLength="1"
-            fill="none"
-            stroke="white"
-            strokeWidth="1.5"
-            strokeDasharray="1"
-            strokeDashoffset={whiteMode && show ? 0 : 1}
-            style={{ transition: `stroke-dashoffset ${whiteMode ? "1.2s ease-out 0.2s" : "0.4s ease-in 0s"}` }}
-          />
-        </svg>
       </div>
     </div>
   );
 }
 
-/* ========== HERO — Vidéo + logo visible d'entrée, clic → amande → cercles s'écartent ========== */
-function HeroGiantCircles({ onComplete }) {
-  const isMobile = useIsMobile();
-  const [animating, setAnimating] = useState(false);   // clic → cercles arrivent, amande se dessine
-  const [neonOn, setNeonOn] = useState(false);         // néon commence (traits ~70%)
-  const [amandeDone, setAmandeDone] = useState(false); // amande dessinée
-  const [spreading, setSpreading] = useState(false);   // cercles s'écartent → révèle équipe
-
-  // Quand l'animation commence → néon → amande → cercles s'écartent
-  useEffect(() => {
-    if (!animating) return;
-    const t0 = setTimeout(() => setNeonOn(true), 950);
-    const t1 = setTimeout(() => setAmandeDone(true), 1400);
-    const t2 = setTimeout(() => setSpreading(true), 1800);
-    const t3 = setTimeout(() => { if (onComplete) onComplete(); }, 2600);
-    return () => { clearTimeout(t0); clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  }, [animating, onComplete]);
-
-  const handleDiscover = () => setAnimating(true);
-
-  const circleSize = isMobile ? "110vh" : "150vh";
-  const cy = isMobile ? "42%" : "45%";
+function FigureItem({ fig, index, active }) {
+  const delay = index * 0.15;
+  const count = useCountUp(fig.value, 2200, active);
+  const display = fig.decimals
+    ? count.toFixed(count >= fig.value * 0.99 ? fig.decimals : 1)
+    : Math.round(count);
 
   return (
-    <section className="relative w-full h-screen overflow-hidden" style={{ isolation: "isolate" }}>
-      {/* Vidéo plein écran en fond — toujours visible */}
-      <video
-        autoPlay muted loop playsInline
-        className="absolute inset-0 w-full h-full object-cover"
-        style={{ zIndex: 0 }}
+    <div
+      className="flex flex-col items-center text-center"
+      style={{
+        opacity: active ? 1 : 0,
+        transform: active ? "translateY(0)" : "translateY(30px)",
+        transition: `opacity 0.7s ease-out ${delay}s, transform 0.7s ease-out ${delay}s`,
+      }}
+    >
+      {/* Petit trait orange au-dessus */}
+      <div
+        className="mb-5 md:mb-6 h-px bg-[#FF4A3E]"
+        style={{
+          width: active ? "40px" : "0px",
+          transition: `width 0.6s cubic-bezier(0.22, 1, 0.36, 1) ${delay + 0.3}s`,
+        }}
+      />
+
+      {/* Nombre */}
+      <span
+        className="font-serif text-[64px] md:text-[90px] lg:text-[110px] leading-none tracking-tight text-[#FF4A3E]"
+        style={{ fontVariantNumeric: "tabular-nums" }}
       >
-        <source src="/media/buy/hero24.mp4" type="video/mp4" />
-      </video>
+        {fig.prefix}{display}{fig.suffix}
+      </span>
 
-      {/* Overlay clair (comme les autres hero) */}
-      <div className="absolute inset-0" style={{ zIndex: 1 }}>
-        <div className="absolute inset-0 bg-black/10" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/45 via-white/20 to-transparent md:from-white/55 md:via-white/25 md:to-transparent" />
-      </div>
-
-      {/* Cercle A (corail) — gauche sur desktop, haut sur mobile */}
-      <div
-        className="absolute rounded-full"
+      {/* Label */}
+      <p
+        className="mt-4 text-[16px] md:text-[20px] uppercase tracking-[0.15em] text-white/70 leading-relaxed max-w-[280px]"
         style={{
-          width: circleSize,
-          height: circleSize,
-          zIndex: 5,
-          top: cy,
-          left: "50%",
-          background: "linear-gradient(135deg, #FF5C50 0%, #FF7A6A 100%)",
-          transform: isMobile
-            ? (spreading
-              ? `translate(-50%, calc(-50% - 120vh))`
-              : `translate(-50%, calc(-50% - 45vh))`)
-            : (spreading
-              ? "translate(calc(-50% - 140vh), -50%)"
-              : "translate(calc(-50% - 55vh), -50%)"),
-          opacity: animating ? (spreading ? 0 : 1) : 0,
-          transition: spreading
-            ? "transform 1.2s cubic-bezier(0.5, 0, 0.75, 0), opacity 0.8s ease-in 0.6s"
-            : "opacity 0.4s ease-out",
-        }}
-      />
-
-      {/* Cercle B (saumon) — droit sur desktop, bas sur mobile */}
-      <div
-        className="absolute rounded-full"
-        style={{
-          width: circleSize,
-          height: circleSize,
-          zIndex: 5,
-          top: cy,
-          left: "50%",
-          background: "linear-gradient(225deg, #FF8A7A 0%, #FFA494 100%)",
-          transform: isMobile
-            ? (spreading
-              ? `translate(-50%, calc(-50% + 120vh))`
-              : `translate(-50%, calc(-50% + 45vh))`)
-            : (spreading
-              ? "translate(calc(-50% + 140vh), -50%)"
-              : "translate(calc(-50% + 55vh), -50%)"),
-          opacity: animating ? (spreading ? 0 : 1) : 0,
-          transition: spreading
-            ? "transform 1.2s cubic-bezier(0.5, 0, 0.75, 0), opacity 0.8s ease-in 0.6s"
-            : "opacity 0.4s ease-out",
-        }}
-      />
-
-      {/* Remplissage orange de l'amande — visible quand animating, néon + brightness à neonOn */}
-      <LensFill
-        show={animating && !spreading}
-        fill="#FF4A3E"
-        horizontal={isMobile}
-        style={{
-          filter: neonOn && !spreading
-            ? "brightness(1.35) drop-shadow(0 0 25px rgba(255,74,62,1)) drop-shadow(0 0 70px rgba(255,74,62,0.8)) drop-shadow(0 0 160px rgba(255,74,62,0.5)) drop-shadow(0 0 250px rgba(255,74,62,0.25))"
-            : "brightness(1) drop-shadow(0 0 0px transparent)",
-          transition: neonOn && !spreading
-            ? "filter 0.8s ease-out"
-            : "filter 0.5s ease-in",
-        }}
-      />
-
-      {/* Couche saturée par-dessus — renforce l'orange quand le néon s'allume */}
-      <LensFill
-        show={neonOn && !spreading}
-        fill="#FF6A3E"
-        horizontal={isMobile}
-        style={{
-          zIndex: 6,
-          mixBlendMode: "screen",
-          opacity: neonOn && !spreading ? 0.4 : 0,
-          transition: "opacity 0.8s ease-out",
-        }}
-      />
-
-      {/* Halo néon — s'étend progressivement à neonOn */}
-      <div
-        className="absolute pointer-events-none"
-        style={{
-          zIndex: 7,
-          top: isMobile ? "42%" : "45%",
-          left: "50%",
-          width: isMobile ? "90vw" : "100vh",
-          height: isMobile ? "70vh" : "130vh",
-          transform: neonOn && !spreading
-            ? "translate(-50%, -50%) scale(1)"
-            : "translate(-50%, -50%) scale(0.5)",
-          borderRadius: "50%",
-          background: "radial-gradient(ellipse at center, rgba(255,74,62,0.75) 0%, rgba(255,80,55,0.45) 20%, rgba(255,74,62,0.2) 40%, rgba(255,74,62,0.06) 60%, transparent 75%)",
-          opacity: neonOn && !spreading ? 1 : 0,
-          transition: neonOn && !spreading
-            ? "opacity 0.7s ease-out, transform 0.9s ease-out"
-            : "opacity 0.4s ease-in, transform 0.4s ease-in",
-        }}
-      />
-
-      {/* Trait blanc amande — se dessine au clic, disparaît à spreading */}
-      <LensOutline show={animating} fadeOut={spreading} vertical={isMobile} />
-
-      {/* Texte gauche (desktop) / haut (mobile) */}
-      <CircleText
-        title="Jeunes courtiers"
-        lines={isMobile ? [] : ["Marketing nouvelle génération", "Innovante & performante"]}
-        show={!spreading}
-        whiteMode={animating}
-        minHeight={isMobile ? undefined : "400px"}
-        style={isMobile ? {
-          top: "16%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          maxWidth: "280px",
-        } : {
-          top: "45%",
-          left: "22%",
-          transform: "translate(-50%, -50%)",
-          maxWidth: "380px",
-        }}
-      />
-
-      {/* Texte droit (desktop) / bas (mobile) */}
-      <CircleText
-        title="Grande expertise"
-        lines={isMobile ? [] : ["Marché immobilier local", "60 ans d'expérience cumulée", "Stratèges de la vente"]}
-        show={!spreading}
-        whiteMode={animating}
-        minHeight={isMobile ? undefined : "400px"}
-        style={isMobile ? {
-          top: "76%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          maxWidth: "280px",
-        } : {
-          top: "45%",
-          right: "22%",
-          transform: "translate(50%, -50%)",
-          maxWidth: "380px",
-        }}
-      />
-
-      {/* Logo GARY orange → blanc quand animating, disparaît à spreading */}
-      <div
-        className="absolute left-1/2"
-        style={{
-          top: isMobile ? "42%" : "45%",
-          zIndex: 10,
-          opacity: spreading ? 0 : 1,
-          transform: spreading
-            ? "translate(-50%, -50%) scale(0.85)"
-            : "translate(-50%, -50%) scale(1)",
-          transition: spreading
-            ? "opacity 0.6s ease-in, transform 0.6s ease-in"
-            : "opacity 0.5s ease-out, transform 0.5s ease-out",
+          opacity: active ? 1 : 0,
+          transition: `opacity 0.6s ease-out ${delay + 0.4}s`,
         }}
       >
-        <img
-          src="/Logo/logo-gary-orange.png"
-          alt="GARY"
-          className="w-[140px] md:w-[260px] h-auto"
+        {fig.label}
+      </p>
+
+      {/* Lien optionnel */}
+      {fig.link && (
+        <a
+          href={fig.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 inline-flex items-center gap-1 text-[12px] uppercase tracking-[0.12em] text-[#FF4A3E]/80 hover:text-[#FF4A3E] transition-colors duration-300"
           style={{
-            filter: animating ? "brightness(0) invert(1)" : "none",
-            transition: "filter 0.8s ease-out",
+            opacity: active ? 1 : 0,
+            transition: `opacity 0.6s ease-out ${delay + 0.6}s`,
           }}
-        />
-      </div>
-
-      {/* Bouton Découvrez — visible avant le clic */}
-      <div
-        className="absolute left-1/2"
-        style={{
-          top: isMobile ? "calc(42% + 60px)" : "calc(45% + 80px)",
-          zIndex: 25,
-          opacity: animating ? 0 : 1,
-          transform: animating
-            ? "translate(-50%, -8px)"
-            : "translate(-50%, 0)",
-          transition: "opacity 0.4s ease-in, transform 0.4s ease-in",
-          pointerEvents: animating ? "none" : "auto",
-        }}
-      >
-        <button
-          onClick={handleDiscover}
-          className="group relative px-6 py-2 md:px-7 md:py-2.5 bg-[#FF4A3E] text-white font-light text-sm md:text-lg tracking-[0.25em] uppercase
-                     border border-[#FF4A3E] rounded-full hover:bg-white hover:text-[#FF4A3E] hover:border-white
-                     transition-all duration-300 cursor-pointer"
-          style={isMobile ? {
-            boxShadow: "0 0 18px rgba(255,74,62,0.5), 0 0 50px rgba(255,74,62,0.2)",
-            animation: "btnPulse 2.4s ease-in-out infinite",
-          } : undefined}
         >
-          <span className="relative z-10">Découvrez</span>
-        </button>
-      </div>
-    </section>
+          {fig.linkText}
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+      )}
+    </div>
   );
 }
 
-/* ========== Bande sous le titre (sobre) ========== */
-function TitleWithBand({ children, align = "left" }) {
-  const bandColor = "rgba(255,74,62,0.10)";
-  const heightEm = 0.55;
-  const dropEm = 0.25;
-  let leftInset = "2%", rightInset = "0%";
-  if (align === "right") { leftInset = "0%"; rightInset = "8%"; }
-  if (align === "center") { leftInset = "10%"; rightInset = "10%"; }
+/* ========== Section Hero + Cercles fusionnés — scroll-driven ========== */
+function HeroCirclesSection() {
+  const [loaded, setLoaded] = useState(false);
+  const isMobile = useIsMobile();
+  const wrapperRef = useRef(null);
+  const progress = useScrollProgress(wrapperRef);
+
+  useEffect(() => { setLoaded(true); }, []);
+
+  // Easing cubique
+  const eased = 1 - Math.pow(1 - Math.min(progress * 1.6, 1), 3);
+
+  // Taille : 320px mobile / 520px desktop
+  const circleSize = isMobile ? 320 : 520;
+
+  // Opacité des cercles : apparaissent progressivement
+  const circleOpacity = Math.min(progress * 3, 1);
+
+  // Les cercles se chevauchent légèrement au centre sur le logo
+  const finalGap = isMobile ? -40 : -60;
+  const finalOffset = finalGap / 2 + circleSize / 2;
+  const startOffset = isMobile ? window.innerHeight * 0.6 : window.innerWidth * 0.5;
+  const currentOffset = startOffset - (startOffset - finalOffset) * eased;
+
+  // Textes dans les cercles
+  const textOpacity = Math.min(progress * 2.5, 1);
+
+  // "Qui sommes-nous" + indicateur scroll disparaissent quand on scrolle
+  const heroFade = Math.max(0, 1 - progress * 5);
+
   return (
-    <h2 className="relative inline-block text-3xl md:text-5xl font-serif leading-tight">
-      <span
-        aria-hidden
-        className="absolute block z-0"
-        style={{ left: leftInset, right: rightInset, height: `${heightEm}em`, bottom: `-${dropEm}em`, backgroundColor: bandColor }}
-      />
-      <span className="relative z-10">{children}</span>
-    </h2>
+    <div ref={wrapperRef} className="relative" style={{ height: "300vh" }}>
+      <div
+        className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center"
+      >
+        {/* Logo GARY — toujours centré, présent dès le début */}
+        <div
+          className="absolute left-1/2 top-1/2 pointer-events-none flex flex-col items-center"
+          style={{
+            zIndex: 10,
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          <img
+            src="/Logo/logo-gary-orange.png"
+            alt="GARY"
+            className="w-[160px] md:w-[280px] h-auto"
+            style={{
+              filter: "brightness(0) invert(1) drop-shadow(0 0 30px rgba(255,255,255,0.3))",
+              opacity: loaded ? 1 : 0,
+              transition: "opacity 1s ease-out 0.3s",
+            }}
+          />
+
+          {/* "Qui sommes-nous" — disparaît au scroll */}
+          <p
+            className="mt-6 text-white/60 text-sm md:text-base uppercase tracking-[0.3em] font-light"
+            style={{
+              opacity: loaded ? heroFade : 0,
+              transition: loaded ? "none" : "opacity 1s ease-out 0.8s",
+            }}
+          >
+            Qui sommes-nous
+          </p>
+        </div>
+
+        {/* Indicateur scroll — disparaît au scroll */}
+        <div
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+          style={{
+            zIndex: 10,
+            opacity: loaded ? heroFade : 0,
+            transition: loaded ? "none" : "opacity 1s ease-out 1.2s",
+          }}
+        >
+          <span className="text-white/40 text-[11px] uppercase tracking-[0.2em]">Scroll</span>
+          <svg
+            className="w-5 h-5 text-white/40"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"
+            style={{ animation: "scrollBounce 2s ease-in-out infinite" }}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+
+        {/* Cercle A (corail) — gauche / haut */}
+        <div
+          className="absolute rounded-full flex items-center justify-center"
+          style={{
+            width: `${circleSize}px`,
+            height: `${circleSize}px`,
+            zIndex: 5,
+            background: "linear-gradient(135deg, #FF5C50 0%, #FF7A6A 100%)",
+            opacity: circleOpacity,
+            ...(isMobile ? {
+              left: "50%",
+              top: "50%",
+              transform: `translate(-50%, calc(-50% - ${currentOffset}px))`,
+            } : {
+              top: "50%",
+              left: "50%",
+              transform: `translate(calc(-50% - ${currentOffset}px), -50%)`,
+            }),
+          }}
+        >
+          <div
+            className="text-center pointer-events-none px-5"
+            style={{ opacity: textOpacity }}
+          >
+            <h3 className="font-serif text-2xl md:text-4xl text-white tracking-wide leading-tight">
+              Jeunes courtiers
+            </h3>
+            <div className="mx-auto my-3 h-px bg-white/30" style={{ width: "60px" }} />
+            <p className="text-white/70 text-xs md:text-sm uppercase tracking-[0.12em] leading-relaxed">
+              Marketing nouvelle génération
+            </p>
+            <p className="text-white/70 text-xs md:text-sm uppercase tracking-[0.12em] leading-relaxed mt-1">
+              Innovante &amp; performante
+            </p>
+          </div>
+        </div>
+
+        {/* Cercle B (saumon) — droite / bas */}
+        <div
+          className="absolute rounded-full flex items-center justify-center"
+          style={{
+            width: `${circleSize}px`,
+            height: `${circleSize}px`,
+            zIndex: 5,
+            background: "linear-gradient(225deg, #FF8A7A 0%, #FFA494 100%)",
+            opacity: circleOpacity,
+            ...(isMobile ? {
+              left: "50%",
+              top: "50%",
+              transform: `translate(-50%, calc(-50% + ${currentOffset}px))`,
+            } : {
+              top: "50%",
+              left: "50%",
+              transform: `translate(calc(-50% + ${currentOffset}px), -50%)`,
+            }),
+          }}
+        >
+          <div
+            className="text-center pointer-events-none px-5"
+            style={{ opacity: textOpacity }}
+          >
+            <h3 className="font-serif text-2xl md:text-4xl text-white tracking-wide leading-tight">
+              Grande expertise
+            </h3>
+            <div className="mx-auto my-3 h-px bg-white/30" style={{ width: "60px" }} />
+            <p className="text-white/70 text-xs md:text-sm uppercase tracking-[0.12em] leading-relaxed">
+              Marché immobilier local
+            </p>
+            <p className="text-white/70 text-xs md:text-sm uppercase tracking-[0.12em] leading-relaxed mt-1">
+              60 ans d'expérience cumulée
+            </p>
+            <p className="text-white/70 text-xs md:text-sm uppercase tracking-[0.12em] leading-relaxed mt-1">
+              Stratèges de la vente
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes scrollBounce {
+          0%, 100% { transform: translateY(0); opacity: 0.4; }
+          50% { transform: translateY(6px); opacity: 1; }
+        }
+      `}</style>
+    </div>
   );
 }
 
@@ -659,7 +374,6 @@ function TeamCard({ name, role, photo, quote, slug }) {
   const startX = useRef(0);
 
   const handleClick = (e) => {
-    // Si l'utilisateur a dragué le carrousel (> 5px), ne pas naviguer
     if (Math.abs(e.clientX - startX.current) > 5) e.preventDefault();
   };
 
@@ -686,7 +400,7 @@ function TeamCard({ name, role, photo, quote, slug }) {
         style={{ background: "linear-gradient(to top, rgba(255,74,62,0.85) 0%, rgba(255,74,62,0.35) 45%, transparent 100%)" }}
       />
 
-      {/* Infos en bas — visibles par défaut */}
+      {/* Infos en bas */}
       <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-10 transition-transform duration-500 group-hover:translate-y-[-20px]">
         <p className="text-white/60 text-xs md:text-sm uppercase tracking-[0.2em] mb-1">{role}</p>
         <p className="text-white text-2xl md:text-3xl font-serif tracking-wide">{name}</p>
@@ -710,7 +424,7 @@ function TeamCard({ name, role, photo, quote, slug }) {
 
 /* ========== PAGE ABOUT ========== */
 export default function About() {
-  const [showContent, setShowContent] = useState(false);
+  const isMobile = useIsMobile();
   const containerRef = useRef(null);
   const trackRef = useRef(null);
   const setWidthRef = useRef(0);
@@ -718,8 +432,21 @@ export default function About() {
   const lastFrameTime = useRef(0);
   const isDragging = useRef(false);
   const dragLastX = useRef(0);
+  const [teamSeen, setTeamSeen] = useState(false);
+  const teamSectionRef = useRef(null);
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
+
+  // Détecte quand la section équipe est visible → lance le carrousel
+  useEffect(() => {
+    const el = teamSectionRef.current;
+    if (!el || teamSeen) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setTeamSeen(true);
+    }, { threshold: 0.1 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [teamSeen]);
 
   // Calcule la largeur d'un jeu de cartes
   useEffect(() => {
@@ -736,12 +463,11 @@ export default function About() {
     return () => { clearTimeout(t1); window.removeEventListener("resize", compute); };
   }, []);
 
-  // Auto-scroll permanent avec transform — pause pendant le drag
+  // Auto-scroll permanent — démarre quand teamSeen
   useEffect(() => {
-    if (!showContent) return;
+    if (!teamSeen) return;
     let raf;
-    const SPEED = 30; // px/s
-    // Initialise l'offset au début du 2e jeu pour pouvoir boucler dans les deux sens
+    const SPEED = 30;
     offsetRef.current = setWidthRef.current || 0;
     lastFrameTime.current = performance.now();
 
@@ -753,7 +479,6 @@ export default function About() {
         offsetRef.current += SPEED * dt;
       }
 
-      // Boucle seamless
       const sw = setWidthRef.current;
       if (sw > 0) {
         if (offsetRef.current >= sw * 2) offsetRef.current -= sw;
@@ -767,7 +492,7 @@ export default function About() {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [showContent]);
+  }, [teamSeen]);
 
   // Drag souris
   const onMouseDown = useCallback((e) => {
@@ -812,66 +537,51 @@ export default function About() {
     lastFrameTime.current = performance.now();
   }, []);
 
-  // Toujours 3× les cards (boucle seamless)
   const displayTeam = [...team, ...team, ...team];
 
   return (
     <div className="relative bg-black" style={{ minHeight: "100vh" }}>
-      {/* HERO avec animation — positionné absolu pour superposer */}
+      {/* ====== VIDÉO DE FOND FIXÉE ====== */}
+      <video
+        autoPlay muted loop playsInline
+        className="fixed inset-0 w-full h-full object-cover"
+        style={{ zIndex: 0 }}
+      >
+        <source src="/media/buy/hero24.mp4" type="video/mp4" />
+      </video>
+
+      {/* Voile sombre fixé */}
       <div
-        className="absolute inset-0 z-10"
-        style={{
-          opacity: showContent ? 0 : 1,
-          pointerEvents: showContent ? "none" : "auto",
-          transition: "opacity 0.8s ease-out",
-        }}
-      >
-        <HeroGiantCircles onComplete={() => setShowContent(true)} />
-      </div>
+        className="fixed inset-0 pointer-events-none"
+        style={{ zIndex: 1, background: "rgba(0,0,0,0.45)" }}
+      />
 
-      {/* CONTENU — équipe en carousel sur vidéo de fond (toujours en dessous) */}
-      <section
-        className="relative min-h-screen overflow-hidden"
-        style={{ pointerEvents: showContent ? "auto" : "none" }}
-      >
-        {/* Vidéo de fond continue */}
-        <video
-          autoPlay muted loop playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          <source src="/media/buy/hero24.mp4" type="video/mp4" />
-        </video>
+      {/* ====== CONTENU SCROLLABLE ====== */}
+      <div className="relative" style={{ zIndex: 10 }}>
 
-        {/* Voile sombre — apparaît progressivement */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: "rgba(0,0,0,0.55)",
-            opacity: showContent ? 1 : 0,
-            transition: "opacity 1s ease-out 0.1s",
-          }}
-        />
+        {/* Section 1+2 — Hero + Cercles fusionnés */}
+        <HeroCirclesSection />
 
-        {/* Contenu par-dessus */}
-        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen py-16">
+        {/* Section 3 — Équipe */}
+        <section ref={teamSectionRef} className="relative py-16 md:py-24">
           <h2
-            className="text-white font-serif text-3xl md:text-6xl tracking-wide mb-6 md:mb-10"
+            className="text-center text-white font-serif text-3xl md:text-6xl tracking-wide mb-6 md:mb-10"
             style={{
-              opacity: showContent ? 1 : 0,
-              transform: showContent ? "translateY(0)" : "translateY(20px)",
-              transition: "opacity 0.8s ease-out 0.1s, transform 0.8s ease-out 0.1s",
+              opacity: teamSeen ? 1 : 0,
+              transform: teamSeen ? "translateY(0)" : "translateY(20px)",
+              transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
             }}
           >
             Notre équipe
           </h2>
 
-          {/* Carousel — overflow:hidden clippe, le track interne est déplacé via transform */}
+          {/* Carrousel */}
           <div
             ref={containerRef}
             className="w-full overflow-hidden py-4"
             style={{
               cursor: "grab",
-              opacity: showContent ? 1 : 0,
+              opacity: teamSeen ? 1 : 0,
               transition: "opacity 0.8s ease-out 0.15s",
             }}
             onMouseDown={onMouseDown}
@@ -894,8 +604,11 @@ export default function About() {
               ))}
             </div>
           </div>
-        </div>
-      </section>
+
+          {/* Section 4 — Chiffres clés */}
+          <KeyFigures />
+        </section>
+      </div>
     </div>
   );
 }
