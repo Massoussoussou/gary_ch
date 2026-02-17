@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import MOCK_LISTING from "../data/mock-listing.js";
 
 /**
  * Cache module-level : partagé entre tous les composants qui appellent le hook.
@@ -56,7 +57,11 @@ export default function useProperties({ perPage = 100, page = 1, lang = "fr" } =
         return res.json();
       })
       .then((json) => {
-        const items = normalizeData(json.data || []);
+        let items = normalizeData(json.data || []);
+        // En dev, si l'API ne renvoie rien, injecter le mock
+        if (items.length === 0 && import.meta.env.DEV) {
+          items = [MOCK_LISTING];
+        }
         propertiesCache = { data: items, page, perPage };
         cacheTimestamp = Date.now();
         setData(items);
@@ -65,6 +70,12 @@ export default function useProperties({ perPage = 100, page = 1, lang = "fr" } =
       .catch((err) => {
         if (err.name === "AbortError") return;
         console.error("useProperties error:", err);
+        // En dev, fallback sur le mock en cas d'erreur API
+        if (import.meta.env.DEV) {
+          setData([MOCK_LISTING]);
+          setLoading(false);
+          return;
+        }
         setError(err.message);
         setLoading(false);
       });

@@ -111,35 +111,46 @@ export default function Sell() {
       <SellHero bgSrc={HERO_URL} />
 
       {/* ÉTAPES */}
-      <StepsSection
-        steps={steps}
-        stepImages={stepImages}
-        active={active}
-        setActive={setActive}
-      />
+      <div className="relative bg-white" style={{ zIndex: 2 }}>
+        <StepsSection
+          steps={steps}
+          stepImages={stepImages}
+          active={active}
+          setActive={setActive}
+        />
+      </div>
 
       {/* BANDEAU KPI */}
-      <SellTrustStrip />
+      <div className="relative bg-white" style={{ zIndex: 2 }}>
+        <SellTrustStrip />
+      </div>
 
       {/* DÉJÀ VENDU */}
       <section
-        ref={vendRef}
-        className={`relative py-24 bg-white transition-all duration-700 ${
-          vendShown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-        }`}
+        className="relative py-24 bg-white"
+        style={{ zIndex: 2 }}
       >
-        <div className="max-w-7xl mx-auto px-6 md:px-8">
-          <BandCarousel
-            title="Déjà vendu"
-            items={vendus}
-            cta="Voir nos ventes"
-            onCta={() => navigate("/ventes")}
-            renderItem={ListingCardSold}
-          />
+        <div
+          ref={vendRef}
+          className={`transition-all duration-700 ${
+            vendShown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          }`}
+        >
+          <div className="max-w-7xl mx-auto px-6 md:px-8">
+            <BandCarousel
+              title="Déjà vendu"
+              items={vendus}
+              cta="Voir nos ventes"
+              onCta={() => navigate("/ventes")}
+              renderItem={ListingCardSold}
+            />
+          </div>
         </div>
       </section>
 
-      <AlreadyOwner toEstimate="/estimer" toSell="/contact" />
+      <div className="relative" style={{ zIndex: 2 }}>
+        <AlreadyOwner toEstimate="/estimer" toSell="/contact" />
+      </div>
     </main>
   );
 }

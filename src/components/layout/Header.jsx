@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import DrawerNav from './DrawerNav.jsx'
 
@@ -106,9 +106,20 @@ export default function Header(){
   const { pathname } = useLocation()
   const isHome = pathname === '/'
 
+  const headerRef = useRef(null)
+  const [headerH, setHeaderH] = useState(0)
+
+  // Mesurer la hauteur du header pour le spacer
+  useEffect(() => {
+    if (!headerRef.current) return
+    const ro = new ResizeObserver(([e]) => setHeaderH(e.contentRect.height))
+    ro.observe(headerRef.current)
+    return () => ro.disconnect()
+  }, [])
+
   const headerCls = isHome
-    ? 'absolute top-0 left-0 right-0 z-50 bg-white'
-    : 'sticky top-0 z-50 bg-white border-b border-line/60'
+    ? 'fixed top-0 left-0 right-0 z-50 bg-white'
+    : 'fixed top-0 left-0 right-0 z-50 bg-white border-b border-line/60'
 
   // ✅ Hamburger: tailles + offsets calculés (plus “droit” que -10/+10 fixes)
   const burgerWH = Math.min(S.burgerWH, 46)                 // cap pour éviter un bouton trop gros
@@ -117,7 +128,8 @@ export default function Header(){
   const burgerY = Math.round(burgerWH * 0.20)               // écart vertical des barres
 
   return (
-    <header className={headerCls} style={{ overflowX: 'clip' }}>
+    <>
+    <header ref={headerRef} className={headerCls} style={{ overflowX: 'clip' }}>
       <div
         className="mx-auto grid items-center"
         style={{
@@ -326,5 +338,8 @@ export default function Header(){
 
       <DrawerNav open={open} onClose={() => setOpen(false)} />
     </header>
+    {/* Spacer pour compenser le header fixed */}
+    <div style={{ height: headerH }} />
+    </>
   )
 }

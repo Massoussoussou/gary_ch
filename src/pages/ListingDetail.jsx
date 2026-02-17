@@ -1,5 +1,5 @@
 // src/pages/ListingDetail.jsx
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import useProperties from "../hooks/useProperties.js";
 import TileToggleButton from "../components/TileToggleButton.jsx";
@@ -34,7 +34,111 @@ export default function ListingDetail() {
 
   const [isReady, setIsReady] = useState(false);
   const [isTileVisible, setIsTileVisible] = useState(true);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [prevImage, setPrevImage] = useState(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [tileOffset, setTileOffset] = useState(0);
+  const tileRef = useRef(null);
 
+  const TRANSITION_MS = 700;
+  const AUTO_ADVANCE_MS = 5000; // durée du tracé avant passage auto à la suivante
+  const [autoKey, setAutoKey] = useState(0); // reset l'animation quand on change d'image
+
+  // images du bien (safe même si item est null)
+  const images = Array.isArray(item?.images) ? item.images : [];
+  const heroIdx = Number.isFinite(item?.heroIdx) ? item.heroIdx : 0;
+  const initialIdx =
+    images.length > 0
+      ? Math.min(Math.max(heroIdx, 0), images.length - 1)
+      : 0;
+
+  const totalImages = images.length;
+  const heroImg = totalImages > 0 ? images[currentImageIndex] : "";
+
+  // adresse et agent (safe même si item est null)
+  const coords = item?.coordsFake || null;
+  const address = `${item?.ville || ""}${
+    item?.canton ? ", " + item.canton : ""
+  }${item?.pays ? ", " + item.pays : ""}`.trim();
+  const mapQuery = coords
+    ? `${coords.lat},${coords.lng}`
+    : address;
+
+  const agent = useMemo(() => {
+    if (item?.agentSlug) {
+      const found = (team || []).find((t) => t.slug === item.agentSlug);
+      if (found) return found;
+    }
+    return (team || [])[0] || {
+      name: "Conseiller GARY",
+      role: "Conseiller immobilier",
+      email: "contact@gary.ch",
+      phone: "+41 22 557 07 00",
+      photo:
+        "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=1000&auto=format&fit=crop",
+    };
+  }, [item]);
+
+  useEffect(() => {
+    setIsReady(true);
+  }, []);
+
+  useEffect(() => {
+    setCurrentImageIndex(initialIdx);
+    setPrevImage(null);
+    setIsTransitioning(false);
+  }, [id, initialIdx]);
+
+  // Parallax tuile : monte à 40% de la vitesse du scroll
+  useEffect(() => {
+    const onScroll = () => setTileOffset(window.scrollY * 0.4);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const handlePrev = () => {
+    if (totalImages < 2 || isTransitioning) return;
+    setPrevImage(heroImg);
+    setIsTransitioning(true);
+    setCurrentImageIndex((prev) => (prev - 1 + totalImages) % totalImages);
+    setAutoKey((k) => k + 1);
+    setTimeout(() => {
+      setIsTransitioning(false);
+      setPrevImage(null);
+    }, TRANSITION_MS);
+  };
+
+  const handleNext = useCallback(() => {
+    if (totalImages < 2 || isTransitioning) return;
+    setPrevImage(heroImg);
+    setIsTransitioning(true);
+    setCurrentImageIndex((prev) => (prev + 1) % totalImages);
+    setAutoKey((k) => k + 1);
+    setTimeout(() => {
+      setIsTransitioning(false);
+      setPrevImage(null);
+    }, TRANSITION_MS);
+  }, [totalImages, isTransitioning, heroImg]);
+
+  // Aller à une image précise (clic miniature) — pas de délai
+  const goToImage = useCallback((idx) => {
+    if (idx === currentImageIndex) return;
+    setPrevImage(null);
+    setIsTransitioning(false);
+    setCurrentImageIndex(idx);
+    setAutoKey((k) => k + 1);
+  }, [currentImageIndex]);
+
+  // Auto-advance : quand le tracé orange finit, passe à la suivante
+  useEffect(() => {
+    if (totalImages < 2) return;
+    const timer = setTimeout(() => {
+      handleNext();
+    }, AUTO_ADVANCE_MS + TRANSITION_MS);
+    return () => clearTimeout(timer);
+  }, [currentImageIndex, autoKey, totalImages]);
+
+  // Early returns APRÈS tous les hooks
   if (loading) {
     return (
       <main className="page-bg min-h-screen text-text flex items-center justify-center">
@@ -53,99 +157,6 @@ export default function ListingDetail() {
     );
   }
 
-  // images du bien
-  const images = Array.isArray(item.images) ? item.images : [];
-  const heroIdx = Number.isFinite(item.heroIdx) ? item.heroIdx : 0;
-  const initialIdx =
-    images.length > 0
-      ? Math.min(Math.max(heroIdx, 0), images.length - 1)
-      : 0;
-
-  const [currentImageIndex, setCurrentImageIndex] = useState(initialIdx);
-
-    const [prevImage, setPrevImage] = useState(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-
-  const TRANSITION_MS = 700; // durée de l'anim (ms)
-
-
-  useEffect(() => {
-    setIsReady(true);
-  }, []);
-
- 
-
-    useEffect(() => {
-    setCurrentImageIndex(initialIdx);
-    setPrevImage(null);
-    setIsTransitioning(false);
-  }, [id, initialIdx]);
-
-
-
-
-  const totalImages = images.length;
-  const heroImg = totalImages > 0 ? images[currentImageIndex] : "";
-
-
-
-      const handlePrev = () => {
-    if (totalImages < 2 || isTransitioning) return;
-
-    // image actuelle = carte du dessus
-    setPrevImage(heroImg);
-    setIsTransitioning(true);
-
-    // nouvelle image en dessous
-    setCurrentImageIndex((prev) => (prev - 1 + totalImages) % totalImages);
-
-    // fin de l'anim
-    setTimeout(() => {
-      setIsTransitioning(false);
-      setPrevImage(null);
-    }, TRANSITION_MS);
-  };
-
-  const handleNext = () => {
-    if (totalImages < 2 || isTransitioning) return;
-
-    setPrevImage(heroImg);
-    setIsTransitioning(true);
-
-    setCurrentImageIndex((prev) => (prev + 1) % totalImages);
-
-    setTimeout(() => {
-      setIsTransitioning(false);
-      setPrevImage(null);
-    }, TRANSITION_MS);
-  };
-
-  // ⬇︎ AJOUT : adresse et agent comme sur ProjetNeufDetail
-  const coords = item.coordsFake || null;
-
-  const address = `${item.ville || ""}${
-    item.canton ? ", " + item.canton : ""
-  }${item.pays ? ", " + item.pays : ""}`.trim();
-
-  const mapQuery = coords
-    ? `${coords.lat},${coords.lng}`
-    : address;
-
-  const agent = useMemo(() => {
-    if (item.agentSlug) {
-      const found = (team || []).find((t) => t.slug === item.agentSlug);
-      if (found) return found;
-    }
-    return (team || [])[0] || {
-      name: "Conseiller GARY",
-      role: "Conseiller immobilier",
-      email: "contact@gary.ch",
-      phone: "+41 22 557 07 00",
-      photo:
-        "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=1000&auto=format&fit=crop",
-    };
-  }, [item]);
-
 
   return (
     <main className="page-bg text-text">
@@ -162,7 +173,8 @@ export default function ListingDetail() {
         .listing-title {
           opacity: 0;
         }
-        .listing-hero.is-visible .listing-title {
+        .listing-hero.is-visible .listing-title,
+        .listing-spacer.is-visible .listing-title {
           animation: reveal-left .9s cubic-bezier(.22, 1, .36, 1) both .12s;
         }
 
@@ -255,19 +267,34 @@ export default function ListingDetail() {
           }
         }
 
-        /* show/hide smooth de la tuile */
+        /* show/hide smooth de la tuile + miniatures */
         .listing-tile {
-          opacity: 0;
-          transform: translateY(10px);
           pointer-events: none;
-          transition:
-            opacity 0.35s ease-out,
-            transform 0.35s ease-out;
         }
         .listing-tile--visible {
+          pointer-events: auto;
+        }
+
+        /* Tuile infos */
+        .listing-tile > .listing-tile-info {
+          opacity: 0;
+          transform: translateY(10px);
+          transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+        .listing-tile--visible > .listing-tile-info {
           opacity: 1;
           transform: translateY(0);
-          pointer-events: auto;
+        }
+
+        /* Miniatures : cascade avec délai progressif */
+        .listing-tile .listing-thumb {
+          opacity: 0;
+          transform: translateY(8px);
+          transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+        }
+        .listing-tile--visible .listing-thumb {
+          opacity: 1;
+          transform: translateY(0);
         }
 
         .listing-hero__nav-btn {
@@ -327,7 +354,48 @@ export default function ListingDetail() {
             transition: none !important;
           }
         }
-                /* petite anim de flèche vers le bas (comme About) */
+        /* === MINIATURES === */
+        .listing-thumbs {
+          display: flex;
+          gap: 8px;
+          align-items: center;
+        }
+
+        .listing-thumb {
+          position: relative;
+          width: 110px;
+          height: 110px;
+          border-radius: 0;
+          overflow: hidden;
+          cursor: pointer;
+          flex-shrink: 0;
+          border: 2.5px solid transparent;
+          transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.25s ease;
+        }
+        .listing-thumb:hover {
+          transform: scale(1.05);
+          box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+
+        .listing-thumb--active {
+          border-color: #FF4A3E;
+        }
+
+        .listing-thumb__img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+
+        @media (max-width: 768px) {
+          .listing-thumb {
+            width: 80px;
+            height: 80px;
+          }
+        }
+
+        /* petite anim de flèche vers le bas (comme About) */
       @keyframes nudge {
         0%   { transform: translateY(0);    opacity: 0.9; }
         50%  { transform: translateY(9px);  opacity: 1; }
@@ -343,178 +411,168 @@ export default function ListingDetail() {
     transform: translateY(0);
   }
 }
-/* Wrapper de la tuile (positionnement différent Mac / grand écran) */
+/* Wrapper de la tuile — positionné dans le spacer hero */
 .listing-tile-wrapper {
   position: absolute;
-  z-index: 40; /* au-dessus du carrousel, au cas où */
-  left: clamp(-18px, 6vw, 58px);
-
-  /* Par défaut : valeur adaptée aux écrans plus petits (ex : Mac) */
-  top: clamp(530px, 36vh, 720px);
-  /* tu pourras jouer sur 420px / 26vh pour la remonter / descendre */
-}
-
-/* Très grands écrans (ton gros écran PC) : on retrouve l’ancienne position */
-@media (min-width: 1700px) {
-  .listing-tile-wrapper {
-    top: clamp(650px, 22vh, 1450px);
-  }
+  z-index: 40;
+  left: clamp(20px, 6vw, 58px);
+  bottom: clamp(40px, 6vh, 100px);
 }
 
       `}</style>
 
-      {/* HERO PLEIN ÉCRAN (carrousel) */}
-      <section
-        className={[
-          "listing-hero",
-          isReady ? "is-visible" : "",
-          "relative w-full h-[calc(100vh-var(--header-h,72px))]",
-        ].join(" ")}
-      >
-               {/* Images empilées + wipe vertical */}
-        <div className="absolute inset-0 overflow-hidden">
-          {/* Image en dessous (nouvelle carte) */}
-          {heroImg && (
-            <img
-              key={heroImg}
-              src={heroImg}
-              alt={item.titre}
-              className={[
-                "listing-hero__image",
-                "listing-hero__image--in",
-                isTransitioning ? "is-animating" : "",
-              ].join(" ")}
-              loading="eager"
-            />
+      {/* IMAGE HERO FIXÉE — reste en place pendant le scroll */}
+      <div className="fixed inset-0" style={{ zIndex: 0 }}>
+        <div className={["listing-hero", isReady ? "is-visible" : ""].join(" ")} style={{ position: "absolute", inset: 0 }}>
+          {/* Images empilées + wipe */}
+          <div className="absolute inset-0 overflow-hidden">
+            {heroImg && (
+              <img
+                key={heroImg}
+                src={heroImg}
+                alt={item.titre}
+                className={[
+                  "listing-hero__image",
+                  "listing-hero__image--in",
+                  isTransitioning ? "is-animating" : "",
+                ].join(" ")}
+                loading="eager"
+              />
+            )}
+            {prevImage && (
+              <img
+                src={prevImage}
+                alt={item.titre}
+                className={[
+                  "listing-hero__image",
+                  "listing-hero__image--out",
+                  isTransitioning ? "is-animating" : "",
+                ].join(" ")}
+              />
+            )}
+            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+          </div>
+
+          {/* BOUTONS CARROUSEL GAUCHE / DROITE */}
+          {totalImages > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={handlePrev}
+                className="listing-hero__nav-btn absolute z-20 left-4 md:left-6 top-1/2 -translate-y-1/2"
+                aria-label="Image précédente"
+              >
+                <span className="listing-hero__nav-icon listing-hero__nav-icon--prev">‹</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleNext}
+                className="listing-hero__nav-btn absolute z-20 right-4 md:right-6 top-1/2 -translate-y-1/2"
+                aria-label="Image suivante"
+              >
+                <span className="listing-hero__nav-icon listing-hero__nav-icon--next">›</span>
+              </button>
+            </>
           )}
 
-          {/* Image du dessus (ancienne carte) */}
-          {prevImage && (
-            <img
-              src={prevImage}
-              alt={item.titre}
-              className={[
-                "listing-hero__image",
-                "listing-hero__image--out",
-                isTransitioning ? "is-animating" : "",
-              ].join(" ")}
-            />
-          )}
-
-
-
-          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-        </div>
-
-  
-        <div className="listing-tile-wrapper">
-
-
-          <div
-            className={[
-              "listing-tile",
-              isTileVisible ? "listing-tile--visible" : "",
-              "relative bg-white/65 backdrop-blur-md shadow-[0_18px_40px_rgba(15,23,42,0.35)]",
-              "px-8 py-5 md:px-10 md:py-6",
-              "max-w-[min(42rem,82vw)]",
-            ].join(" ")}
-          >
-            {/* localisation (on la garde) */}
-            <p className="text-[13px] md:text-[14px] uppercase tracking-[0.2em] text-neutral-700 mb-2">
-              {item.ville}
-              {item.canton ? `, ${item.canton}` : ""}
-            </p>
-
-            {/* titre animé */}
-            <h1
-              className="
-                listing-title proj-serif
-                tracking-[-0.03em]
-                leading-[0.98]
-                text-[clamp(2.3rem,3.8vw,3.2rem)]
-              "
+          {/* Petit texte + flèche animée "Détails du bien" */}
+          <div className="absolute inset-x-0 bottom-10 flex flex-col items-center justify-center pointer-events-none">
+            <span className="mb-2 text-[11px] md:text-[12px] uppercase tracking-[0.25em] text-white/80">
+              Détails du bien
+            </span>
+            <svg
+              viewBox="0 0 64 36"
+              width="76"
+              height="44"
+              className="md:w-[88px] md:h-[50px] animate-[nudge_1.8s_ease-in-out_infinite]"
+              style={{ filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.6))" }}
+              aria-hidden="true"
             >
-              {item.titre}
-            </h1>
+              <path
+                d="M16 12 L32 28 L48 12"
+                fill="none"
+                stroke="#FFFFFF"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+
+        </div>
+      </div>
+
+      {/* SPACER hero — prend la hauteur de l'écran */}
+      <section className={`listing-spacer ${isReady ? "is-visible" : ""} relative w-full pointer-events-none`} style={{ zIndex: 1, height: "calc(100vh - var(--header-h, 72px))" }}>
+        {/* Tuile + miniatures avec parallax */}
+        <div
+          ref={tileRef}
+          className="listing-tile-wrapper pointer-events-auto"
+          style={{ transform: `translateY(${tileOffset}px)` }}
+        >
+          <div className={[
+            "listing-tile flex items-end gap-5",
+            isTileVisible ? "listing-tile--visible" : "",
+          ].join(" ")}>
+            {/* Tuile infos */}
+            <div
+              className={[
+                "listing-tile-info",
+                "relative bg-white/65 backdrop-blur-md shadow-[0_18px_40px_rgba(15,23,42,0.35)]",
+                "px-8 py-5 md:px-10 md:py-6",
+                "max-w-[min(42rem,82vw)]",
+              ].join(" ")}
+            >
+              <p className="text-[13px] md:text-[14px] uppercase tracking-[0.2em] text-neutral-700 mb-2">
+                {item.ville}
+                {item.canton ? `, ${item.canton}` : ""}
+              </p>
+              <h1
+                className="listing-title proj-serif tracking-[-0.03em] leading-[0.98] text-[clamp(2.3rem,3.8vw,3.2rem)]"
+              >
+                {item.titre}
+              </h1>
+            </div>
+
+            {/* Miniatures */}
+            {totalImages > 1 && (
+              <div className="listing-thumbs hidden md:flex">
+                {images.map((src, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => goToImage(idx)}
+                    className={`listing-thumb ${idx === currentImageIndex ? "listing-thumb--active" : ""}`}
+                    aria-label={`Photo ${idx + 1}`}
+                    style={{ transitionDelay: `${idx * 50}ms` }}
+                  >
+                    <img
+                      src={src}
+                      alt={`Miniature ${idx + 1}`}
+                      className="listing-thumb__img"
+                      loading="lazy"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* BOUTONS CARROUSEL GAUCHE / DROITE */}
-        {totalImages > 1 && (
-          <>
-            {/* gauche */}
-<button
-  type="button"
-  onClick={handlePrev}
-  className="
-    listing-hero__nav-btn
-    absolute z-20
-    left-4 md:left-6
-    top-1/2 -translate-y-1/2
-  "
-  aria-label="Image précédente"
->
-  <span className="listing-hero__nav-icon listing-hero__nav-icon--prev">
-    ‹
-  </span>
-</button>
-
-{/* droite */}
-<button
-  type="button"
-  onClick={handleNext}
-  className="
-    listing-hero__nav-btn
-    absolute z-20
-    right-4 md:right-6
-    top-1/2 -translate-y-1/2
-  "
-  aria-label="Image suivante"
->
-  <span className="listing-hero__nav-icon listing-hero__nav-icon--next">
-    ›
-  </span>
-</button>
-
-          </>
-        )}
-                {/* Petit texte + flèche animée "Détails du bien" au centre bas */}
-        <div className="absolute inset-x-0 bottom-10 flex flex-col items-center justify-center pointer-events-none">
-          <span className="mb-2 text-[11px] md:text-[12px] uppercase tracking-[0.25em] text-white/80">
-            Détails du bien
-          </span>
-
-          <svg
-            viewBox="0 0 64 36"
-            width="76"
-            height="44"
-            className="md:w-[88px] md:h-[50px] animate-[nudge_1.8s_ease-in-out_infinite]"
-            style={{ filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.6))" }}
-            aria-hidden="true"
-          >
-            <path
-              d="M16 12 L32 28 L48 12"
-              fill="none"
-              stroke="#FFFFFF"
-              strokeWidth="2.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+        {/* BOUTON CACHER / AFFICHER LA TUILE — même parallax que la tuile */}
+        <div
+          className="absolute z-30 right-6 md:right-10 bottom-6 md:bottom-8 pointer-events-auto"
+          style={{ transform: `translateY(${tileOffset}px)` }}
+        >
+          <TileToggleButton
+            isTileVisible={isTileVisible}
+            onToggle={() => setIsTileVisible((v) => !v)}
+          />
         </div>
-
-
-        {/* BOUTON CACHER / AFFICHER LA TUILE — EN BAS À DROITE DU HERO */}
-        <TileToggleButton
-          isTileVisible={isTileVisible}
-          onToggle={() => setIsTileVisible((v) => !v)}
-          className="absolute z-30 right-6 md:right-10 bottom-6 md:bottom-8"
-        />
       </section>
 
-
-      {/* === CONTENU PRINCIPAL : DESCRIPTION + SPECS === */}
-      <section className="relative w-full px-[clamp(20px,6vw,140px)] py-[clamp(60px,12vh,160px)] grid grid-cols-1 lg:grid-cols-2 gap-[clamp(40px,6vw,80px)]">
+      {/* === CONTENU PRINCIPAL — passe par-dessus le hero === */}
+      <section className="relative bg-white w-full px-[clamp(20px,6vw,140px)] py-[clamp(60px,12vh,160px)] grid grid-cols-1 lg:grid-cols-2 gap-[clamp(40px,6vw,80px)]" style={{ zIndex: 2 }}>
         {/* DESCRIPTION (à gauche) — rendue en HTML */}
         <div
           className="
@@ -589,7 +647,7 @@ export default function ListingDetail() {
       </section>
 
             {/* ======= BAS DE PAGE : CARTE (gauche) + AGENT (droite) ======= */}
-      <section className="detail-bottom">
+      <section className="detail-bottom relative bg-white" style={{ zIndex: 2 }}>
         <div className="detail-bottom__map">
           <div className="detail-map__inner">
             {address && (

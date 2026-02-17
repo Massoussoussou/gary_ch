@@ -14,7 +14,7 @@ export default function TileToggleButton({
       type="button"
       onClick={onToggle}
       className={[
-        "tile-toggle-cta inline-flex items-center justify-center",
+        "tile-toggle-cta relative inline-flex items-center justify-center",
         `min-w-[${minWidth}px]`,
         "px-[clamp(18px,2.6vw,26px)] py-[clamp(8px,1.6vw,12px)]",
         "rounded-full overflow-hidden",
