@@ -55,7 +55,7 @@ export default function ThreeHeroTiles() {
   }, []);
 
   return (
-    <section className="relative mt-[80px] h-[calc(100vh-80px)] w-full overflow-hidden bg-black">
+    <section className="relative h-[calc(100vh-80px)] w-full overflow-hidden bg-black">
       {/* IMAGE HERO DE FOND */}
       <div className="absolute inset-0">
         <img
