@@ -46,33 +46,13 @@ export default function ListingGrid({ items = [] }) {
         w-full max-w-[1500px] 2xl:max-w-[1600px] mx-auto px-4 lg:px-6 py-10
         grid gap-6
         grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4
-        [--row:220px] sm:[--row:240px] md:[--row:260px] lg:[--row:280px]
-        [grid-auto-rows:var(--row)]
       "
     >
-      {items.map((it, i) => {
-        const layoutSize = normalizeSize(it.spotlight); // ✅ sert pour les spans desktop
-        const cardSize = isMobile ? "md" : layoutSize;  // ✅ rendu “petit” sur mobile
-
-        const span = SPANS[layoutSize];
-
-        // ✅ Mobile => toujours 1x1 (sinon overflow)
-        const colCls =
-          span.col === 1
-            ? "col-span-1"
-            : layoutSize === "xxl"
-              ? "col-span-1 sm:col-span-2 lg:col-span-4"
-              : "col-span-1 sm:col-span-2";
-
-        const rowCls =
-          span.row === 1 ? "row-span-1" : "row-span-1 sm:row-span-2";
-
-        return (
-          <div key={it.id ?? i} className={`${colCls} ${rowCls}`}>
-            <ListingCard item={it} size={cardSize} />
-          </div>
-        );
-      })}
+      {items.map((it, i) => (
+        <div key={it.id ?? i} className="col-span-1">
+          <ListingCard item={it} size="md" />
+        </div>
+      ))}
     </div>
   );
 }
