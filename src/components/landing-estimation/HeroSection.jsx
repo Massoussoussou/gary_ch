@@ -39,7 +39,7 @@ function HeroContent({ children }) {
               </p>
 
               {/* Headline */}
-              <h1 className="font-serif tracking-[-0.03em] leading-[0.95] text-[clamp(2.2rem,7vw,3.2rem)] md:text-[clamp(2.6rem,3.8vw,4.2rem)]">
+              <h1 className="font-serif tracking-[-0.03em] leading-[0.92] text-[clamp(2.6rem,8vw,3.6rem)] md:text-[clamp(3.2rem,4.5vw,5rem)]">
                 Estimez votre bien<span className="text-[#FF4A3E]">,</span>
                 <br />
                 <span className="block">gratuitement.</span>
