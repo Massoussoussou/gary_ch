@@ -24,7 +24,7 @@ function HeroContent({ onScrollToForm }) {
       <div className="relative flex justify-center md:justify-start">
         <div className="relative w-full max-w-[92vw] sm:max-w-[min(900px,84vw)] mx-auto md:mx-0">
           {/* Glassmorphic tile */}
-          <div className="absolute -inset-y-5 -inset-x-4 sm:-inset-y-6 sm:-inset-x-6 md:-inset-y-6 md:-left-6 md:-right-6 bg-white/55 backdrop-blur-sm rounded-3xl md:rounded-none shadow-[0_22px_70px_-45px_rgba(0,0,0,0.45)] md:shadow-none" />
+          <div className="absolute -inset-y-5 -inset-x-4 sm:-inset-y-6 sm:-inset-x-6 md:-inset-y-8 md:-inset-x-8 bg-white/60 backdrop-blur-md rounded-2xl shadow-[0_22px_70px_-30px_rgba(0,0,0,0.25)]" />
 
           <div className="relative text-center px-3 sm:px-0 py-5 sm:py-0">
             {/* Eyebrow */}
