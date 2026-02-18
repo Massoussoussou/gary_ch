@@ -27,8 +27,6 @@ export default function App() {
   const isEstimer = location.pathname === "/estimer";
 
   useEffect(() => {
-    if (isEstimer) return; // Lenis interfère avec le layout du formulaire
-
     const lenis = new Lenis({
       duration: 1.1,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
