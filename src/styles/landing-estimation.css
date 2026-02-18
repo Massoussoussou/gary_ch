@@ -184,7 +184,7 @@
 
 .landing-estimation .checkbox-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .landing-estimation .checkbox-label {
-  display: inline-flex; align-items: center; gap: 6px;
+  display: inline-flex; align-items: center; gap: 10px;
   padding: 10px 14px; background: var(--le-bg-alt);
   border: 1px solid var(--le-line); cursor: pointer;
   transition: all 0.2s ease; font-size: 13px; font-weight: 500;
