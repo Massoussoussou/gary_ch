@@ -1,77 +1,41 @@
 /* =========================================================
    LANDING ESTIMATION — Scoped under .landing-estimation
+   Restyled to match GARY design system (fond clair, orange, Inter+Playfair)
    ========================================================= */
 
 .landing-estimation {
   --ink: #141424;
   --ink-light: #2a2a42;
-  --cream: #faf9f6;
+  --cream: var(--bg-alt, #FAF7F4);
   --gold: #c8a45c;
   --gold-light: #e8d5a0;
   --gold-dark: #a07d3a;
-  --red: #FA4838;
-  --red-light: #ff6b5e;
-  --red-dark: #e03a2c;
-  --muted: #7a7a8c;
-  --text: #3a3a4a;
-  --border: #e8e6e0;
+  --orange: var(--color-primary, #FF4A3E);
+  --orange-light: #ff6b5e;
+  --orange-dark: #e03a2c;
+  --le-muted: var(--muted, #6B7280);
+  --le-text: var(--text, #1F2937);
+  --le-line: var(--line, #E5E7EB);
+  --le-bg-alt: var(--bg-alt, #FAF7F4);
   --white: #ffffff;
   --success: #2d8a4e;
 
-  font-family: 'DM Sans', sans-serif;
-  color: var(--text);
+  font-family: var(--font-sans, "Inter", sans-serif);
+  color: var(--le-text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  background: var(--cream);
+  background: transparent;
 }
 
-/* NAV */
-.landing-estimation .nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  padding: 20px 48px;
-  display: flex; justify-content: space-between; align-items: center;
-  transition: all 0.3s ease;
-}
-.landing-estimation .nav.scrolled {
-  background: rgba(20,20,36,0.95);
-  backdrop-filter: blur(20px);
-  padding: 14px 48px;
-  box-shadow: 0 4px 30px rgba(0,0,0,0.15);
-}
-.landing-estimation .nav-logo svg { height: 28px; width: auto; }
-.landing-estimation .nav-phone {
-  display: flex; align-items: center; gap: 8px;
-  color: rgba(255,255,255,0.6); text-decoration: none;
-  font-size: 13px; font-weight: 500; transition: color 0.2s;
-}
-.landing-estimation .nav-phone:hover { color: white; }
-.landing-estimation .nav-cta {
-  padding: 10px 28px; background: var(--red); color: white;
-  font-size: 13px; font-weight: 600; letter-spacing: 1px;
-  text-transform: uppercase; text-decoration: none;
-  transition: all 0.3s ease; border: none; cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-}
-.landing-estimation .nav-cta:hover {
-  background: var(--red-light); transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(250,72,56,0.3);
-}
-.landing-estimation .nav-right {
-  display: flex; align-items: center; gap: 24px;
-}
+/* NAV — removed, using site Header */
 
-/* HERO */
+/* HERO — fond clair */
 .landing-estimation .hero {
   min-height: 100vh; display: flex; align-items: flex-start;
-  background: var(--ink); color: white; position: relative;
-  overflow: visible; padding: 100px 48px 80px;
+  background: transparent; color: var(--le-text); position: relative;
+  overflow: visible; padding: 120px 48px 80px;
 }
-.landing-estimation .hero::before {
-  content: ''; position: absolute; top: 0; right: 0;
-  width: 55%; height: 100%;
-  background: linear-gradient(135deg, rgba(250,72,56,0.04) 0%, rgba(200,164,92,0.04) 50%, transparent 100%);
-  pointer-events: none;
-}
+.landing-estimation .hero::before { display: none; }
 .landing-estimation .hero-grid {
   display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 64px;
   align-items: start; max-width: 1200px; margin: 0 auto;
@@ -87,68 +51,68 @@
   content: ''; width: 32px; height: 1px; background: var(--gold);
 }
 .landing-estimation .hero h1 {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-serif, "Playfair Display", serif);
   font-size: clamp(34px, 3.8vw, 52px); font-weight: 700;
-  line-height: 1.12; margin-bottom: 20px;
+  line-height: 1.12; margin-bottom: 20px; color: var(--le-text);
 }
 .landing-estimation .hero h1 em {
-  font-style: normal; color: var(--red); display: block;
+  font-style: normal; color: var(--orange); display: block;
 }
 .landing-estimation .hero-sub {
-  font-size: 17px; color: rgba(255,255,255,0.5);
+  font-size: 17px; color: var(--le-muted);
   max-width: 440px; line-height: 1.7; margin-bottom: 36px;
 }
 .landing-estimation .hero-stats {
   display: flex; gap: 36px; padding-top: 28px;
-  border-top: 1px solid rgba(255,255,255,0.08);
+  border-top: 1px solid var(--le-line);
 }
 .landing-estimation .hero-stat .num {
-  font-family: 'Playfair Display', serif; font-size: 28px;
+  font-family: var(--font-serif, "Playfair Display", serif); font-size: 28px;
   font-weight: 700; color: var(--gold);
 }
 .landing-estimation .hero-stat .label {
-  font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 2px;
+  font-size: 12px; color: var(--le-muted); margin-top: 2px;
 }
 
-/* FORM */
+/* FORM — fond blanc */
 .landing-estimation .hero-form-wrap {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  backdrop-filter: blur(10px); padding: 36px 32px;
+  background: #fff;
+  border: 1px solid var(--le-line);
+  backdrop-filter: none; padding: 36px 32px;
   align-self: start;
 }
 .landing-estimation .form-title {
-  font-family: 'Playfair Display', serif; font-size: 22px;
-  font-weight: 700; color: white; margin-bottom: 4px;
+  font-family: var(--font-serif, "Playfair Display", serif); font-size: 22px;
+  font-weight: 700; color: var(--le-text); margin-bottom: 4px;
 }
 .landing-estimation .form-sub {
-  font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 24px;
+  font-size: 13px; color: var(--le-muted); margin-bottom: 24px;
 }
 .landing-estimation .form-group { margin-bottom: 14px; }
 .landing-estimation .form-group label {
   display: block; font-size: 11px; font-weight: 600;
   letter-spacing: 0.5px; text-transform: uppercase;
-  color: rgba(255,255,255,0.4); margin-bottom: 5px;
+  color: var(--le-muted); margin-bottom: 5px;
 }
 .landing-estimation .form-group input,
 .landing-estimation .form-group select {
   width: 100%; padding: 12px 14px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: white; font-family: 'DM Sans', sans-serif;
+  background: var(--le-bg-alt);
+  border: 1px solid var(--le-line);
+  color: var(--le-text); font-family: var(--font-sans, "Inter", sans-serif);
   font-size: 14px; outline: none; transition: border-color 0.2s;
   border-radius: 0;
 }
 .landing-estimation .form-group input::placeholder {
-  color: rgba(255,255,255,0.25);
+  color: var(--le-muted);
 }
 .landing-estimation .form-group input:focus,
 .landing-estimation .form-group select:focus {
-  border-color: var(--gold);
+  border-color: var(--orange);
 }
 .landing-estimation .form-group select { cursor: pointer; }
 .landing-estimation .form-group select option {
-  background: var(--ink); color: white;
+  background: white; color: var(--le-text);
 }
 .landing-estimation .form-row {
   display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
@@ -178,11 +142,11 @@
   transition: all 0.3s ease;
 }
 .landing-estimation .form-step-num.pending {
-  background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.25);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--le-bg-alt); color: var(--le-muted);
+  border: 1px solid var(--le-line);
 }
 .landing-estimation .form-step-num.active {
-  background: var(--red); color: white; border: 1px solid var(--red);
+  background: var(--orange); color: white; border: 1px solid var(--orange);
 }
 .landing-estimation .form-step-num.done {
   background: rgba(200,164,92,0.15); color: var(--gold);
@@ -192,58 +156,58 @@
   font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
   text-transform: uppercase; transition: color 0.3s ease;
 }
-.landing-estimation .form-step-label.pending { color: rgba(255,255,255,0.2); }
-.landing-estimation .form-step-label.active { color: white; }
-.landing-estimation .form-step-label.done { color: rgba(200,164,92,0.5); }
+.landing-estimation .form-step-label.pending { color: var(--le-muted); }
+.landing-estimation .form-step-label.active { color: var(--le-text); }
+.landing-estimation .form-step-label.done { color: var(--gold); }
 .landing-estimation .form-step-line {
-  flex: 1; height: 1px; background: rgba(255,255,255,0.06);
+  flex: 1; height: 1px; background: var(--le-line);
 }
 .landing-estimation .form-next {
   width: 100%; padding: 12px;
-  background: rgba(250,72,56,0.12); color: var(--red);
-  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  background: rgba(255,74,62,0.1); color: var(--orange);
+  font-family: var(--font-sans, "Inter", sans-serif); font-size: 13px;
   font-weight: 600; letter-spacing: 0.5px;
-  border: 1px solid rgba(250,72,56,0.25); cursor: pointer;
+  border: 1px solid rgba(255,74,62,0.25); cursor: pointer;
   transition: all 0.2s ease; margin-top: 4px;
 }
 .landing-estimation .form-next:hover {
-  background: rgba(250,72,56,0.2); border-color: rgba(250,72,56,0.4);
+  background: rgba(255,74,62,0.18); border-color: rgba(255,74,62,0.4);
 }
 .landing-estimation .form-submit {
-  width: 100%; padding: 16px; background: var(--red); color: white;
-  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  width: 100%; padding: 16px; background: var(--orange); color: white;
+  font-family: var(--font-sans, "Inter", sans-serif); font-size: 14px;
   font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
   border: none; cursor: pointer; transition: all 0.3s ease; margin-top: 4px;
 }
 .landing-estimation .form-submit:hover {
-  background: var(--red-light); transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(250,72,56,0.3);
+  background: var(--orange-light); transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(255,74,62,0.3);
 }
 .landing-estimation .form-submit:disabled {
   opacity: 0.6; pointer-events: none;
 }
 .landing-estimation .form-note {
   text-align: center; font-size: 11px;
-  color: rgba(255,255,255,0.25); margin-top: 12px;
+  color: var(--le-muted); margin-top: 12px;
 }
 .landing-estimation .form-optional {
   font-weight: 400; letter-spacing: 0; text-transform: none;
-  color: rgba(255,255,255,0.25); font-size: 10px; margin-left: 4px;
+  color: var(--le-muted); font-size: 10px; margin-left: 4px;
 }
 
 /* Toggle */
 .landing-estimation .toggle-row {
-  display: flex; gap: 0; border: 1px solid rgba(255,255,255,0.12);
+  display: flex; gap: 0; border: 1px solid var(--le-line);
 }
 .landing-estimation .toggle-btn {
   flex: 1; padding: 10px 12px;
-  background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.4);
-  font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+  background: var(--le-bg-alt); color: var(--le-muted);
+  font-family: var(--font-sans, "Inter", sans-serif); font-size: 12px; font-weight: 500;
   border: none; cursor: pointer; transition: all 0.2s ease;
-  border-right: 1px solid rgba(255,255,255,0.08);
+  border-right: 1px solid var(--le-line);
 }
 .landing-estimation .toggle-btn:last-child { border-right: none; }
-.landing-estimation .toggle-btn:hover { background: rgba(255,255,255,0.06); }
+.landing-estimation .toggle-btn:hover { background: rgba(200,164,92,0.08); }
 .landing-estimation .toggle-btn.active {
   background: rgba(200,164,92,0.15); color: var(--gold); font-weight: 600;
 }
@@ -265,17 +229,17 @@
 .landing-estimation .checkbox-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .landing-estimation .checkbox-label {
   display: flex; align-items: center; gap: 6px;
-  padding: 7px 12px; background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1); cursor: pointer;
-  transition: all 0.2s ease; font-size: 12px; color: rgba(255,255,255,0.5);
+  padding: 7px 12px; background: var(--le-bg-alt);
+  border: 1px solid var(--le-line); cursor: pointer;
+  transition: all 0.2s ease; font-size: 12px; color: var(--le-muted);
 }
 .landing-estimation .checkbox-label input[type="checkbox"] {
   appearance: none; -webkit-appearance: none;
-  width: 14px; height: 14px; border: 1.5px solid rgba(255,255,255,0.25);
+  width: 14px; height: 14px; border: 1.5px solid var(--le-line);
   background: transparent; cursor: pointer; position: relative; flex-shrink: 0;
 }
 .landing-estimation .checkbox-label input[type="checkbox"]:checked {
-  background: var(--red); border-color: var(--red);
+  background: var(--orange); border-color: var(--orange);
 }
 .landing-estimation .checkbox-label input[type="checkbox"]:checked::after {
   content: '\2713'; position: absolute; top: 50%; left: 50%;
@@ -286,22 +250,22 @@
 /* Address autocomplete dropdown */
 .landing-estimation .address-dropdown {
   display: none; position: absolute; top: 100%; left: 0; right: 0;
-  background: var(--ink-light); border: 1px solid rgba(255,255,255,0.12);
+  background: white; border: 1px solid var(--le-line);
   z-index: 50; max-height: 220px; overflow-y: auto;
 }
 .landing-estimation .address-dropdown.open { display: block; }
 .landing-estimation .address-dropdown-item {
-  padding: 10px 14px; font-size: 13px; color: rgba(255,255,255,0.65);
-  cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding: 10px 14px; font-size: 13px; color: var(--le-muted);
+  cursor: pointer; border-bottom: 1px solid var(--le-line);
   transition: background 0.15s; white-space: nowrap;
   overflow: hidden; text-overflow: ellipsis;
 }
 .landing-estimation .address-dropdown-item:last-child { border-bottom: none; }
 .landing-estimation .address-dropdown-item:hover {
-  background: rgba(250,72,56,0.1); color: white;
+  background: rgba(255,74,62,0.06); color: var(--le-text);
 }
 
-/* CONFIRMATION */
+/* CONFIRMATION — reste sombre */
 .landing-estimation .confirmation-page {
   min-height: 100vh; background: var(--ink); color: white;
   padding: 120px 48px 80px;
@@ -312,15 +276,15 @@
 .landing-estimation .conf-header { text-align: center; margin-bottom: 56px; }
 .landing-estimation .conf-check-circle {
   width: 72px; height: 72px; margin: 0 auto 24px;
-  border: 2px solid var(--red); border-radius: 50%;
+  border: 2px solid var(--orange); border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
 }
 .landing-estimation .conf-title {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-serif, "Playfair Display", serif);
   font-size: clamp(28px, 3.5vw, 42px); font-weight: 700;
   margin-bottom: 12px;
 }
-.landing-estimation .conf-title span { color: var(--red); }
+.landing-estimation .conf-title span { color: var(--orange); }
 .landing-estimation .conf-sub {
   font-size: 17px; color: rgba(255,255,255,0.45);
   max-width: 500px; margin: 0 auto;
@@ -341,7 +305,7 @@
   width: 48px; height: 48px; margin: 0 auto 16px;
   border: 1.5px solid rgba(200,164,92,0.4); border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Playfair Display', serif; font-size: 18px;
+  font-family: var(--font-serif, "Playfair Display", serif); font-size: 18px;
   font-weight: 700; color: var(--gold); background: var(--ink);
 }
 .landing-estimation .conf-timeline-title {
@@ -357,7 +321,7 @@
 .landing-estimation .conf-booking { margin-bottom: 48px; }
 .landing-estimation .conf-booking-inner {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 20px; background: var(--red); padding: 24px 32px;
+  gap: 20px; background: var(--orange); padding: 24px 32px;
 }
 .landing-estimation .conf-booking-left {
   display: flex; align-items: center; gap: 16px;
@@ -376,7 +340,7 @@
 .landing-estimation .conf-booking-btn {
   display: inline-block; padding: 14px 28px;
   background: var(--ink); color: white;
-  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  font-family: var(--font-sans, "Inter", sans-serif); font-size: 13px;
   font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
   text-decoration: none; white-space: nowrap;
   transition: all 0.2s ease; flex-shrink: 0;
@@ -429,9 +393,9 @@
 }
 .landing-estimation .conf-link:last-child { margin-bottom: 0; }
 .landing-estimation .conf-link:hover {
-  background: rgba(255,255,255,0.06); border-color: rgba(250,72,56,0.3);
+  background: rgba(255,255,255,0.06); border-color: rgba(255,74,62,0.3);
 }
-.landing-estimation .conf-link:hover .conf-link-text { color: var(--red); }
+.landing-estimation .conf-link:hover .conf-link-text { color: var(--orange); }
 .landing-estimation .conf-link-text {
   font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.6);
 }
@@ -448,21 +412,21 @@
 }
 .landing-estimation .conf-action-btn {
   display: inline-flex; align-items: center; gap: 4px;
-  padding: 7px 14px; font-family: 'DM Sans', sans-serif;
+  padding: 7px 14px; font-family: var(--font-sans, "Inter", sans-serif);
   font-size: 12px; font-weight: 600; text-decoration: none;
   transition: all 0.2s ease; border: none; cursor: pointer;
 }
 .landing-estimation a.conf-action-btn[href^="tel"] {
-  background: rgba(250,72,56,0.1); color: var(--red);
-  border: 1px solid rgba(250,72,56,0.2);
+  background: rgba(255,74,62,0.1); color: var(--orange);
+  border: 1px solid rgba(255,74,62,0.2);
 }
 .landing-estimation a.conf-action-btn[href^="tel"]:hover {
-  background: rgba(250,72,56,0.2);
+  background: rgba(255,74,62,0.2);
 }
 .landing-estimation .conf-action-btn.email-copy {
   background: rgba(200,164,92,0.1); color: var(--gold);
   border: 1px solid rgba(200,164,92,0.2);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans, "Inter", sans-serif);
 }
 .landing-estimation .conf-action-btn.email-copy:hover {
   background: rgba(200,164,92,0.2);
@@ -472,7 +436,7 @@
   border-color: rgba(45,138,78,0.3);
 }
 
-/* eBook modal */
+/* eBook modal — reste sombre */
 .landing-estimation .ebook-overlay {
   position: fixed; inset: 0; z-index: 300;
   background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
@@ -504,7 +468,7 @@
   display: flex; align-items: center; justify-content: center;
 }
 .landing-estimation .ebook-title {
-  font-family: 'Playfair Display', serif; font-size: 22px;
+  font-family: var(--font-serif, "Playfair Display", serif); font-size: 22px;
   font-weight: 700; color: white; margin-bottom: 10px;
 }
 .landing-estimation .ebook-desc {
@@ -523,7 +487,7 @@
 .landing-estimation .ebook-confirm-btn {
   display: inline-block; width: 100%; padding: 14px;
   background: var(--gold); color: var(--ink);
-  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  font-family: var(--font-sans, "Inter", sans-serif); font-size: 14px;
   font-weight: 700; letter-spacing: 0.5px;
   border: none; cursor: pointer; transition: all 0.2s ease;
 }
@@ -538,7 +502,7 @@
   font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 12px;
 }
 
-/* METHOD */
+/* METHOD — fond clair, fonts GARY */
 .landing-estimation .method {
   padding: 120px 48px; background: var(--white);
 }
@@ -548,15 +512,15 @@
 }
 .landing-estimation .method-eyebrow {
   font-size: 12px; font-weight: 600; letter-spacing: 2.5px;
-  text-transform: uppercase; color: var(--red); margin-bottom: 16px;
+  text-transform: uppercase; color: var(--orange); margin-bottom: 16px;
 }
 .landing-estimation .method-header h2 {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-serif, "Playfair Display", serif);
   font-size: clamp(30px, 3.5vw, 44px); font-weight: 700;
   color: var(--ink); line-height: 1.15; margin-bottom: 20px;
 }
 .landing-estimation .method-header p {
-  font-size: 17px; color: var(--muted); line-height: 1.7;
+  font-size: 17px; color: var(--le-muted); line-height: 1.7;
 }
 .landing-estimation .phases {
   display: grid; grid-template-columns: 1fr 1fr 1fr;
@@ -567,27 +531,27 @@
 }
 .landing-estimation .phase-card:not(:last-child)::after {
   content: ''; position: absolute; right: 0;
-  top: 20px; bottom: 20px; width: 1px; background: var(--border);
+  top: 20px; bottom: 20px; width: 1px; background: var(--le-line);
 }
 .landing-estimation .phase-num-wrap {
   display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
 }
-.landing-estimation .phase-num-line { flex: 1; height: 1px; background: var(--border); }
+.landing-estimation .phase-num-line { flex: 1; height: 1px; background: var(--le-line); }
 .landing-estimation .phase-num {
-  font-family: 'Playfair Display', serif; font-size: 11px;
+  font-family: var(--font-serif, "Playfair Display", serif); font-size: 11px;
   font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
-  color: var(--muted); white-space: nowrap;
+  color: var(--le-muted); white-space: nowrap;
 }
 .landing-estimation .phase-big-num {
-  font-family: 'Playfair Display', serif; font-size: 72px;
+  font-family: var(--font-serif, "Playfair Display", serif); font-size: 72px;
   font-weight: 800; line-height: 1; margin-bottom: 16px; opacity: 0.06;
 }
 .landing-estimation .phase-card h3 {
-  font-family: 'Playfair Display', serif; font-size: 28px;
+  font-family: var(--font-serif, "Playfair Display", serif); font-size: 28px;
   font-weight: 700; margin-bottom: 16px; letter-spacing: -0.3px;
 }
 .landing-estimation .phase-card p {
-  font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 24px;
+  font-size: 15px; color: var(--le-muted); line-height: 1.7; margin-bottom: 24px;
 }
 .landing-estimation .phase-tag {
   display: inline-block; padding: 8px 16px;
@@ -596,7 +560,7 @@
 }
 .landing-estimation .phase-card:nth-child(1) h3 { color: var(--ink); }
 .landing-estimation .phase-card:nth-child(2) h3 { color: var(--gold-dark); }
-.landing-estimation .phase-card:nth-child(3) h3 { color: var(--red); }
+.landing-estimation .phase-card:nth-child(3) h3 { color: var(--orange); }
 .landing-estimation .phase-card:nth-child(1) .phase-tag {
   background: rgba(20,20,36,0.06); color: var(--ink);
 }
@@ -604,33 +568,33 @@
   background: rgba(200,164,92,0.1); color: var(--gold-dark);
 }
 .landing-estimation .phase-card:nth-child(3) .phase-tag {
-  background: rgba(250,72,56,0.08); color: var(--red);
+  background: rgba(255,74,62,0.08); color: var(--orange);
 }
 .landing-estimation .method-cta-wrap {
   text-align: center; padding: 48px;
-  background: var(--cream); border: 1px solid var(--border);
+  background: var(--le-bg-alt); border: 1px solid var(--le-line);
 }
 .landing-estimation .method-cta-wrap p {
-  font-size: 17px; color: var(--muted); margin-bottom: 6px;
+  font-size: 17px; color: var(--le-muted); margin-bottom: 6px;
 }
 .landing-estimation .method-cta-wrap .big {
-  font-family: 'Playfair Display', serif; font-size: 22px;
+  font-family: var(--font-serif, "Playfair Display", serif); font-size: 22px;
   font-weight: 700; color: var(--ink); margin-bottom: 24px;
 }
 .landing-estimation .method-cta {
   display: inline-block; padding: 16px 40px;
-  background: var(--red); color: white;
+  background: var(--orange); color: white;
   font-size: 13px; font-weight: 600; letter-spacing: 1.5px;
   text-transform: uppercase; text-decoration: none;
   transition: all 0.3s ease; border: none; cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans, "Inter", sans-serif);
 }
 .landing-estimation .method-cta:hover {
-  background: var(--red-light); transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(250,72,56,0.25);
+  background: var(--orange-light); transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255,74,62,0.25);
 }
 
-/* COMPARISON */
+/* COMPARISON — reste sombre */
 .landing-estimation .comparison {
   padding: 100px 48px; background: var(--ink); color: white;
 }
@@ -639,7 +603,7 @@
   text-align: center; margin-bottom: 56px;
 }
 .landing-estimation .comparison-header h2 {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-serif, "Playfair Display", serif);
   font-size: clamp(28px, 3vw, 38px); font-weight: 700;
   margin-bottom: 16px;
 }
@@ -655,15 +619,15 @@
   border: 1px solid rgba(255,255,255,0.06);
 }
 .landing-estimation .comp-col.gary {
-  background: rgba(250,72,56,0.06);
-  border: 1px solid rgba(250,72,56,0.2);
+  background: rgba(255,74,62,0.06);
+  border: 1px solid rgba(255,74,62,0.2);
 }
 .landing-estimation .comp-col h3 {
   font-size: 12px; font-weight: 600; letter-spacing: 2px;
   text-transform: uppercase; margin-bottom: 28px;
 }
 .landing-estimation .comp-col.classic h3 { color: rgba(255,255,255,0.35); }
-.landing-estimation .comp-col.gary h3 { color: var(--red); }
+.landing-estimation .comp-col.gary h3 { color: var(--orange); }
 .landing-estimation .comp-item {
   display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px;
 }
@@ -677,7 +641,7 @@
   background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3);
 }
 .landing-estimation .comp-col.gary .comp-icon {
-  background: rgba(250,72,56,0.15); color: var(--red);
+  background: rgba(255,74,62,0.15); color: var(--orange);
 }
 .landing-estimation .comp-item .comp-text {
   font-size: 15px; line-height: 1.5;
@@ -689,7 +653,7 @@
   color: rgba(255,255,255,0.85);
 }
 
-/* TRUST */
+/* TRUST — fond clair */
 .landing-estimation .trust {
   padding: 100px 48px; background: var(--white);
 }
@@ -698,28 +662,28 @@
   text-align: center; margin-bottom: 56px;
 }
 .landing-estimation .trust-header h2 {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-serif, "Playfair Display", serif);
   font-size: clamp(28px, 3vw, 38px); font-weight: 700;
   color: var(--ink); margin-bottom: 12px;
 }
 .landing-estimation .trust-header p {
-  font-size: 16px; color: var(--muted);
+  font-size: 16px; color: var(--le-muted);
 }
 .landing-estimation .testimonials {
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 24px; margin-bottom: 56px;
 }
 .landing-estimation .testimonial {
-  padding: 36px; background: var(--cream);
-  border: 1px solid var(--border); position: relative;
+  padding: 36px; background: var(--le-bg-alt);
+  border: 1px solid var(--le-line); position: relative;
 }
 .landing-estimation .testimonial::before {
-  content: '\201C'; font-family: 'Playfair Display', serif;
-  font-size: 64px; color: var(--red); opacity: 0.2;
+  content: '\201C'; font-family: var(--font-serif, "Playfair Display", serif);
+  font-size: 64px; color: var(--orange); opacity: 0.2;
   position: absolute; top: 16px; left: 28px; line-height: 1;
 }
 .landing-estimation .testimonial blockquote {
-  font-size: 15px; line-height: 1.7; color: var(--text);
+  font-size: 15px; line-height: 1.7; color: var(--le-text);
   font-style: italic; margin-bottom: 20px; padding-top: 20px;
 }
 .landing-estimation .testimonial-author {
@@ -727,53 +691,53 @@
 }
 .landing-estimation .testimonial-avatar {
   width: 40px; height: 40px; background: var(--ink);
-  color: var(--red); display: flex; align-items: center;
+  color: var(--orange); display: flex; align-items: center;
   justify-content: center; font-size: 14px; font-weight: 700;
 }
 .landing-estimation .testimonial-name {
   font-size: 14px; font-weight: 600; color: var(--ink);
 }
 .landing-estimation .testimonial-detail {
-  font-size: 12px; color: var(--muted);
+  font-size: 12px; color: var(--le-muted);
 }
 .landing-estimation .trust-numbers {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
 }
 .landing-estimation .trust-num {
   text-align: center; padding: 32px 20px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--le-line);
 }
 .landing-estimation .trust-num .val {
-  font-family: 'Playfair Display', serif; font-size: 36px;
+  font-family: var(--font-serif, "Playfair Display", serif); font-size: 36px;
   font-weight: 800; color: var(--ink);
 }
 .landing-estimation .trust-num .unit {
-  font-size: 13px; color: var(--muted); margin-top: 4px;
+  font-size: 13px; color: var(--le-muted); margin-top: 4px;
 }
 
-/* PORTALS */
+/* PORTALS — fond clair */
 .landing-estimation .portals {
-  padding: 60px 48px; background: var(--cream);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  padding: 60px 48px; background: var(--le-bg-alt);
+  border-top: 1px solid var(--le-line);
+  border-bottom: 1px solid var(--le-line);
 }
 .landing-estimation .portals-inner {
   max-width: 900px; margin: 0 auto; text-align: center;
 }
 .landing-estimation .portals-label {
   font-size: 12px; font-weight: 600; letter-spacing: 2px;
-  text-transform: uppercase; color: var(--muted); margin-bottom: 24px;
+  text-transform: uppercase; color: var(--le-muted); margin-bottom: 24px;
 }
 .landing-estimation .portal-logos {
   display: flex; justify-content: center; align-items: center;
   gap: 48px; flex-wrap: wrap;
 }
 .landing-estimation .portal-logo {
-  font-size: 18px; font-weight: 700; color: var(--muted);
+  font-size: 18px; font-weight: 700; color: var(--le-muted);
   opacity: 0.5; letter-spacing: 1px;
 }
 
-/* FINAL CTA */
+/* FINAL CTA — reste sombre */
 .landing-estimation .final-cta {
   padding: 120px 48px; background: var(--ink); color: white;
   text-align: center; position: relative; overflow: hidden;
@@ -781,38 +745,38 @@
 .landing-estimation .final-cta::before {
   content: ''; position: absolute; top: -50%; left: 50%;
   transform: translateX(-50%); width: 800px; height: 800px;
-  background: radial-gradient(circle, rgba(250,72,56,0.06) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255,74,62,0.06) 0%, transparent 70%);
   border-radius: 50%;
 }
 .landing-estimation .final-cta-inner {
   max-width: 600px; margin: 0 auto; position: relative; z-index: 1;
 }
 .landing-estimation .final-cta h2 {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-serif, "Playfair Display", serif);
   font-size: clamp(32px, 4vw, 48px); font-weight: 700;
   line-height: 1.15; margin-bottom: 20px;
 }
-.landing-estimation .final-cta h2 span { color: var(--red); }
+.landing-estimation .final-cta h2 span { color: var(--orange); }
 .landing-estimation .final-cta p {
   font-size: 17px; color: rgba(255,255,255,0.5);
   margin-bottom: 40px; line-height: 1.7;
 }
 .landing-estimation .final-cta-btn {
-  display: inline-block; padding: 18px 48px; background: var(--red);
+  display: inline-block; padding: 18px 48px; background: var(--orange);
   color: white; font-size: 14px; font-weight: 700;
   letter-spacing: 1.5px; text-transform: uppercase;
   text-decoration: none; transition: all 0.3s ease;
-  border: none; cursor: pointer; font-family: 'DM Sans', sans-serif;
+  border: none; cursor: pointer; font-family: var(--font-sans, "Inter", sans-serif);
 }
 .landing-estimation .final-cta-btn:hover {
-  background: var(--red-light); transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(250,72,56,0.3);
+  background: var(--orange-light); transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255,74,62,0.3);
 }
 .landing-estimation .final-cta-note {
   margin-top: 20px; font-size: 13px; color: rgba(255,255,255,0.3);
 }
 
-/* FOOTER */
+/* FOOTER — reste sombre */
 .landing-estimation .footer {
   padding: 40px 48px; background: #0e0e1a;
   display: flex; justify-content: space-between; align-items: center;
@@ -822,7 +786,7 @@
 .landing-estimation .footer-links a {
   font-size: 13px; color: rgba(255,255,255,0.35); text-decoration: none;
 }
-.landing-estimation .footer-links a:hover { color: var(--red); }
+.landing-estimation .footer-links a:hover { color: var(--orange); }
 
 /* Form validation */
 .landing-estimation .form-error {
@@ -843,15 +807,15 @@
 .landing-estimation .phone-verify-row { display: flex; gap: 8px; }
 .landing-estimation .phone-verify-row input { flex: 1; }
 .landing-estimation .phone-verify-btn {
-  padding: 12px 18px; background: rgba(250,72,56,0.12);
-  color: var(--red); font-family: 'DM Sans', sans-serif;
+  padding: 12px 18px; background: rgba(255,74,62,0.1);
+  color: var(--orange); font-family: var(--font-sans, "Inter", sans-serif);
   font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
   text-transform: uppercase;
-  border: 1px solid rgba(250,72,56,0.25); cursor: pointer;
+  border: 1px solid rgba(255,74,62,0.25); cursor: pointer;
   transition: all 0.2s ease; white-space: nowrap; flex-shrink: 0;
 }
 .landing-estimation .phone-verify-btn:hover {
-  background: rgba(250,72,56,0.2);
+  background: rgba(255,74,62,0.2);
 }
 .landing-estimation .phone-verify-btn.loading {
   opacity: 0.5; pointer-events: none;
@@ -879,21 +843,21 @@
 .landing-estimation .sms-code-label {
   display: block; font-size: 11px; font-weight: 600;
   letter-spacing: 0.5px; text-transform: uppercase;
-  color: rgba(255,255,255,0.4); margin-bottom: 8px;
+  color: var(--le-muted); margin-bottom: 8px;
 }
 .landing-estimation .sms-code-row {
   display: flex; gap: 8px; margin-bottom: 8px;
 }
 .landing-estimation .sms-code-input {
   width: 48px; height: 52px; text-align: center;
-  font-family: 'DM Sans', sans-serif; font-size: 22px;
+  font-family: var(--font-sans, "Inter", sans-serif); font-size: 22px;
   font-weight: 700; letter-spacing: 0;
-  background: rgba(255,255,255,0.08);
-  border: 1.5px solid rgba(255,255,255,0.15);
-  color: white; outline: none; transition: border-color 0.2s;
+  background: var(--le-bg-alt);
+  border: 1.5px solid var(--le-line);
+  color: var(--le-text); outline: none; transition: border-color 0.2s;
 }
 .landing-estimation .sms-code-input:focus {
-  border-color: var(--red); background: rgba(250,72,56,0.06);
+  border-color: var(--orange); background: rgba(255,74,62,0.04);
 }
 .landing-estimation .sms-code-input.correct {
   border-color: var(--success); background: rgba(45,138,78,0.1);
@@ -912,8 +876,8 @@
 }
 .landing-estimation .sms-code-error { font-size: 11px; color: #ff6b6b; }
 .landing-estimation .sms-resend {
-  background: none; border: none; color: rgba(255,255,255,0.25);
-  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  background: none; border: none; color: var(--le-muted);
+  font-family: var(--font-sans, "Inter", sans-serif); font-size: 11px;
   cursor: pointer; padding: 0; transition: color 0.2s;
 }
 .landing-estimation .sms-resend:not(:disabled):hover { color: var(--gold); }
@@ -922,12 +886,12 @@
 /* Micro-trust */
 .landing-estimation .form-trust {
   display: flex; align-items: center; justify-content: center;
-  gap: 6px; font-size: 11px; color: rgba(255,255,255,0.3);
+  gap: 6px; font-size: 11px; color: var(--le-muted);
   margin-top: 10px; margin-bottom: 4px;
 }
 .landing-estimation .form-trust svg { opacity: 0.5; }
 
-/* Sticky mobile CTA */
+/* Sticky mobile CTA — reste sombre */
 .landing-estimation .sticky-cta { display: none; }
 
 /* ========= RESPONSIVE ========= */
@@ -949,22 +913,20 @@
     color: rgba(255,255,255,0.35); font-weight: 400;
   }
   .landing-estimation .sticky-cta-btn {
-    padding: 12px 24px; background: var(--red); color: white;
-    font-family: 'DM Sans', sans-serif; font-size: 12px;
+    padding: 12px 24px; background: var(--orange); color: white;
+    font-family: var(--font-sans, "Inter", sans-serif); font-size: 12px;
     font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
     text-decoration: none; white-space: nowrap; flex-shrink: 0;
     border: none; cursor: pointer;
   }
 
-  .landing-estimation .hero { padding: 90px 24px 60px; }
+  .landing-estimation .hero { padding: 100px 24px 60px; }
   .landing-estimation .hero-grid { grid-template-columns: 1fr; gap: 32px; }
   .landing-estimation .phases { grid-template-columns: 1fr; gap: 48px; }
   .landing-estimation .phase-card:not(:last-child)::after { display: none; }
   .landing-estimation .comp-grid { grid-template-columns: 1fr; }
   .landing-estimation .testimonials { grid-template-columns: 1fr; }
   .landing-estimation .trust-numbers { grid-template-columns: 1fr 1fr; }
-  .landing-estimation .nav { padding: 16px 24px; }
-  .landing-estimation .nav-phone { display: none; }
   .landing-estimation .method,
   .landing-estimation .comparison,
   .landing-estimation .trust,

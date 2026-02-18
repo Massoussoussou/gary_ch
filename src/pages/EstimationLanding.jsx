@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import "../styles/landing-estimation.css";
 
-import LandingNav from "../components/landing-estimation/LandingNav";
 import HeroSection from "../components/landing-estimation/HeroSection";
 import EstimationForm from "../components/landing-estimation/EstimationForm";
 import ConfirmationPage from "../components/landing-estimation/ConfirmationPage";
@@ -52,8 +51,7 @@ export default function EstimationLanding() {
   }, []);
 
   return (
-    <div className="landing-estimation">
-      <LandingNav />
+    <div className="landing-estimation page-bg">
 
       {!submitted && (
         <section className="hero" id="heroSection">

@@ -46,11 +46,11 @@ export default function App() {
   }, [isEstimer]);
 
   return (
-    <div className={isEstimer ? "" : "min-h-screen flex flex-col bg-bg text-text font-sans"}>
-      {!isEstimer && <Header />}
+    <div className="min-h-screen flex flex-col bg-bg text-text font-sans">
+      <Header />
       {!isEstimer && <IntroCover />}
       <ScrollToTop />
-      <main className={isEstimer ? "" : "flex-1"}>
+      <main className="flex-1">
         <Suspense fallback={
           <div className="min-h-screen flex items-center justify-center">
             <p className="text-sm text-neutral-500 animate-pulse">Chargement…</p>
