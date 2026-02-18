@@ -1,5 +1,4 @@
 import React from "react";
-import TrustStrip from "../TrustStrip";
 
 const testimonials = [
   {
@@ -28,6 +27,13 @@ const testimonials = [
   },
 ];
 
+const numbers = [
+  { val: "150+", unit: "Biens vendus" },
+  { val: "Genève", unit: "Nyon · Lausanne · Valais" },
+  { val: "48h", unit: "Estimation détaillée" },
+  { val: "4.9\u2605", unit: "Avis Google" },
+];
+
 export default function TrustSection() {
   return (
     <section className="trust">
@@ -52,14 +58,21 @@ export default function TrustSection() {
         </div>
       </div>
 
-      {/* Trust strip — même composant que /acheter */}
-      <TrustStrip
-        size="xl"
-        reviewsLabel="RealAdvisor"
-        reviewsUrl="https://realadvisor.ch/fr/agences-immobilieres/agence-gary"
-        rating={5}
-        reviewsCount={75}
-      />
+      {/* Trust strip — style TrustStrip avec les données originales */}
+      <div className="w-full px-[min(6vw,72px)] py-8 md:py-12">
+        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full items-start justify-items-center gap-y-6">
+          {numbers.map((n, i) => (
+            <li key={i} className="py-4 text-center w-full">
+              <div className="text-5xl md:text-6xl font-serif font-bold tracking-tight">
+                {n.val}
+              </div>
+              <div className="mt-3 text-xs md:text-sm uppercase tracking-wide text-zinc-600">
+                {n.unit}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }
