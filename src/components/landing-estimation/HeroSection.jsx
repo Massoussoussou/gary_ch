@@ -24,7 +24,7 @@ function HeroContent({ children }) {
         {/* LEFT — Glassmorphic tile, offset to the left */}
         <div className="relative order-1 md:-translate-x-8">
           {/* Tile background */}
-          <div className="absolute -inset-5 sm:-inset-6 bg-white/60 backdrop-blur-md rounded-2xl shadow-[0_22px_70px_-30px_rgba(0,0,0,0.25)]" />
+          <div className="absolute -inset-5 sm:-inset-6 bg-white/60 backdrop-blur-md shadow-[0_22px_70px_-30px_rgba(0,0,0,0.25)]" />
 
           <div className="relative px-4 sm:px-6 py-8 sm:py-10 text-center md:text-left">
             {/* Eyebrow */}
@@ -46,7 +46,7 @@ function HeroContent({ children }) {
             </p>
 
             {/* Stats */}
-            <div className="mt-6 pt-6 border-t border-neutral-200/80 flex gap-6 md:gap-8 justify-center md:justify-start">
+            <div className="mt-6 pt-6 border-t border-neutral-200/80 flex justify-between">
               <div>
                 <span className="font-serif text-[26px] font-bold text-[#c8a45c]">3</span>
                 <span className="block text-[11px] text-neutral-500 mt-1">Phases de vente</span>
