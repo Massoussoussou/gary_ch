@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import Header from './components/layout/Header.jsx'
@@ -12,7 +12,7 @@ import Home from './pages/Home.jsx'
 const BuyIntro = React.lazy(() => import('./pages/BuyIntro.jsx'));
 const ListingDetail = React.lazy(() => import('./pages/ListingDetail.jsx'));
 const Sell = React.lazy(() => import('./pages/Sell.jsx'));
-const Estimate = React.lazy(() => import('./pages/Estimate.jsx'));
+const EstimationLanding = React.lazy(() => import('./pages/EstimationLanding.jsx'));
 const About = React.lazy(() => import('./pages/About.jsx'));
 const Contact = React.lazy(() => import('./pages/Contact.jsx'));
 const TeamMemberDetail = React.lazy(() => import('./pages/TeamMemberDetail.jsx'));
@@ -23,6 +23,9 @@ const ActualiteDetail = React.lazy(() => import('./pages/ActualiteDetail.jsx'));
 const NotFound = React.lazy(() => import('./pages/NotFound.jsx'));
 
 export default function App() {
+  const location = useLocation();
+  const isEstimer = location.pathname === "/estimer";
+
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.1,
@@ -38,12 +41,12 @@ export default function App() {
     }
     requestAnimationFrame(raf);
     return () => { lenis.destroy(); window.__lenis = null; };
-  }, []);
+  }, [isEstimer]);
 
   return (
     <div className="min-h-screen flex flex-col bg-bg text-text font-sans">
       <Header />
-      <IntroCover />
+      {!isEstimer && <IntroCover />}
       <ScrollToTop />
       <main className="flex-1">
         <Suspense fallback={
@@ -57,7 +60,7 @@ export default function App() {
             <Route path="/acheter/catalogue" element={<Navigate to="/acheter" replace />} />
             <Route path="/annonce/:id" element={<ListingDetail />} />
             <Route path="/vendre" element={<Sell />} />
-            <Route path="/estimer" element={<Estimate />} />
+            <Route path="/estimer" element={<EstimationLanding />} />
             <Route path="/a-propos" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/equipe/:slug" element={<TeamMemberDetail />} />

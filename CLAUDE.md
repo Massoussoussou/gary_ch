@@ -107,6 +107,16 @@ REALFORCE_PUBLIC_DEFAULT_LOCALE=fr
 - ✅ **Header desktop** - Supprimé les offsets manuels. Grille CSS `auto 1fr auto` centre naturellement. Fichier : `src/components/layout/Header.jsx`.
 - ✅ **Nettoyage CSS projet.css** - Consolidé de 1869 → 1037 lignes (-44%). Supprimé : 3x `@keyframes reveal-left` dupliqués, 5x itérations specs-aside/grid/chip, classes mortes (coming-*, btn-contact, btn-cta-animated, detail-specs--overlay, proj-veil-intro). CSS bundle : 128 kB → 121 kB.
 - ✅ **Intégration Projets Neufs (liste)** - Le mapping dans `src/hooks/usePromotions.js` → `normalizePromotionsList()` est correct. L'API `/api/promotions` renvoie les données, la page `/projets-neufs` les affiche.
+- ✅ **Landing /estimer — Refonte visuelle GARY** (branche `feature/landing-estimation`) :
+  - Header du site GARY affiché (supprimé LandingNav custom)
+  - Hero : vidéo fixe + tuile glassmorphique (gauche) + formulaire (droite), titre 3 lignes
+  - Toutes les sections passées en fond clair (comparison, CTA final, footer, sticky mobile)
+  - Couleurs : uniquement orange GARY (#FF4A3E), blanc, neutres — plus de gold/sombre
+  - Fonts : Inter + Playfair Display via variables CSS du site
+  - Trust bar : style TrustStrip (150+, Genève, 48h, 4.9★)
+  - Parallax désactivé sur mobile, Lenis smooth scroll actif
+  - Fichiers modifiés : `App.jsx`, `EstimationLanding.jsx`, `HeroSection.jsx`, `TrustSection.jsx`, `icons.jsx`, `ConfirmationPage.jsx`, `landing-estimation.css`
+  - Fichier supprimé : `LandingNav.jsx`
 
 ---
 
@@ -184,9 +194,14 @@ REALFORCE_PUBLIC_DEFAULT_LOCALE=fr
 - **En attente** : Gary donnera ses demandes directement sur la page
 - Il y a déjà des instructions existantes à relire avant de commencer
 
-### Page Estimer
-- Rendre la page plus solide et professionnelle
-- Implémenter une vraie fonctionnalité d'envoi des infos (leads)
+### Page Estimer (landing /estimer)
+- ✅ Refonte visuelle complète — intégrée au design GARY (branche `feature/landing-estimation`)
+- **Reste à faire :**
+  - Intégrer le widget Google Reviews (avis en direct) — nécessite API Google Places ou service tiers (Elfsight)
+  - Connecter le formulaire à l'API Leads Realforce (envoi réel)
+  - Page de confirmation : adapter au fond clair (actuellement encore en fond sombre `var(--ink)`)
+  - eBook modal : adapter au fond clair (même remarque)
+  - Merger `feature/landing-estimation` dans `dev` ou `main` quand validé par Gary
 - **Bloqué par** : accord de Gary pour tester les leads en production
 
 ### Formulaire "Contactez Gary" / API Leads
