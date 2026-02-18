@@ -184,10 +184,10 @@
 
 .landing-estimation .checkbox-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .landing-estimation .checkbox-label {
-  display: flex; align-items: center; gap: 6px;
-  padding: 7px 12px; background: var(--le-bg-alt);
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 14px; background: var(--le-bg-alt);
   border: 1px solid var(--le-line); cursor: pointer;
-  transition: all 0.2s ease; font-size: 12px; color: var(--le-muted);
+  transition: all 0.2s ease; font-size: 14px; color: var(--le-muted);
 }
 .landing-estimation .checkbox-label input[type="checkbox"] {
   appearance: none; -webkit-appearance: none;
