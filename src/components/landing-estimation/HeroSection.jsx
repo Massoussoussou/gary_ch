@@ -7,7 +7,12 @@ function HeroContent({ children }) {
   useEffect(() => {
     const onScroll = () => {
       if (!ref.current) return;
-      setOffset(window.scrollY * 0.35);
+      // Parallax uniquement sur desktop (768px+)
+      if (window.innerWidth >= 768) {
+        setOffset(window.scrollY * 0.35);
+      } else {
+        setOffset(0);
+      }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -23,43 +28,46 @@ function HeroContent({ children }) {
 
         {/* LEFT — Glassmorphic tile, offset to the left */}
         <div className="relative order-1 md:-translate-x-8">
-          {/* Tile background */}
-          <div className="absolute -inset-5 sm:-inset-6 bg-white/60 backdrop-blur-md shadow-[0_22px_70px_-30px_rgba(0,0,0,0.25)]" />
+          {/* Single tile container */}
+          <div className="bg-white/60 backdrop-blur-md shadow-[0_22px_70px_-30px_rgba(0,0,0,0.25)] flex flex-col">
 
-          <div className="relative px-4 sm:px-6 py-8 sm:py-10 text-center md:text-left">
-            {/* Eyebrow */}
-            <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-neutral-600 mb-3">
-              Estimation immobilière
-            </p>
+            {/* Text content */}
+            <div className="px-7 sm:px-10 pt-10 sm:pt-12 pb-4 text-center md:text-left">
+              {/* Eyebrow */}
+              <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-neutral-600 mb-3">
+                Estimation immobilière
+              </p>
 
-            {/* Headline */}
-            <h1 className="font-serif tracking-[-0.03em] leading-[0.95] text-[clamp(2.2rem,7vw,3.2rem)] md:text-[clamp(2.6rem,3.8vw,4.2rem)]">
-              Estimez votre bien<span className="text-[#FF4A3E]">,</span>
-              <br />
-              <span className="block">gratuitement.</span>
-            </h1>
+              {/* Headline */}
+              <h1 className="font-serif tracking-[-0.03em] leading-[0.95] text-[clamp(2.2rem,7vw,3.2rem)] md:text-[clamp(2.6rem,3.8vw,4.2rem)]">
+                Estimez votre bien<span className="text-[#FF4A3E]">,</span>
+                <br />
+                <span className="block">gratuitement.</span>
+              </h1>
 
-            {/* Subheadline */}
-            <p className="mt-4 text-[clamp(0.95rem,1.8vw,1.15rem)] text-neutral-900/80 max-w-[42ch] mx-auto md:mx-0">
-              Estimation détaillée en 48h par nos experts, basée sur les données
-              du marché genevois. 100% gratuit et sans engagement.
-            </p>
+              {/* Subheadline */}
+              <p className="mt-4 text-[clamp(0.95rem,1.8vw,1.15rem)] text-neutral-900/80 max-w-[42ch] mx-auto md:mx-0">
+                Estimation détaillée en 48h par nos experts, basée sur les données
+                du marché genevois. 100% gratuit et sans engagement.
+              </p>
+            </div>
 
-            {/* Stats */}
-            <div className="mt-6 pt-6 border-t border-neutral-200/80 flex justify-between">
-              <div>
-                <span className="font-serif text-[26px] font-bold text-[#FF4A3E]">3</span>
-                <span className="block text-[11px] text-neutral-500 mt-1">Phases de vente</span>
+            {/* Stats — pleine largeur, bas de la tuile */}
+            <div className="mt-auto border-t border-neutral-200/80 px-7 sm:px-10 py-6 sm:py-8 flex justify-between">
+              <div className="text-center">
+                <span className="font-serif text-[28px] sm:text-[32px] font-bold text-[#FF4A3E] leading-none">3</span>
+                <span className="block text-[11px] text-neutral-500 mt-2">Phases de vente</span>
               </div>
-              <div>
-                <span className="font-serif text-[26px] font-bold text-[#FF4A3E]">48h</span>
-                <span className="block text-[11px] text-neutral-500 mt-1">Estimation détaillée</span>
+              <div className="text-center">
+                <span className="font-serif text-[28px] sm:text-[32px] font-bold text-[#FF4A3E] leading-none">48h</span>
+                <span className="block text-[11px] text-neutral-500 mt-2">Estimation détaillée</span>
               </div>
-              <div>
-                <span className="font-serif text-[26px] font-bold text-[#FF4A3E]">100%</span>
-                <span className="block text-[11px] text-neutral-500 mt-1">Gratuit & sans engagement</span>
+              <div className="text-center">
+                <span className="font-serif text-[28px] sm:text-[32px] font-bold text-[#FF4A3E] leading-none">100%</span>
+                <span className="block text-[11px] text-neutral-500 mt-2">Gratuit & sans engagement</span>
               </div>
             </div>
+
           </div>
         </div>
 
