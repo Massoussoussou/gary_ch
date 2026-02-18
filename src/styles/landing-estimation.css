@@ -191,18 +191,21 @@
   color: var(--le-text); line-height: 1;
 }
 .landing-estimation .checkbox-label input[type="checkbox"] {
-  appearance: none; -webkit-appearance: none;
-  width: 13px; height: 13px; border: 1.5px solid var(--le-line);
+  appearance: none; -webkit-appearance: none; -moz-appearance: none;
+  width: 12px; height: 12px; min-width: 12px; min-height: 12px;
+  max-width: 12px; max-height: 12px;
+  border: 1.5px solid var(--le-line);
   background: transparent; cursor: pointer; position: relative; flex-shrink: 0;
-  border-radius: 2px; margin: 0;
+  border-radius: 2px; margin: 0; padding: 0;
+  display: inline-block; box-sizing: border-box;
 }
 .landing-estimation .checkbox-label input[type="checkbox"]:checked {
   background: var(--orange); border-color: var(--orange);
 }
 .landing-estimation .checkbox-label input[type="checkbox"]:checked::after {
   content: '\2713'; position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%, -50%); font-size: 9px;
-  font-weight: 700; color: white;
+  transform: translate(-50%, -50%); font-size: 8px;
+  font-weight: 700; color: white; line-height: 1;
 }
 
 /* Address autocomplete dropdown */
