@@ -44,13 +44,13 @@ export const IconCalendar = ({ size = 24, color = "white" }) => (
   </svg>
 );
 
-export const IconPhone = ({ size = 18, color = "#c8a45c" }) => (
+export const IconPhone = ({ size = 18, color = "#FF4A3E" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z" />
   </svg>
 );
 
-export const IconChart = ({ size = 18, color = "#c8a45c" }) => (
+export const IconChart = ({ size = 18, color = "#FF4A3E" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <line x1="18" y1="20" x2="18" y2="10" />
     <line x1="12" y1="20" x2="12" y2="4" />
@@ -58,14 +58,14 @@ export const IconChart = ({ size = 18, color = "#c8a45c" }) => (
   </svg>
 );
 
-export const IconHome = ({ size = 18, color = "#c8a45c" }) => (
+export const IconHome = ({ size = 18, color = "#FF4A3E" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
     <polyline points="9 22 9 12 15 12 15 22" />
   </svg>
 );
 
-export const IconTarget = ({ size = 18, color = "#c8a45c" }) => (
+export const IconTarget = ({ size = 18, color = "#FF4A3E" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="10" />
     <circle cx="12" cy="12" r="6" />
@@ -73,7 +73,7 @@ export const IconTarget = ({ size = 18, color = "#c8a45c" }) => (
   </svg>
 );
 
-export const IconBook = ({ size = 18, color = "#c8a45c" }) => (
+export const IconBook = ({ size = 18, color = "#FF4A3E" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
     <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
@@ -81,7 +81,7 @@ export const IconBook = ({ size = 18, color = "#c8a45c" }) => (
 );
 
 export const IconCheckGold = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c8a45c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF4A3E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="20 6 9 17 4 12" />
   </svg>
 );

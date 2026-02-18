@@ -48,15 +48,15 @@ function HeroContent({ children }) {
             {/* Stats */}
             <div className="mt-6 pt-6 border-t border-neutral-200/80 flex justify-between">
               <div>
-                <span className="font-serif text-[26px] font-bold text-[#c8a45c]">3</span>
+                <span className="font-serif text-[26px] font-bold text-[#FF4A3E]">3</span>
                 <span className="block text-[11px] text-neutral-500 mt-1">Phases de vente</span>
               </div>
               <div>
-                <span className="font-serif text-[26px] font-bold text-[#c8a45c]">48h</span>
+                <span className="font-serif text-[26px] font-bold text-[#FF4A3E]">48h</span>
                 <span className="block text-[11px] text-neutral-500 mt-1">Estimation détaillée</span>
               </div>
               <div>
-                <span className="font-serif text-[26px] font-bold text-[#c8a45c]">100%</span>
+                <span className="font-serif text-[26px] font-bold text-[#FF4A3E]">100%</span>
                 <span className="block text-[11px] text-neutral-500 mt-1">Gratuit & sans engagement</span>
               </div>
             </div>

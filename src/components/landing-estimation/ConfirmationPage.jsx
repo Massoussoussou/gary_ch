@@ -39,7 +39,7 @@ const rdvItems = [
   { icon: <IconChart />, text: "Estimation chiffrée avec fourchette de prix" },
   { icon: <IconHome />, text: "Analyse des ventes récentes dans votre quartier" },
   { icon: <IconTarget />, text: "Stratégie de vente personnalisée (Off-Market, Coming Soon ou Public)" },
-  { icon: <IconCalendar size={18} color="#c8a45c" />, text: "Calendrier prévisionnel de vente" },
+  { icon: <IconCalendar size={18} color="#FF4A3E" />, text: "Calendrier prévisionnel de vente" },
 ];
 
 export default function ConfirmationPage({ firstName, onOpenEbook }) {
@@ -65,7 +65,7 @@ export default function ConfirmationPage({ firstName, onOpenEbook }) {
       <div className="conf-inner">
         <div className="conf-header">
           <div className="conf-check-circle">
-            <IconCheck size={28} color="#FA4838" strokeWidth={2.5} />
+            <IconCheck size={28} color="#FF4A3E" strokeWidth={2.5} />
           </div>
           <h2 className="conf-title">
             Demande reçue, <span>{firstName || "merci"}</span>.
