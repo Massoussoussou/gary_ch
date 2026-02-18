@@ -475,7 +475,7 @@
 .landing-estimation .method-header h2 {
   font-family: var(--font-serif, "Playfair Display", serif);
   font-size: clamp(30px, 3.5vw, 44px); font-weight: 700;
-  color: var(--ink); line-height: 1.15; margin-bottom: 20px;
+  color: var(--le-text); line-height: 1.15; margin-bottom: 20px;
 }
 .landing-estimation .method-header p {
   font-size: 17px; color: var(--le-muted); line-height: 1.7;
@@ -516,11 +516,11 @@
   font-size: 12px; font-weight: 600; letter-spacing: 0.8px;
   text-transform: uppercase;
 }
-.landing-estimation .phase-card:nth-child(1) h3 { color: var(--ink); }
+.landing-estimation .phase-card:nth-child(1) h3 { color: var(--le-text); }
 .landing-estimation .phase-card:nth-child(2) h3 { color: var(--le-text); }
 .landing-estimation .phase-card:nth-child(3) h3 { color: var(--orange); }
 .landing-estimation .phase-card:nth-child(1) .phase-tag {
-  background: rgba(20,20,36,0.06); color: var(--ink);
+  background: rgba(20,20,36,0.06); color: var(--le-text);
 }
 .landing-estimation .phase-card:nth-child(2) .phase-tag {
   background: rgba(107,114,128,0.08); color: var(--le-muted);
@@ -537,7 +537,7 @@
 }
 .landing-estimation .method-cta-wrap .big {
   font-family: var(--font-serif, "Playfair Display", serif); font-size: 22px;
-  font-weight: 700; color: var(--ink); margin-bottom: 24px;
+  font-weight: 700; color: var(--le-text); margin-bottom: 24px;
 }
 .landing-estimation .method-cta {
   display: inline-block; padding: 16px 40px;
@@ -552,9 +552,9 @@
   box-shadow: 0 6px 20px rgba(255,74,62,0.25);
 }
 
-/* COMPARISON — reste sombre */
+/* COMPARISON — fond clair */
 .landing-estimation .comparison {
-  padding: 100px 48px; background: var(--ink); color: white;
+  padding: 100px 48px; background: var(--le-bg-alt); color: var(--le-text);
 }
 .landing-estimation .comparison-inner { max-width: 900px; margin: 0 auto; }
 .landing-estimation .comparison-header {
@@ -563,28 +563,28 @@
 .landing-estimation .comparison-header h2 {
   font-family: var(--font-serif, "Playfair Display", serif);
   font-size: clamp(28px, 3vw, 38px); font-weight: 700;
-  margin-bottom: 16px;
+  color: var(--le-text); margin-bottom: 16px;
 }
 .landing-estimation .comparison-header p {
-  font-size: 16px; color: rgba(255,255,255,0.45);
+  font-size: 16px; color: var(--le-muted);
 }
 .landing-estimation .comp-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 0;
 }
 .landing-estimation .comp-col { padding: 40px; }
 .landing-estimation .comp-col.classic {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: white;
+  border: 1px solid var(--le-line);
 }
 .landing-estimation .comp-col.gary {
-  background: rgba(255,74,62,0.06);
+  background: rgba(255,74,62,0.04);
   border: 1px solid rgba(255,74,62,0.2);
 }
 .landing-estimation .comp-col h3 {
   font-size: 12px; font-weight: 600; letter-spacing: 2px;
   text-transform: uppercase; margin-bottom: 28px;
 }
-.landing-estimation .comp-col.classic h3 { color: rgba(255,255,255,0.35); }
+.landing-estimation .comp-col.classic h3 { color: var(--le-muted); }
 .landing-estimation .comp-col.gary h3 { color: var(--orange); }
 .landing-estimation .comp-item {
   display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px;
@@ -596,19 +596,19 @@
   flex-shrink: 0; font-size: 14px; margin-top: 2px;
 }
 .landing-estimation .comp-col.classic .comp-icon {
-  background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3);
+  background: var(--le-bg-alt); color: var(--le-muted);
 }
 .landing-estimation .comp-col.gary .comp-icon {
-  background: rgba(255,74,62,0.15); color: var(--orange);
+  background: rgba(255,74,62,0.1); color: var(--orange);
 }
 .landing-estimation .comp-item .comp-text {
   font-size: 15px; line-height: 1.5;
 }
 .landing-estimation .comp-col.classic .comp-text {
-  color: rgba(255,255,255,0.5);
+  color: var(--le-muted);
 }
 .landing-estimation .comp-col.gary .comp-text {
-  color: rgba(255,255,255,0.85);
+  color: var(--le-text);
 }
 
 /* TRUST — fond clair */
@@ -622,7 +622,7 @@
 .landing-estimation .trust-header h2 {
   font-family: var(--font-serif, "Playfair Display", serif);
   font-size: clamp(28px, 3vw, 38px); font-weight: 700;
-  color: var(--ink); margin-bottom: 12px;
+  color: var(--le-text); margin-bottom: 12px;
 }
 .landing-estimation .trust-header p {
   font-size: 16px; color: var(--le-muted);
@@ -648,30 +648,18 @@
   display: flex; align-items: center; gap: 12px;
 }
 .landing-estimation .testimonial-avatar {
-  width: 40px; height: 40px; background: var(--ink);
+  width: 40px; height: 40px; background: var(--le-bg-alt);
+  border: 1px solid var(--le-line);
   color: var(--orange); display: flex; align-items: center;
   justify-content: center; font-size: 14px; font-weight: 700;
 }
 .landing-estimation .testimonial-name {
-  font-size: 14px; font-weight: 600; color: var(--ink);
+  font-size: 14px; font-weight: 600; color: var(--le-text);
 }
 .landing-estimation .testimonial-detail {
   font-size: 12px; color: var(--le-muted);
 }
-.landing-estimation .trust-numbers {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
-}
-.landing-estimation .trust-num {
-  text-align: center; padding: 32px 20px;
-  border: 1px solid var(--le-line);
-}
-.landing-estimation .trust-num .val {
-  font-family: var(--font-serif, "Playfair Display", serif); font-size: 36px;
-  font-weight: 800; color: var(--ink);
-}
-.landing-estimation .trust-num .unit {
-  font-size: 13px; color: var(--le-muted); margin-top: 4px;
-}
+/* trust-numbers remplacé par le composant TrustStrip */
 
 /* PORTALS — fond clair */
 .landing-estimation .portals {
@@ -695,15 +683,15 @@
   opacity: 0.5; letter-spacing: 1px;
 }
 
-/* FINAL CTA — reste sombre */
+/* FINAL CTA — fond clair */
 .landing-estimation .final-cta {
-  padding: 120px 48px; background: var(--ink); color: white;
+  padding: 120px 48px; background: var(--white); color: var(--le-text);
   text-align: center; position: relative; overflow: hidden;
 }
 .landing-estimation .final-cta::before {
   content: ''; position: absolute; top: -50%; left: 50%;
   transform: translateX(-50%); width: 800px; height: 800px;
-  background: radial-gradient(circle, rgba(255,74,62,0.06) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255,74,62,0.05) 0%, transparent 70%);
   border-radius: 50%;
 }
 .landing-estimation .final-cta-inner {
@@ -712,11 +700,11 @@
 .landing-estimation .final-cta h2 {
   font-family: var(--font-serif, "Playfair Display", serif);
   font-size: clamp(32px, 4vw, 48px); font-weight: 700;
-  line-height: 1.15; margin-bottom: 20px;
+  line-height: 1.15; margin-bottom: 20px; color: var(--le-text);
 }
 .landing-estimation .final-cta h2 span { color: var(--orange); }
 .landing-estimation .final-cta p {
-  font-size: 17px; color: rgba(255,255,255,0.5);
+  font-size: 17px; color: var(--le-muted);
   margin-bottom: 40px; line-height: 1.7;
 }
 .landing-estimation .final-cta-btn {
@@ -731,18 +719,19 @@
   box-shadow: 0 8px 24px rgba(255,74,62,0.3);
 }
 .landing-estimation .final-cta-note {
-  margin-top: 20px; font-size: 13px; color: rgba(255,255,255,0.3);
+  margin-top: 20px; font-size: 13px; color: var(--le-muted);
 }
 
-/* FOOTER — reste sombre */
+/* FOOTER — fond clair */
 .landing-estimation .footer {
-  padding: 40px 48px; background: #0e0e1a;
+  padding: 40px 48px; background: var(--le-bg-alt);
+  border-top: 1px solid var(--le-line);
   display: flex; justify-content: space-between; align-items: center;
 }
 .landing-estimation .footer-logo svg { height: 22px; width: auto; }
 .landing-estimation .footer-links { display: flex; gap: 32px; }
 .landing-estimation .footer-links a {
-  font-size: 13px; color: rgba(255,255,255,0.35); text-decoration: none;
+  font-size: 13px; color: var(--le-muted); text-decoration: none;
 }
 .landing-estimation .footer-links a:hover { color: var(--orange); }
 
@@ -856,19 +845,20 @@
 @media (max-width: 900px) {
   .landing-estimation .sticky-cta {
     display: flex; position: fixed; bottom: 0; left: 0; right: 0;
-    z-index: 150; background: var(--ink);
-    border-top: 1px solid rgba(255,255,255,0.1);
+    z-index: 150; background: white;
+    border-top: 1px solid var(--le-line);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
     padding: 12px 20px; align-items: center;
     justify-content: space-between; gap: 12px;
     transform: translateY(100%); transition: transform 0.3s ease;
   }
   .landing-estimation .sticky-cta.visible { transform: translateY(0); }
   .landing-estimation .sticky-cta-text {
-    font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 500;
+    font-size: 13px; color: var(--le-text); font-weight: 500;
   }
   .landing-estimation .sticky-cta-text span {
     display: block; font-size: 11px;
-    color: rgba(255,255,255,0.35); font-weight: 400;
+    color: var(--le-muted); font-weight: 400;
   }
   .landing-estimation .sticky-cta-btn {
     padding: 12px 24px; background: var(--orange); color: white;
@@ -882,7 +872,6 @@
   .landing-estimation .phase-card:not(:last-child)::after { display: none; }
   .landing-estimation .comp-grid { grid-template-columns: 1fr; }
   .landing-estimation .testimonials { grid-template-columns: 1fr; }
-  .landing-estimation .trust-numbers { grid-template-columns: 1fr 1fr; }
   .landing-estimation .method,
   .landing-estimation .comparison,
   .landing-estimation .trust,
