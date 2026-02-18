@@ -16,7 +16,7 @@ function HeroContent({ children }) {
   return (
     <div
       ref={ref}
-      className="relative mx-auto w-full max-w-7xl px-5 sm:px-6 md:px-8 py-14 sm:py-16 md:py-24"
+      className="relative mx-auto w-full max-w-7xl px-5 sm:px-6 md:px-8 pt-24 pb-16 sm:py-16 md:py-24"
       style={{ transform: `translateY(${offset}px)` }}
     >
       <div className="grid grid-cols-1 md:grid-cols-[1.1fr_1fr] gap-10 md:gap-14 items-start">
@@ -114,7 +114,7 @@ export default function HeroSection({ children }) {
 
       {/* Hero section */}
       <section
-        className="relative min-h-[100svh] flex items-center overflow-x-clip"
+        className="relative min-h-0 md:min-h-[100svh] flex items-start md:items-center overflow-x-clip"
         style={{ zIndex: 1 }}
       >
         <HeroContent>{children}</HeroContent>
