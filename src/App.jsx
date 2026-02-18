@@ -27,8 +27,6 @@ export default function App() {
   const isEstimer = location.pathname === "/estimer";
 
   useEffect(() => {
-    if (isEstimer) return; // Pas de Lenis sur /estimer
-
     const lenis = new Lenis({
       duration: 1.1,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -43,7 +41,7 @@ export default function App() {
     }
     requestAnimationFrame(raf);
     return () => { lenis.destroy(); window.__lenis = null; };
-  }, [isEstimer]);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-bg text-text font-sans">

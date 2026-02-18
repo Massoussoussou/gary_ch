@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import "../styles/landing-estimation.css";
 
 import HeroSection from "../components/landing-estimation/HeroSection";
@@ -17,7 +17,6 @@ export default function EstimationLanding() {
   const [submitted, setSubmitted] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [ebookOpen, setEbookOpen] = useState(false);
-  const formRef = useRef(null);
 
   // Capture UTM params au mount
   const utmParams = useMemo(() => {
@@ -29,10 +28,6 @@ export default function EstimationLanding() {
       utm_term: params.get("utm_term") || "",
       utm_content: params.get("utm_content") || "",
     };
-  }, []);
-
-  const scrollToForm = useCallback(() => {
-    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
   const handleSubmitSuccess = useCallback((name) => {
@@ -59,7 +54,12 @@ export default function EstimationLanding() {
     <div className="landing-estimation">
 
       {!submitted && (
-        <HeroSection onScrollToForm={scrollToForm} />
+        <HeroSection>
+          <EstimationForm
+            onSubmitSuccess={handleSubmitSuccess}
+            utmParams={utmParams}
+          />
+        </HeroSection>
       )}
 
       {submitted && (
@@ -67,35 +67,6 @@ export default function EstimationLanding() {
           firstName={firstName}
           onOpenEbook={openEbook}
         />
-      )}
-
-      {/* Form section — separate from hero, solid background */}
-      {!submitted && (
-        <section ref={formRef} className="le-form-section relative" style={{ zIndex: 2 }}>
-          <div className="le-form-section-inner">
-            {/* Stats row */}
-            <div className="le-form-stats">
-              <div className="le-form-stat">
-                <span className="le-form-stat-num">3</span>
-                <span className="le-form-stat-label">Phases de vente</span>
-              </div>
-              <div className="le-form-stat">
-                <span className="le-form-stat-num">48h</span>
-                <span className="le-form-stat-label">Estimation détaillée</span>
-              </div>
-              <div className="le-form-stat">
-                <span className="le-form-stat-num">100%</span>
-                <span className="le-form-stat-label">Gratuit & sans engagement</span>
-              </div>
-            </div>
-
-            {/* Form card */}
-            <EstimationForm
-              onSubmitSuccess={handleSubmitSuccess}
-              utmParams={utmParams}
-            />
-          </div>
-        </section>
       )}
 
       {/* Remaining sections — above fixed background */}
