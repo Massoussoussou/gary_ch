@@ -19,15 +19,10 @@ function HeroContent({ children }) {
       className="relative mx-auto w-full max-w-7xl px-5 sm:px-6 md:px-8 py-14 sm:py-16 md:py-24"
       style={{ transform: `translateY(${offset}px)` }}
     >
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_1.1fr] gap-10 md:gap-14 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-[1.1fr_1fr] gap-10 md:gap-14 items-start">
 
-        {/* LEFT — Form (order-2 mobile, order-1 desktop) */}
-        <div className="order-2 md:order-1">
-          {children}
-        </div>
-
-        {/* RIGHT — Glassmorphic tile, offset to the right */}
-        <div className="relative order-1 md:order-2 md:translate-x-8">
+        {/* LEFT — Glassmorphic tile, offset to the left */}
+        <div className="relative order-1 md:-translate-x-8">
           {/* Tile background */}
           <div className="absolute -inset-5 sm:-inset-6 bg-white/60 backdrop-blur-md rounded-2xl shadow-[0_22px_70px_-30px_rgba(0,0,0,0.25)]" />
 
@@ -66,6 +61,11 @@ function HeroContent({ children }) {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* RIGHT — Form */}
+        <div className="order-2">
+          {children}
         </div>
 
       </div>
