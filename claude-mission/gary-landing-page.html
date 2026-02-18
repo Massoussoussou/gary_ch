@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GARY — Estimation Immobilière Gratuite à Genève</title>
+<meta name="description" content="Estimez votre bien gratuitement avec GARY. Notre méthode de vente en 3 phases (Off-Market, Coming Soon, Public) optimise votre prix de vente. Résultat sous 48h.">
+<meta property="og:title" content="Estimation immobilière gratuite — GARY">
+<meta property="og:description" content="Ne mettez pas votre bien en ligne. Orchestrez sa vente. Méthode exclusive en 3 phases pour vendre au meilleur prix.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://gary-immobilier.ch/estimation">
+<meta property="og:image" content="https://gary-immobilier.ch/og-estimation.jpg">
+<meta property="og:locale" content="fr_CH">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23141424' width='100' height='100' rx='16'/%3E%3Ctext x='50' y='68' text-anchor='middle' fill='%23FA4838' font-family='serif' font-size='56' font-weight='800'%3EG%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #141424; --ink-light: #2a2a42; --cream: #faf9f6;
+    --gold: #c8a45c; --gold-light: #e8d5a0; --gold-dark: #a07d3a;
+    --red: #FA4838; --red-light: #ff6b5e; --red-dark: #e03a2c;
+    --muted: #7a7a8c; --text: #3a3a4a; --border: #e8e6e0;
+    --white: #ffffff; --success: #2d8a4e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; background: var(--cream); }
+
+  /* NAV */
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 48px; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease; }
+  .nav.scrolled { background: rgba(20,20,36,0.95); backdrop-filter: blur(20px); padding: 14px 48px; box-shadow: 0 4px 30px rgba(0,0,0,0.15); }
+  .nav-logo svg { height: 28px; width: auto; }
+  .nav-cta { padding: 10px 28px; background: var(--red); color: white; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; transition: all 0.3s ease; }
+  .nav-cta:hover { background: var(--red-light); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(250,72,56,0.3); }
+
+  /* HERO */
+  .hero { min-height: 100vh; display: flex; align-items: flex-start; background: var(--ink); color: white; position: relative; overflow: visible; padding: 100px 48px 80px; }
+  .hero::before { content: ''; position: absolute; top: 0; right: 0; width: 55%; height: 100%; background: linear-gradient(135deg, rgba(250,72,56,0.04) 0%, rgba(200,164,92,0.04) 50%, transparent 100%); pointer-events: none; }
+  .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 64px; align-items: start; max-width: 1200px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+  .hero-content { padding-top: 20px; }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 24px; }
+  .hero-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--gold); }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(34px, 3.8vw, 52px); font-weight: 700; line-height: 1.12; margin-bottom: 20px; }
+  .hero h1 em { font-style: normal; color: var(--red); display: block; }
+  .hero-sub { font-size: 17px; color: rgba(255,255,255,0.5); max-width: 440px; line-height: 1.7; margin-bottom: 36px; }
+  .hero-stats { display: flex; gap: 36px; padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.08); }
+  .hero-stat .num { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--gold); }
+  .hero-stat .label { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+
+  /* FORM */
+  .hero-form-wrap { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px); padding: 36px 32px; align-self: start; }
+  .form-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: white; margin-bottom: 4px; }
+  .form-sub { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 24px; }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 5px; }
+  .form-group input, .form-group select { width: 100%; padding: 12px 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: white; font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; }
+  .form-group input::placeholder { color: rgba(255,255,255,0.25); }
+  .form-group input:focus, .form-group select:focus { border-color: var(--gold); }
+  .form-group select { cursor: pointer; }
+  .form-group select option { background: var(--ink); color: white; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .form-row-3 { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
+
+  /* Steps */
+  .form-step { overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease; }
+  .form-step.collapsed { max-height: 0; opacity: 0; pointer-events: none; }
+  .form-step.expanded { max-height: 800px; opacity: 1; pointer-events: auto; }
+  .form-step-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .form-step-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; transition: all 0.3s ease; }
+  .form-step-num.pending { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.1); }
+  .form-step-num.active { background: var(--red); color: white; border: 1px solid var(--red); }
+  .form-step-num.done { background: rgba(200,164,92,0.15); color: var(--gold); border: 1px solid rgba(200,164,92,0.3); }
+  .form-step-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; transition: color 0.3s ease; }
+  .form-step-label.pending { color: rgba(255,255,255,0.2); }
+  .form-step-label.active { color: white; }
+  .form-step-label.done { color: rgba(200,164,92,0.5); }
+  .form-step-line { flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
+
+  .form-next { width: 100%; padding: 12px; background: rgba(250,72,56,0.12); color: var(--red); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; border: 1px solid rgba(250,72,56,0.25); cursor: pointer; transition: all 0.2s ease; margin-top: 4px; }
+  .form-next:hover { background: rgba(250,72,56,0.2); border-color: rgba(250,72,56,0.4); }
+
+  .form-submit { width: 100%; padding: 16px; background: var(--red); color: white; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; border: none; cursor: pointer; transition: all 0.3s ease; margin-top: 4px; }
+  .form-submit:hover { background: var(--red-light); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(250,72,56,0.3); }
+  .form-note { text-align: center; font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 12px; }
+  .form-optional { font-weight: 400; letter-spacing: 0; text-transform: none; color: rgba(255,255,255,0.25); font-size: 10px; margin-left: 4px; }
+
+  /* Toggle */
+  .toggle-row { display: flex; gap: 0; border: 1px solid rgba(255,255,255,0.12); }
+  .toggle-btn { flex: 1; padding: 10px 12px; background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.4); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s ease; border-right: 1px solid rgba(255,255,255,0.08); }
+  .toggle-btn:last-child { border-right: none; }
+  .toggle-btn:hover { background: rgba(255,255,255,0.06); }
+  .toggle-btn.active { background: rgba(200,164,92,0.15); color: var(--gold); font-weight: 600; }
+
+  /* Expand */
+  .expand-section { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease; opacity: 0; }
+  .expand-section.open { max-height: 600px; opacity: 1; }
+  .expand-inner { padding: 14px 0 4px; }
+  .expand-hint { font-size: 11px; color: rgba(200,164,92,0.7); background: rgba(200,164,92,0.08); padding: 8px 12px; margin-bottom: 14px; line-height: 1.5; border-left: 2px solid var(--gold); }
+
+  .checkbox-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .checkbox-label { display: flex; align-items: center; gap: 6px; padding: 7px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.2s ease; font-size: 12px; color: rgba(255,255,255,0.5); }
+  .checkbox-label input[type="checkbox"] { appearance: none; -webkit-appearance: none; width: 14px; height: 14px; border: 1.5px solid rgba(255,255,255,0.25); background: transparent; cursor: pointer; position: relative; flex-shrink: 0; }
+  .checkbox-label input[type="checkbox"]:checked { background: var(--red); border-color: var(--red); }
+  .checkbox-label input[type="checkbox"]:checked::after { content: '\2713'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; font-weight: 700; color: white; }
+
+  /* Address autocomplete dropdown */
+  .address-dropdown { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--ink-light); border: 1px solid rgba(255,255,255,0.12); z-index: 50; max-height: 220px; overflow-y: auto; }
+  .address-dropdown-item { padding: 10px 14px; font-size: 13px; color: rgba(255,255,255,0.65); cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.15s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .address-dropdown-item:last-child { border-bottom: none; }
+  .address-dropdown-item:hover { background: rgba(250,72,56,0.1); color: white; }
+
+  /* CONFIRMATION */
+  .confirmation-page { display: none; min-height: 100vh; background: var(--ink); color: white; padding: 120px 48px 80px; }
+  .confirmation-page.visible { display: block; animation: confIn 0.6s ease; }
+  @keyframes confIn { from { opacity: 0; } to { opacity: 1; } }
+  .conf-inner { max-width: 800px; margin: 0 auto; }
+  .conf-header { text-align: center; margin-bottom: 56px; }
+  .conf-check-circle { width: 72px; height: 72px; margin: 0 auto 24px; border: 2px solid var(--red); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .conf-title { font-family: 'Playfair Display', serif; font-size: clamp(28px, 3.5vw, 42px); font-weight: 700; margin-bottom: 12px; }
+  .conf-title span { color: var(--red); }
+  .conf-sub { font-size: 17px; color: rgba(255,255,255,0.45); max-width: 500px; margin: 0 auto; }
+  .conf-timeline { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; margin-bottom: 56px; position: relative; }
+  .conf-timeline::before { content: ''; position: absolute; top: 24px; left: 16.66%; right: 16.66%; height: 1px; background: rgba(200,164,92,0.25); }
+  .conf-timeline-step { text-align: center; position: relative; z-index: 1; padding: 0 16px; }
+  .conf-timeline-dot { width: 48px; height: 48px; margin: 0 auto 16px; border: 1.5px solid rgba(200,164,92,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--gold); background: var(--ink); }
+  .conf-timeline-title { font-size: 15px; font-weight: 600; color: white; margin-bottom: 4px; }
+  .conf-timeline-time { font-size: 12px; font-weight: 600; color: var(--gold); letter-spacing: 0.5px; margin-bottom: 8px; }
+  .conf-timeline-desc { font-size: 13px; color: rgba(255,255,255,0.35); line-height: 1.5; }
+  .conf-booking { margin-bottom: 48px; }
+  .conf-booking-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; background: var(--red); padding: 24px 32px; }
+  .conf-booking-left { display: flex; align-items: center; gap: 16px; }
+  .conf-booking-icon { width: 52px; height: 52px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 50%; }
+  .conf-booking-title { font-size: 17px; font-weight: 700; color: white; }
+  .conf-booking-sub { font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+  .conf-booking-btn { display: inline-block; padding: 14px 28px; background: var(--ink); color: white; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; white-space: nowrap; transition: all 0.2s ease; flex-shrink: 0; }
+  .conf-booking-btn:hover { background: var(--ink-light); transform: translateY(-1px); }
+  .conf-booking-alt { text-align: center; font-size: 13px; color: rgba(255,255,255,0.3); padding: 12px 0 0; }
+  .conf-bottom { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; }
+  .conf-rdv-preview { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 32px; }
+  .conf-rdv-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+  .conf-rdv-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .conf-rdv-item:last-child { border-bottom: none; }
+  .conf-rdv-icon { width: 36px; height: 36px; background: rgba(200,164,92,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .conf-rdv-text { font-size: 14px; color: rgba(255,255,255,0.6); }
+  .conf-meanwhile { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 32px; display: flex; flex-direction: column; }
+  .conf-meanwhile-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 20px; }
+  .conf-link { display: flex; align-items: center; gap: 14px; padding: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); text-decoration: none; transition: all 0.2s ease; margin-bottom: 12px; }
+  .conf-link:last-child { margin-bottom: 0; }
+  .conf-link:hover { background: rgba(255,255,255,0.06); border-color: rgba(250,72,56,0.3); }
+  .conf-link:hover .conf-link-text { color: var(--red); }
+  .conf-link-text { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.6); }
+
+  /* Contact block */
+  .conf-contact-block { display: flex; align-items: flex-start; gap: 14px; padding: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); }
+  .conf-contact-info { flex: 1; }
+  .conf-contact-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .conf-action-btn { display: inline-flex; align-items: center; gap: 4px; padding: 7px 14px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; text-decoration: none; transition: all 0.2s ease; }
+  a.conf-action-btn[href^="tel"] { background: rgba(250,72,56,0.1); color: var(--red); border: 1px solid rgba(250,72,56,0.2); }
+  a.conf-action-btn[href^="tel"]:hover { background: rgba(250,72,56,0.2); }
+  .conf-action-btn.email-copy { background: rgba(200,164,92,0.1); color: var(--gold); border: 1px solid rgba(200,164,92,0.2); cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .conf-action-btn.email-copy:hover { background: rgba(200,164,92,0.2); }
+  .conf-action-btn.email-copy.copied { background: rgba(45,138,78,0.15); color: var(--success); border-color: rgba(45,138,78,0.3); }
+
+  /* eBook modal */
+  .ebook-overlay { display: none; position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); align-items: center; justify-content: center; }
+  .ebook-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .ebook-modal { background: var(--ink); border: 1px solid rgba(255,255,255,0.1); max-width: 480px; width: 90%; padding: 40px; position: relative; text-align: center; animation: modalSlide 0.3s ease; }
+  @keyframes modalSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .ebook-close { position: absolute; top: 16px; right: 16px; background: none; border: none; color: rgba(255,255,255,0.3); font-size: 24px; cursor: pointer; line-height: 1; padding: 4px; transition: color 0.2s; }
+  .ebook-close:hover { color: white; }
+  .ebook-icon { width: 56px; height: 56px; margin: 0 auto 20px; background: rgba(200,164,92,0.1); border: 1px solid rgba(200,164,92,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .ebook-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: white; margin-bottom: 10px; }
+  .ebook-desc { font-size: 14px; color: rgba(255,255,255,0.45); line-height: 1.6; margin-bottom: 24px; }
+  .ebook-desc strong { color: rgba(255,255,255,0.7); font-weight: 600; }
+  .ebook-list { text-align: left; margin-bottom: 28px; }
+  .ebook-list-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; font-size: 13px; color: rgba(255,255,255,0.55); }
+  .ebook-list-item svg { flex-shrink: 0; margin-top: 1px; }
+  .ebook-confirm-btn { display: inline-block; width: 100%; padding: 14px; background: var(--gold); color: var(--ink); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.5px; border: none; cursor: pointer; transition: all 0.2s ease; }
+  .ebook-confirm-btn:hover { background: var(--gold-light); }
+  .ebook-note { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 12px; }
+  .ebook-sent { display: none; text-align: center; }
+  .ebook-sent.show { display: block; }
+
+  /* METHOD */
+  .method { padding: 120px 48px; background: var(--white); }
+  .method-inner { max-width: 1100px; margin: 0 auto; }
+  .method-header { text-align: center; max-width: 640px; margin: 0 auto 80px; }
+  .method-eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; }
+  .method-header h2 { font-family: 'Playfair Display', serif; font-size: clamp(30px, 3.5vw, 44px); font-weight: 700; color: var(--ink); line-height: 1.15; margin-bottom: 20px; }
+  .method-header p { font-size: 17px; color: var(--muted); line-height: 1.7; }
+  .phases { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; margin-bottom: 64px; }
+  .phase-card { padding: 0 36px; position: relative; }
+  .phase-card:not(:last-child)::after { content: ''; position: absolute; right: 0; top: 20px; bottom: 20px; width: 1px; background: var(--border); }
+  .phase-num-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  .phase-num-line { flex: 1; height: 1px; background: var(--border); }
+  .phase-num { font-family: 'Playfair Display', serif; font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+  .phase-big-num { font-family: 'Playfair Display', serif; font-size: 72px; font-weight: 800; line-height: 1; margin-bottom: 16px; opacity: 0.06; }
+  .phase-card h3 { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; margin-bottom: 16px; letter-spacing: -0.3px; }
+  .phase-card p { font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
+  .phase-tag { display: inline-block; padding: 8px 16px; font-size: 12px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; }
+  .phase-card:nth-child(1) h3 { color: var(--ink); }
+  .phase-card:nth-child(2) h3 { color: var(--gold-dark); }
+  .phase-card:nth-child(3) h3 { color: var(--red); }
+  .phase-card:nth-child(1) .phase-tag { background: rgba(20,20,36,0.06); color: var(--ink); }
+  .phase-card:nth-child(2) .phase-tag { background: rgba(200,164,92,0.1); color: var(--gold-dark); }
+  .phase-card:nth-child(3) .phase-tag { background: rgba(250,72,56,0.08); color: var(--red); }
+  .method-cta-wrap { text-align: center; padding: 48px; background: var(--cream); border: 1px solid var(--border); }
+  .method-cta-wrap p { font-size: 17px; color: var(--muted); margin-bottom: 6px; }
+  .method-cta-wrap .big { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 24px; }
+  .method-cta { display: inline-block; padding: 16px 40px; background: var(--red); color: white; font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none; transition: all 0.3s ease; }
+  .method-cta:hover { background: var(--red-light); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(250,72,56,0.25); }
+
+  /* COMPARISON */
+  .comparison { padding: 100px 48px; background: var(--ink); color: white; }
+  .comparison-inner { max-width: 900px; margin: 0 auto; }
+  .comparison-header { text-align: center; margin-bottom: 56px; }
+  .comparison-header h2 { font-family: 'Playfair Display', serif; font-size: clamp(28px, 3vw, 38px); font-weight: 700; margin-bottom: 16px; }
+  .comparison-header p { font-size: 16px; color: rgba(255,255,255,0.45); }
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .comp-col { padding: 40px; }
+  .comp-col.classic { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); }
+  .comp-col.gary { background: rgba(250,72,56,0.06); border: 1px solid rgba(250,72,56,0.2); }
+  .comp-col h3 { font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 28px; }
+  .comp-col.classic h3 { color: rgba(255,255,255,0.35); }
+  .comp-col.gary h3 { color: var(--red); }
+  .comp-item { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; }
+  .comp-item:last-child { margin-bottom: 0; }
+  .comp-icon { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; margin-top: 2px; }
+  .comp-col.classic .comp-icon { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); }
+  .comp-col.gary .comp-icon { background: rgba(250,72,56,0.15); color: var(--red); }
+  .comp-item .comp-text { font-size: 15px; line-height: 1.5; }
+  .comp-col.classic .comp-text { color: rgba(255,255,255,0.5); }
+  .comp-col.gary .comp-text { color: rgba(255,255,255,0.85); }
+
+  /* TRUST */
+  .trust { padding: 100px 48px; background: var(--white); }
+  .trust-inner { max-width: 1100px; margin: 0 auto; }
+  .trust-header { text-align: center; margin-bottom: 56px; }
+  .trust-header h2 { font-family: 'Playfair Display', serif; font-size: clamp(28px, 3vw, 38px); font-weight: 700; color: var(--ink); margin-bottom: 12px; }
+  .trust-header p { font-size: 16px; color: var(--muted); }
+  .testimonials { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 56px; }
+  .testimonial { padding: 36px; background: var(--cream); border: 1px solid var(--border); position: relative; }
+  .testimonial::before { content: '\201C'; font-family: 'Playfair Display', serif; font-size: 64px; color: var(--red); opacity: 0.2; position: absolute; top: 16px; left: 28px; line-height: 1; }
+  .testimonial blockquote { font-size: 15px; line-height: 1.7; color: var(--text); font-style: italic; margin-bottom: 20px; padding-top: 20px; }
+  .testimonial-author { display: flex; align-items: center; gap: 12px; }
+  .testimonial-avatar { width: 40px; height: 40px; background: var(--ink); color: var(--red); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+  .testimonial-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .testimonial-detail { font-size: 12px; color: var(--muted); }
+  .trust-numbers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .trust-num { text-align: center; padding: 32px 20px; border: 1px solid var(--border); }
+  .trust-num .val { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 800; color: var(--ink); }
+  .trust-num .unit { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  /* PORTALS */
+  .portals { padding: 60px 48px; background: var(--cream); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .portals-inner { max-width: 900px; margin: 0 auto; text-align: center; }
+  .portals-label { font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 24px; }
+  .portal-logos { display: flex; justify-content: center; align-items: center; gap: 48px; flex-wrap: wrap; }
+  .portal-logo { font-size: 18px; font-weight: 700; color: var(--muted); opacity: 0.5; letter-spacing: 1px; }
+
+  /* FINAL CTA */
+  .final-cta { padding: 120px 48px; background: var(--ink); color: white; text-align: center; position: relative; overflow: hidden; }
+  .final-cta::before { content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(250,72,56,0.06) 0%, transparent 70%); border-radius: 50%; }
+  .final-cta-inner { max-width: 600px; margin: 0 auto; position: relative; z-index: 1; }
+  .final-cta h2 { font-family: 'Playfair Display', serif; font-size: clamp(32px, 4vw, 48px); font-weight: 700; line-height: 1.15; margin-bottom: 20px; }
+  .final-cta h2 span { color: var(--red); }
+  .final-cta p { font-size: 17px; color: rgba(255,255,255,0.5); margin-bottom: 40px; line-height: 1.7; }
+  .final-cta-btn { display: inline-block; padding: 18px 48px; background: var(--red); color: white; font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none; transition: all 0.3s ease; }
+  .final-cta-btn:hover { background: var(--red-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(250,72,56,0.3); }
+  .final-cta-note { margin-top: 20px; font-size: 13px; color: rgba(255,255,255,0.3); }
+
+  /* FOOTER */
+  .footer { padding: 40px 48px; background: #0e0e1a; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo svg { height: 22px; width: auto; }
+  .footer-links { display: flex; gap: 32px; }
+  .footer-links a { font-size: 13px; color: rgba(255,255,255,0.35); text-decoration: none; }
+  .footer-links a:hover { color: var(--red); }
+
+  /* Form validation */
+  .form-error { font-size: 12px; color: #ff6b6b; background: rgba(255,107,107,0.08); padding: 0; max-height: 0; overflow: hidden; transition: all 0.3s ease; border-left: 2px solid transparent; }
+  .form-error.visible { padding: 8px 12px; max-height: 60px; margin-bottom: 8px; border-left-color: #ff6b6b; }
+  .form-group.has-error input { border-color: #ff6b6b !important; }
+
+  /* Phone verify */
+  .phone-verify-row { display: flex; gap: 8px; }
+  .phone-verify-row input { flex: 1; }
+  .phone-verify-btn { padding: 12px 18px; background: rgba(250,72,56,0.12); color: var(--red); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; border: 1px solid rgba(250,72,56,0.25); cursor: pointer; transition: all 0.2s ease; white-space: nowrap; flex-shrink: 0; }
+  .phone-verify-btn:hover { background: rgba(250,72,56,0.2); }
+  .phone-verify-btn.loading { opacity: 0.5; pointer-events: none; }
+  .phone-verify-btn.sent { background: rgba(200,164,92,0.1); color: var(--gold); border-color: rgba(200,164,92,0.25); }
+  .phone-verified { display: none; align-items: center; gap: 6px; font-size: 12px; color: var(--success); margin-top: 6px; font-weight: 500; }
+  .phone-verified.show { display: flex; }
+
+  /* SMS code */
+  .sms-code-section { display: none; margin-bottom: 14px; animation: smsSlide 0.3s ease; }
+  .sms-code-section.show { display: block; }
+  @keyframes smsSlide { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  .sms-code-label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 8px; }
+  .sms-code-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .sms-code-input { width: 48px; height: 52px; text-align: center; font-family: 'DM Sans', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: 0; background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.15); color: white; outline: none; transition: border-color 0.2s; }
+  .sms-code-input:focus { border-color: var(--red); background: rgba(250,72,56,0.06); }
+  .sms-code-input.correct { border-color: var(--success); background: rgba(45,138,78,0.1); }
+  .sms-code-input.wrong { border-color: #ff6b6b; background: rgba(255,107,107,0.08); animation: smsShake 0.4s ease; }
+  @keyframes smsShake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-4px); } 40%,80% { transform: translateX(4px); } }
+  .sms-code-footer { display: flex; align-items: center; justify-content: space-between; }
+  .sms-code-error { font-size: 11px; color: #ff6b6b; }
+  .sms-resend { background: none; border: none; color: rgba(255,255,255,0.25); font-family: 'DM Sans', sans-serif; font-size: 11px; cursor: pointer; padding: 0; transition: color 0.2s; }
+  .sms-resend:not(:disabled):hover { color: var(--gold); }
+  .sms-resend:disabled { cursor: default; }
+
+  /* Micro-trust */
+  .form-trust { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 10px; margin-bottom: 4px; }
+  .form-trust svg { opacity: 0.5; }
+
+  /* Sticky mobile CTA */
+  .sticky-cta { display: none; }
+
+  @media (max-width: 900px) {
+    .sticky-cta { display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 150; background: var(--ink); border-top: 1px solid rgba(255,255,255,0.1); padding: 12px 20px; align-items: center; justify-content: space-between; gap: 12px; transform: translateY(100%); transition: transform 0.3s ease; }
+    .sticky-cta.visible { transform: translateY(0); }
+    .sticky-cta-text { font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 500; }
+    .sticky-cta-text span { display: block; font-size: 11px; color: rgba(255,255,255,0.35); font-weight: 400; }
+    .sticky-cta-btn { padding: 12px 24px; background: var(--red); color: white; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; text-decoration: none; white-space: nowrap; flex-shrink: 0; }
+
+    .hero { padding: 90px 24px 60px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+    .phases { grid-template-columns: 1fr; gap: 48px; }
+    .phase-card:not(:last-child)::after { display: none; }
+    .comp-grid { grid-template-columns: 1fr; }
+    .testimonials { grid-template-columns: 1fr; }
+    .trust-numbers { grid-template-columns: 1fr 1fr; }
+    .nav { padding: 16px 24px; }
+    .method, .comparison, .trust, .final-cta { padding: 80px 24px; }
+    .footer { flex-direction: column; gap: 20px; text-align: center; }
+    .form-row, .form-row-3 { grid-template-columns: 1fr; }
+    .checkbox-row { flex-direction: column; }
+    .toggle-row { flex-direction: column; }
+    .confirmation-page { padding: 100px 24px 60px; }
+    .conf-timeline { grid-template-columns: 1fr; gap: 32px; }
+    .conf-timeline::before { display: none; }
+    .conf-bottom { grid-template-columns: 1fr; }
+    .conf-booking-inner { flex-direction: column; text-align: center; }
+    .conf-booking-left { flex-direction: column; }
+    .conf-booking-btn { width: 100%; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV with real SVG logo -->
+<nav class="nav" id="nav">
+  <a href="#" class="nav-logo">
+    <svg viewBox="0 0 1372 309" xmlns="http://www.w3.org/2000/svg"><g fill="#FFFFFF"><path d="M12,156.2C12,72.9,73.2,9.4,162.1,9.4c58.5,0,102.7,25.5,127,62l-42.8,27.8c-15.7-26.5-44.7-44.1-84.2-44.1c-57.8,0-96.3,43.4-96.3,101.1c0,58.1,38.6,101.9,96.3,101.9c47.2,0,81-26.3,89.6-68.5h-92.5v-43.9h151c0,93.3-57.2,157.4-148.1,157.4C73.2,303,12,239.5,12,156.2z"/><path d="M505.7,15.2h57l114.6,282.1h-53.5L594.4,223H474l-29.4,74.3h-53.3L505.7,15.2z M577.9,178.5L534.3,67.7l-43.8,110.7H577.9z"/><path d="M787.6,15.2h100.4c69.1,0,101.1,32.2,101.1,80.2c0,40.1-26.1,71-76,77.3l110.3,124.5h-63.1L854.7,175.8h-16.5v121.5h-50.7V15.2z M883.7,134.1c34.7,0,51.4-13.2,51.4-38.2c0-24.9-16.7-38.2-51.4-38.2h-45.5v76.4H883.7z"/><path d="M1192.1,177.1l-112.3-162h56.6l81.2,119.5l81.2-119.5h56.4l-112.4,162v120.1h-50.7V177.1z"/></g></svg>
+  </a>
+  <a href="#form" class="nav-cta">Estimer mon bien</a>
+</nav>
+
+<section class="hero" id="heroSection">
+  <div class="hero-grid">
+    <div class="hero-content">
+      <div class="hero-eyebrow">Estimation immobilière</div>
+      <h1>Ne mettez pas votre bien en ligne.<em>Orchestrez sa vente.</em></h1>
+      <p class="hero-sub">Notre méthode de vente en 3 phases crée la compétition entre acquéreurs à chaque étape. Résultat : un prix de vente optimisé et un processus que vous maîtrisez.</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="num">3</div><div class="label">Phases de vente</div></div>
+        <div class="hero-stat"><div class="num">48h</div><div class="label">Estimation détaillée</div></div>
+        <div class="hero-stat"><div class="num">100%</div><div class="label">Gratuit & sans engagement</div></div>
+      </div>
+    </div>
+
+    <div class="hero-form-wrap" id="form">
+      <div class="form-title">Estimez votre bien</div>
+      <div class="form-sub">Commencez par nous décrire votre bien</div>
+
+      <!-- STEP 1 -->
+      <div class="form-step expanded" id="step1">
+        <div class="form-step-header"><div class="form-step-num active" id="num1">1</div><span class="form-step-label active" id="lbl1">Votre bien</span><div class="form-step-line"></div></div>
+        <div class="form-group"><label>Type de bien</label><select><option value="" disabled selected>Sélectionner</option><option>Appartement</option><option>Maison individuelle</option><option>Villa mitoyenne</option><option>Immeuble</option><option>Terrain</option></select></div>
+        <div class="form-row">
+          <div class="form-group"><label>Pièces</label><select><option value="" disabled selected>Pièces</option><option>1-2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7+</option></select></div>
+          <div class="form-group"><label>Surface</label><select><option value="" disabled selected>Surface</option><option>&lt; 50 m²</option><option>50-80 m²</option><option>80-120 m²</option><option>120-180 m²</option><option>180-250 m²</option><option>250+ m²</option></select></div>
+        </div>
+        <div class="form-group"><label>Adresse du bien</label><input type="text" id="addressAutocomplete" placeholder="Commencez à taper l'adresse..."></div>
+        <div class="form-row-3">
+          <div class="form-group"><label>NPA</label><input type="text" id="fieldNpa" placeholder="1200"></div>
+          <div class="form-group"><label>Localité</label><input type="text" id="fieldCity" placeholder="Genève"></div>
+        </div>
+        <button type="button" class="form-next" onclick="goToStep(2)">Continuer →</button>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="form-step collapsed" id="step2">
+        <div class="form-step-header"><div class="form-step-num pending" id="num2">2</div><span class="form-step-label pending" id="lbl2">Votre projet</span><div class="form-step-line"></div></div>
+        <div class="form-group"><label>Où en êtes-vous ?</label><select><option value="" disabled selected>Sélectionner</option><option>Je veux vendre dans les 3 mois</option><option>Je veux vendre dans les 6 mois</option><option>Je réfléchis encore</option><option>Je veux juste connaître la valeur</option></select></div>
+        <div class="form-group">
+          <label>Votre bien est-il déjà en vente ?</label>
+          <div class="toggle-row" id="toggleAlreadySelling">
+            <button type="button" class="toggle-btn active" data-value="non">Non</button>
+            <button type="button" class="toggle-btn" data-value="oui">Oui, avec une agence</button>
+          </div>
+        </div>
+        <div class="expand-section" id="alreadySellingDetails">
+          <div class="expand-inner">
+            <div class="expand-hint">Ces informations nous permettent d'identifier ce qui peut être amélioré.</div>
+            <div class="form-group"><label>Depuis combien de temps ?</label><select><option value="" disabled selected>Sélectionner</option><option>Moins d'un mois</option><option>1 à 3 mois</option><option>3 à 6 mois</option><option>Plus de 6 mois</option></select></div>
+            <div class="form-group"><label>Sur quels portails ?</label>
+              <div class="checkbox-row">
+                <label class="checkbox-label"><input type="checkbox"><span>Homegate</span></label>
+                <label class="checkbox-label"><input type="checkbox"><span>ImmoScout24</span></label>
+                <label class="checkbox-label"><input type="checkbox"><span>Immobilier.ch</span></label>
+                <label class="checkbox-label"><input type="checkbox"><span>Autre</span></label>
+              </div>
+            </div>
+            <div class="form-group"><label>Prix déjà baissé ?</label>
+              <div class="toggle-row" id="togglePriceReduced">
+                <button type="button" class="toggle-btn active" data-value="non">Non</button>
+                <button type="button" class="toggle-btn" data-value="oui">Oui</button>
+                <button type="button" class="toggle-btn" data-value="nsp">Je ne sais pas</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="form-next" onclick="goToStep(3)">Dernière étape →</button>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="form-step collapsed" id="step3">
+        <div class="form-step-header"><div class="form-step-num pending" id="num3">3</div><span class="form-step-label pending" id="lbl3">Vos coordonnées</span><div class="form-step-line"></div></div>
+        <div class="form-row">
+          <div class="form-group"><label>Nom</label><input type="text" id="fieldNom" placeholder="Votre nom"></div>
+          <div class="form-group"><label>Prénom</label><input type="text" id="fieldPrenom" placeholder="Votre prénom"></div>
+        </div>
+        <div class="form-group" id="phoneGroup">
+          <label>Téléphone</label>
+          <div class="phone-verify-row">
+            <input type="tel" id="fieldPhone" placeholder="+41 79 000 00 00">
+            <button type="button" class="phone-verify-btn" id="sendCodeBtn" onclick="sendSmsCode()">Vérifier</button>
+          </div>
+          <div class="phone-verified" id="phoneVerified"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2d8a4e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Numéro vérifié</div>
+        </div>
+        <!-- SMS code input (hidden by default) -->
+        <div class="sms-code-section" id="smsCodeSection">
+          <label class="sms-code-label">Code reçu par SMS</label>
+          <div class="sms-code-row">
+            <input type="text" class="sms-code-input" id="smsCode1" maxlength="1" inputmode="numeric" autocomplete="one-time-code">
+            <input type="text" class="sms-code-input" id="smsCode2" maxlength="1" inputmode="numeric">
+            <input type="text" class="sms-code-input" id="smsCode3" maxlength="1" inputmode="numeric">
+            <input type="text" class="sms-code-input" id="smsCode4" maxlength="1" inputmode="numeric">
+          </div>
+          <div class="sms-code-footer">
+            <span class="sms-code-error" id="smsError"></span>
+            <button type="button" class="sms-resend" id="resendBtn" onclick="sendSmsCode()" disabled>Renvoyer (<span id="resendTimer">60</span>s)</button>
+          </div>
+        </div>
+        <div class="form-group"><label>Email <span class="form-optional">optionnel</span></label><input type="email" id="fieldEmail" placeholder="votre@email.ch"></div>
+        <div class="form-error" id="formError"></div>
+        <button type="button" class="form-submit" onclick="showConfirmation()">Recevoir mon estimation gratuite</button>
+        <div class="form-trust"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Vos données restent strictement confidentielles</div>
+        <div class="form-note">Estimation par un courtier expert de votre quartier · Sans engagement</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONFIRMATION -->
+<section class="confirmation-page" id="confirmationPage">
+  <div class="conf-inner">
+    <div class="conf-header">
+      <div class="conf-check-circle"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FA4838" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <h2 class="conf-title">Demande reçue, <span id="confName">merci</span>.</h2>
+      <p class="conf-sub">Votre demande d'estimation a bien été envoyée. Voici la suite :</p>
+    </div>
+    <div class="conf-timeline">
+      <div class="conf-timeline-step"><div class="conf-timeline-dot">1</div><div class="conf-timeline-title">Analyse de votre bien</div><div class="conf-timeline-time">Prochaines heures</div><div class="conf-timeline-desc">Un courtier expert de votre quartier prépare une évaluation du marché local.</div></div>
+      <div class="conf-timeline-step"><div class="conf-timeline-dot">2</div><div class="conf-timeline-title">Planification du RDV</div><div class="conf-timeline-time">Sous 24h</div><div class="conf-timeline-desc">Réservez un créneau ci-dessous, ou attendez notre appel pour fixer la visite.</div></div>
+      <div class="conf-timeline-step"><div class="conf-timeline-dot">3</div><div class="conf-timeline-title">Estimation sur place</div><div class="conf-timeline-time">À la date convenue</div><div class="conf-timeline-desc">Visite, estimation détaillée et stratégie de vente personnalisée en 3 phases.</div></div>
+    </div>
+    <div class="conf-booking">
+      <div class="conf-booking-inner">
+        <div class="conf-booking-left">
+          <div class="conf-booking-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          <div><div class="conf-booking-title">Réservez votre RDV d'estimation</div><div class="conf-booking-sub">30 min · à votre domicile · gratuit et sans engagement</div></div>
+        </div>
+        <a href="https://calendly.com/gary-immobilier" target="_blank" class="conf-booking-btn">Choisir un créneau</a>
+      </div>
+      <div class="conf-booking-alt">Vous préférez être rappelé ? Notre équipe vous contacte sous 24h.</div>
+    </div>
+    <div class="conf-bottom">
+      <div class="conf-rdv-preview">
+        <div class="conf-rdv-label">Ce que votre courtier vous apportera</div>
+        <div class="conf-rdv-item"><div class="conf-rdv-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c8a45c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><div class="conf-rdv-text">Estimation chiffrée avec fourchette de prix</div></div>
+        <div class="conf-rdv-item"><div class="conf-rdv-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c8a45c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="conf-rdv-text">Analyse des ventes récentes dans votre quartier</div></div>
+        <div class="conf-rdv-item"><div class="conf-rdv-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c8a45c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div><div class="conf-rdv-text">Stratégie de vente personnalisée (Off-Market, Coming Soon ou Public)</div></div>
+        <div class="conf-rdv-item"><div class="conf-rdv-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c8a45c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="conf-rdv-text">Calendrier prévisionnel de vente</div></div>
+      </div>
+      <div class="conf-meanwhile">
+        <div class="conf-meanwhile-label">En attendant</div>
+        <a href="https://gary.ch/acheter/" target="_blank" class="conf-link"><span class="conf-rdv-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c8a45c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span class="conf-link-text">Découvrir nos biens en vente</span></a>
+        <a href="#" onclick="showEbookModal();return false;" class="conf-link"><span class="conf-rdv-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c8a45c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span><span class="conf-link-text">Recevoir notre guide de vente (eBook gratuit)</span></a>
+        <div class="conf-contact-block">
+          <div class="conf-rdv-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c8a45c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div>
+          <div class="conf-contact-info">
+            <span class="conf-link-text">Nous contacter</span>
+            <div class="conf-contact-actions">
+              <a href="tel:+41225570700" class="conf-action-btn">+41 22 557 07 00</a>
+              <button type="button" class="conf-action-btn email-copy" onclick="copyEmail(this)">gary@gary.ch — copier</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METHOD -->
+<section class="method">
+  <div class="method-inner">
+    <div class="method-header">
+      <div class="method-eyebrow">Notre approche exclusive</div>
+      <h2>Une stratégie en 3 phases pour vendre au meilleur prix</h2>
+      <p>La plupart des agences publient votre bien immédiatement sur tous les portails. Nous faisons l'inverse : une diffusion séquentielle qui crée l'urgence à chaque étape.</p>
+    </div>
+    <div class="phases">
+      <div class="phase-card"><div class="phase-big-num">01</div><div class="phase-num-wrap"><span class="phase-num">Phase 1</span><div class="phase-num-line"></div></div><h3>Off-Market</h3><p>Votre bien est présenté exclusivement à un cercle restreint d'acquéreurs qualifiés. La rareté crée la valeur et les premières offres arrivent avant toute publication.</p><div class="phase-tag">Crée l'exclusivité</div></div>
+      <div class="phase-card"><div class="phase-big-num">02</div><div class="phase-num-wrap"><span class="phase-num">Phase 2</span><div class="phase-num-line"></div></div><h3>Coming Soon</h3><p>La visibilité s'élargit progressivement. Les acquéreurs qui n'ont pas agi en phase 1 réalisent que la fenêtre d'opportunité se referme.</p><div class="phase-tag">Amplifie la demande</div></div>
+      <div class="phase-card"><div class="phase-big-num">03</div><div class="phase-num-wrap"><span class="phase-num">Phase 3</span><div class="phase-num-line"></div></div><h3>Public</h3><p>Publication sur tous les portails. Votre bien arrive sur le marché avec un historique de demandes déjà constitué et une dynamique de prix favorable.</p><div class="phase-tag">Maximise le prix</div></div>
+    </div>
+    <div class="method-cta-wrap">
+      <p>Chaque bien est différent. Chaque stratégie aussi.</p>
+      <div class="big">Découvrez quelle approche maximise la valeur de votre bien lors de votre estimation personnalisée.</div>
+      <a href="#form" class="method-cta">Demander mon estimation</a>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section class="comparison">
+  <div class="comparison-inner">
+    <div class="comparison-header"><h2>Pourquoi cette méthode change tout</h2><p>Deux approches. Deux résultats très différents.</p></div>
+    <div class="comp-grid">
+      <div class="comp-col classic"><h3>Approche classique</h3><div class="comp-item"><div class="comp-icon">→</div><div class="comp-text">Publication immédiate sur tous les portails</div></div><div class="comp-item"><div class="comp-icon">→</div><div class="comp-text">Visites massives dès la première semaine</div></div><div class="comp-item"><div class="comp-icon">→</div><div class="comp-text">L'intérêt retombe après quelques semaines</div></div><div class="comp-item"><div class="comp-icon">→</div><div class="comp-text">Pression à la baisse sur le prix</div></div><div class="comp-item"><div class="comp-icon">→</div><div class="comp-text">Le vendeur subit le calendrier</div></div></div>
+      <div class="comp-col gary"><h3>Méthode GARY</h3><div class="comp-item"><div class="comp-icon">✦</div><div class="comp-text">Diffusion progressive et contrôlée</div></div><div class="comp-item"><div class="comp-icon">✦</div><div class="comp-text">Chaque phase génère une nouvelle vague de demandes</div></div><div class="comp-item"><div class="comp-icon">✦</div><div class="comp-text">L'intérêt se renouvelle à chaque étape</div></div><div class="comp-item"><div class="comp-icon">✦</div><div class="comp-text">Compétition entre acquéreurs → prix optimisé</div></div><div class="comp-item"><div class="comp-icon">✦</div><div class="comp-text">Le vendeur décide du rythme</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section class="trust">
+  <div class="trust-inner">
+    <div class="trust-header"><h2>Ils ont vendu avec la méthode GARY</h2><p>Des résultats concrets, racontés par nos clients.</p></div>
+    <div class="testimonials">
+      <div class="testimonial"><blockquote>Nous avons reçu deux offres avant même que le bien ne soit publié sur les portails. La phase off-market a créé exactement l'urgence dont nous avions besoin.</blockquote><div class="testimonial-author"><div class="testimonial-avatar">ML</div><div><div class="testimonial-name">M. & Mme L.</div><div class="testimonial-detail">Appartement 5 pièces · Champel</div></div></div></div>
+      <div class="testimonial"><blockquote>On pensait que mettre en ligne rapidement était la bonne stratégie. GARY nous a convaincus de faire l'inverse. Résultat : vendu en 6 semaines, au-dessus du prix estimé.</blockquote><div class="testimonial-author"><div class="testimonial-avatar">PD</div><div><div class="testimonial-name">P. Dumont</div><div class="testimonial-detail">Villa · Nyon</div></div></div></div>
+      <div class="testimonial"><blockquote>Ce qui m'a convaincu, c'est d'avoir le contrôle. À chaque phase, mon courtier m'expliquait où on en était et quelles étaient les options.</blockquote><div class="testimonial-author"><div class="testimonial-avatar">SF</div><div><div class="testimonial-name">S. Fischer</div><div class="testimonial-detail">Appartement 4 pièces · Carouge</div></div></div></div>
+      <div class="testimonial"><blockquote>J'avais déjà essayé avec une autre agence pendant 4 mois. Avec GARY, la stratégie en 3 phases a tout changé. Vendu en phase Coming Soon.</blockquote><div class="testimonial-author"><div class="testimonial-avatar">AR</div><div><div class="testimonial-name">A. Rousseau</div><div class="testimonial-detail">Maison mitoyenne · Meyrin</div></div></div></div>
+    </div>
+    <div class="trust-numbers">
+      <div class="trust-num"><div class="val">150+</div><div class="unit">Biens vendus</div></div>
+      <div class="trust-num"><div class="val">Genève</div><div class="unit">Nyon · Lausanne · Valais</div></div>
+      <div class="trust-num"><div class="val">48h</div><div class="unit">Estimation détaillée</div></div>
+      <div class="trust-num"><div class="val">4.9★</div><div class="unit">Avis Google</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="portals"><div class="portals-inner"><div class="portals-label">Votre bien diffusé sur les meilleurs portails</div><div class="portal-logos"><div class="portal-logo">Homegate</div><div class="portal-logo">ImmoScout24</div><div class="portal-logo">Immobilier.ch</div><div class="portal-logo">Acheter-Louer</div><div class="portal-logo">Realforce</div></div></div></section>
+
+<section class="final-cta"><div class="final-cta-inner"><h2>Prêt à découvrir la stratégie<br><span>adaptée à votre bien ?</span></h2><p>Chaque estimation inclut une analyse de marché détaillée et une recommandation personnalisée sur la stratégie de diffusion optimale.</p><a href="#form" class="final-cta-btn">Demander mon estimation gratuite</a><div class="final-cta-note">Gratuit · Sans engagement · Résultat sous 48h</div></div></section>
+
+<!-- EBOOK MODAL -->
+<div class="ebook-overlay" id="ebookOverlay" onclick="if(event.target===this)closeEbookModal()">
+  <div class="ebook-modal">
+    <button class="ebook-close" onclick="closeEbookModal()">×</button>
+    <div id="ebookContent">
+      <div class="ebook-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c8a45c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+      <div class="ebook-title">Notre guide de vente immobilière</div>
+      <div class="ebook-desc">Recevez gratuitement notre eBook avec la <strong>stratégie détaillée de vente en 3 phases</strong> utilisée par nos courtiers pour maximiser le prix de vente.</div>
+      <div class="ebook-list">
+        <div class="ebook-list-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c8a45c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Comment fonctionne la diffusion séquentielle</div>
+        <div class="ebook-list-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c8a45c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Les erreurs qui font baisser votre prix de vente</div>
+        <div class="ebook-list-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c8a45c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Checklist complète pour préparer votre bien</div>
+        <div class="ebook-list-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c8a45c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Étude de cas : ventes réalisées avec la méthode GARY</div>
+      </div>
+      <button class="ebook-confirm-btn" onclick="confirmEbook()">Recevoir le guide par email</button>
+      <div class="ebook-note">Envoyé à l'adresse email renseignée dans votre demande</div>
+    </div>
+    <div class="ebook-sent" id="ebookSent">
+      <div class="ebook-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2d8a4e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="ebook-title">C'est envoyé !</div>
+      <div class="ebook-desc">Vous recevrez notre guide de vente par email dans les prochaines minutes. Pensez à vérifier vos spams.</div>
+      <button class="ebook-confirm-btn" onclick="closeEbookModal()" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- STICKY MOBILE CTA -->
+<div class="sticky-cta" id="stickyCta">
+  <div class="sticky-cta-text">Estimation gratuite<span>Résultat sous 48h</span></div>
+  <a href="#form" class="sticky-cta-btn" onclick="event.preventDefault();document.getElementById('form').scrollIntoView({behavior:'smooth'})">Estimer mon bien</a>
+</div>
+
+<!-- FOOTER with real SVG logo (red version) -->
+<footer class="footer">
+  <a href="#" class="footer-logo">
+    <svg viewBox="0 0 1372 309" xmlns="http://www.w3.org/2000/svg"><g fill="#FA4838"><path d="M12,156.2C12,72.9,73.2,9.4,162.1,9.4c58.5,0,102.7,25.5,127,62l-42.8,27.8c-15.7-26.5-44.7-44.1-84.2-44.1c-57.8,0-96.3,43.4-96.3,101.1c0,58.1,38.6,101.9,96.3,101.9c47.2,0,81-26.3,89.6-68.5h-92.5v-43.9h151c0,93.3-57.2,157.4-148.1,157.4C73.2,303,12,239.5,12,156.2z"/><path d="M505.7,15.2h57l114.6,282.1h-53.5L594.4,223H474l-29.4,74.3h-53.3L505.7,15.2z M577.9,178.5L534.3,67.7l-43.8,110.7H577.9z"/><path d="M787.6,15.2h100.4c69.1,0,101.1,32.2,101.1,80.2c0,40.1-26.1,71-76,77.3l110.3,124.5h-63.1L854.7,175.8h-16.5v121.5h-50.7V15.2z M883.7,134.1c34.7,0,51.4-13.2,51.4-38.2c0-24.9-16.7-38.2-51.4-38.2h-45.5v76.4H883.7z"/><path d="M1192.1,177.1l-112.3-162h56.6l81.2,119.5l81.2-119.5h56.4l-112.4,162v120.1h-50.7V177.1z"/></g></svg>
+  </a>
+  <div class="footer-links"><a href="#">Nos biens</a><a href="#">Notre méthode</a><a href="#">Nos courtiers</a><a href="#">Contact</a><a href="#">Mentions légales</a></div>
+</footer>
+
+<script>
+// ========== ADDRESS AUTOCOMPLETE (Nominatim / OpenStreetMap — gratuit, sans clé) ==========
+(function() {
+  var input = document.getElementById('addressAutocomplete');
+  if (!input) return;
+
+  var dropdown = document.createElement('div');
+  dropdown.className = 'address-dropdown';
+  input.parentElement.style.position = 'relative';
+  input.parentElement.appendChild(dropdown);
+
+  var debounceTimer = null;
+
+  input.addEventListener('input', function() {
+    var q = input.value.trim();
+    clearTimeout(debounceTimer);
+    if (q.length < 3) { dropdown.innerHTML = ''; dropdown.style.display = 'none'; return; }
+
+    debounceTimer = setTimeout(function() {
+      fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=ch&limit=5&q=' + encodeURIComponent(q))
+        .then(function(r) { return r.json(); })
+        .then(function(results) {
+          dropdown.innerHTML = '';
+          if (!results.length) { dropdown.style.display = 'none'; return; }
+          results.forEach(function(item) {
+            var row = document.createElement('div');
+            row.className = 'address-dropdown-item';
+            row.textContent = item.display_name;
+            row.addEventListener('click', function() {
+              // Build clean address (road + house number)
+              var a = item.address || {};
+              var street = a.road || '';
+              if (a.house_number) street += ' ' + a.house_number;
+              input.value = street || item.display_name.split(',')[0];
+              // Fill NPA + city
+              if (a.postcode) document.getElementById('fieldNpa').value = a.postcode;
+              var city = a.city || a.town || a.village || a.municipality || '';
+              if (city) document.getElementById('fieldCity').value = city;
+              dropdown.innerHTML = '';
+              dropdown.style.display = 'none';
+            });
+            dropdown.appendChild(row);
+          });
+          dropdown.style.display = 'block';
+        })
+        .catch(function() { dropdown.style.display = 'none'; });
+    }, 300);
+  });
+
+  // Close dropdown on outside click
+  document.addEventListener('click', function(e) {
+    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.style.display = 'none';
+    }
+  });
+})();
+</script>
+
+<script>
+var nav = document.getElementById('nav');
+window.addEventListener('scroll', function() { nav.classList.toggle('scrolled', window.scrollY > 60); });
+document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+  a.addEventListener('click', function(e) { var h = a.getAttribute('href'); if (h.length <= 1) return; e.preventDefault(); var t = document.querySelector(h); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+});
+document.querySelectorAll('.toggle-row').forEach(function(row) {
+  row.querySelectorAll('.toggle-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() { row.querySelectorAll('.toggle-btn').forEach(function(b) { b.classList.remove('active'); }); btn.classList.add('active'); });
+  });
+});
+var toggleSelling = document.getElementById('toggleAlreadySelling');
+var expandSection = document.getElementById('alreadySellingDetails');
+toggleSelling.querySelectorAll('.toggle-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    if (btn.getAttribute('data-value') === 'oui') { expandSection.classList.add('open'); } else { expandSection.classList.remove('open'); }
+  });
+});
+function goToStep(n) {
+  for (var i = 1; i <= 3; i++) {
+    var step = document.getElementById('step' + i);
+    var num = document.getElementById('num' + i);
+    var lbl = document.getElementById('lbl' + i);
+    if (i < n) { step.className = 'form-step collapsed'; num.className = 'form-step-num done'; lbl.className = 'form-step-label done'; }
+    else if (i === n) { step.className = 'form-step expanded'; num.className = 'form-step-num active'; lbl.className = 'form-step-label active'; }
+    else { step.className = 'form-step collapsed'; num.className = 'form-step-num pending'; lbl.className = 'form-step-label pending'; }
+  }
+}
+// ========== SMS VERIFICATION ==========
+var phoneVerified = false;
+var resendInterval = null;
+
+function sendSmsCode() {
+  var phone = document.getElementById('fieldPhone');
+  var phoneVal = phone.value.trim();
+  var btn = document.getElementById('sendCodeBtn');
+
+  // Validate phone format before sending
+  if (!phoneVal || phoneVal.replace(/\s/g, '').length < 10) {
+    phone.parentElement.parentElement.classList.add('has-error');
+    return;
+  }
+  phone.parentElement.parentElement.classList.remove('has-error');
+
+  // Show loading state
+  btn.textContent = '...';
+  btn.classList.add('loading');
+
+  // ── TODO BACKEND: Appel API pour envoyer le SMS ──
+  // fetch('/api/sms/send', { method: 'POST', body: JSON.stringify({ phone: phoneVal }) })
+  //   .then(r => r.json()).then(data => { ... })
+  // ──────────────────────────────────────────────────
+  // Simulation: délai 1s puis affiche le champ code
+  setTimeout(function() {
+    btn.textContent = 'Envoyé';
+    btn.classList.remove('loading');
+    btn.classList.add('sent');
+
+    // Show code input
+    document.getElementById('smsCodeSection').classList.add('show');
+    document.getElementById('smsCode1').focus();
+
+    // Lock phone field
+    phone.setAttribute('readonly', true);
+    phone.style.opacity = '0.5';
+
+    // Start resend countdown
+    startResendTimer();
+  }, 800);
+}
+
+function startResendTimer() {
+  var seconds = 60;
+  var btn = document.getElementById('resendBtn');
+  var timer = document.getElementById('resendTimer');
+  btn.disabled = true;
+  timer.textContent = seconds;
+  clearInterval(resendInterval);
+  resendInterval = setInterval(function() {
+    seconds--;
+    timer.textContent = seconds;
+    if (seconds <= 0) {
+      clearInterval(resendInterval);
+      btn.disabled = false;
+      btn.innerHTML = 'Renvoyer le code';
+    }
+  }, 1000);
+}
+
+function verifySmsCode() {
+  var code = '';
+  for (var i = 1; i <= 4; i++) { code += document.getElementById('smsCode' + i).value; }
+  if (code.length < 4) return;
+
+  var inputs = document.querySelectorAll('.sms-code-input');
+  var errorEl = document.getElementById('smsError');
+
+  // ── TODO BACKEND: Vérifier le code SMS ──
+  // fetch('/api/sms/verify', { method: 'POST', body: JSON.stringify({ phone, code }) })
+  //   .then(r => r.json()).then(data => { if (data.valid) { onVerified(); } else { onFailed(); } })
+  // ─────────────────────────────────────────
+  // Simulation: accepte tout code à 4 chiffres
+  var isValid = /^\d{4}$/.test(code);
+
+  if (isValid) {
+    phoneVerified = true;
+    inputs.forEach(function(el) { el.classList.add('correct'); el.setAttribute('readonly', true); });
+    errorEl.textContent = '';
+
+    // Show verified state
+    setTimeout(function() {
+      document.getElementById('smsCodeSection').classList.remove('show');
+      document.getElementById('sendCodeBtn').style.display = 'none';
+      document.getElementById('phoneVerified').classList.add('show');
+      clearInterval(resendInterval);
+    }, 500);
+  } else {
+    inputs.forEach(function(el) { el.classList.add('wrong'); el.value = ''; });
+    errorEl.textContent = 'Code incorrect';
+    setTimeout(function() { inputs.forEach(function(el) { el.classList.remove('wrong'); }); document.getElementById('smsCode1').focus(); }, 400);
+  }
+}
+
+// Auto-advance & paste handling for code inputs
+document.querySelectorAll('.sms-code-input').forEach(function(input, idx) {
+  input.addEventListener('input', function() {
+    this.value = this.value.replace(/[^0-9]/g, '');
+    if (this.value.length === 1) {
+      var next = document.getElementById('smsCode' + (idx + 2));
+      if (next) next.focus(); else verifySmsCode();
+    }
+  });
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Backspace' && !this.value && idx > 0) {
+      document.getElementById('smsCode' + idx).focus();
+    }
+  });
+  input.addEventListener('paste', function(e) {
+    e.preventDefault();
+    var paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 4);
+    for (var j = 0; j < paste.length; j++) {
+      var el = document.getElementById('smsCode' + (j + 1));
+      if (el) el.value = paste[j];
+    }
+    if (paste.length === 4) verifySmsCode();
+  });
+});
+
+// ========== COPY EMAIL ==========
+function copyEmail(btn) {
+  navigator.clipboard.writeText('gary@gary.ch').then(function() {
+    btn.textContent = '✓ Copié !';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'gary@gary.ch — copier'; btn.classList.remove('copied'); }, 2500);
+  });
+}
+
+// ========== EBOOK MODAL ==========
+function showEbookModal() {
+  document.getElementById('ebookOverlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeEbookModal() {
+  document.getElementById('ebookOverlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+function confirmEbook() {
+  // ── TODO BACKEND: Envoyer l'eBook à l'email du prospect ──
+  // var email = document.getElementById('fieldEmail').value;
+  // fetch('/api/ebook/send', { method: 'POST', body: JSON.stringify({ email }) })
+  // ──────────────────────────────────────────────────────────
+  document.getElementById('ebookContent').style.display = 'none';
+  document.getElementById('ebookSent').classList.add('show');
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeEbookModal(); });
+
+// ========== FORM SUBMISSION ==========
+function showConfirmation() {
+  var phone = document.getElementById('fieldPhone');
+  var nom = document.getElementById('fieldNom');
+  var prenom = document.getElementById('fieldPrenom');
+  var error = document.getElementById('formError');
+  // Clear previous errors
+  document.querySelectorAll('.has-error').forEach(function(el) { el.classList.remove('has-error'); });
+  error.classList.remove('visible');
+  error.textContent = '';
+  // Validate name
+  var nomVal = nom.value.trim();
+  if (!nomVal || !prenom.value.trim()) {
+    error.textContent = 'Merci de renseigner votre nom et prénom.';
+    error.classList.add('visible');
+    if (!nomVal) nom.parentElement.classList.add('has-error');
+    if (!prenom.value.trim()) prenom.parentElement.classList.add('has-error');
+    return;
+  }
+  // Validate phone entered
+  var phoneVal = phone.value.trim();
+  if (!phoneVal || phoneVal.replace(/\s/g, '').length < 10) {
+    error.textContent = 'Merci de renseigner un numéro de téléphone valide.';
+    error.classList.add('visible');
+    phone.parentElement.parentElement.classList.add('has-error');
+    phone.focus();
+    return;
+  }
+  // Validate phone verified
+  if (!phoneVerified) {
+    error.textContent = 'Merci de vérifier votre numéro de téléphone par SMS.';
+    error.classList.add('visible');
+    return;
+  }
+  // Success
+  document.getElementById('confName').textContent = prenom.value.trim();
+  document.getElementById('heroSection').style.display = 'none';
+  document.getElementById('stickyCta').style.display = 'none';
+  var cp = document.getElementById('confirmationPage');
+  cp.style.display = 'block'; cp.classList.add('visible');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Sticky mobile CTA — show after scrolling past hero form
+var stickyCta = document.getElementById('stickyCta');
+var formWrap = document.getElementById('form');
+var heroSection = document.getElementById('heroSection');
+function checkSticky() {
+  if (!heroSection || heroSection.style.display === 'none') { stickyCta.classList.remove('visible'); return; }
+  var rect = formWrap.getBoundingClientRect();
+  // Show when form is scrolled out of view
+  if (rect.bottom < 0) { stickyCta.classList.add('visible'); }
+  else { stickyCta.classList.remove('visible'); }
+}
+window.addEventListener('scroll', checkSticky, { passive: true });
+</script>
+</body>
+</html>
