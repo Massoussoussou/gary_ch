@@ -360,7 +360,7 @@ export default function BuyIntro() {
       </section>
 
       {/* 2) FiltersBar + SortMenu + ListingGrid — passe par-dessus */}
-      <section ref={listingsRef} className="relative bg-white" style={{ zIndex: 2 }}>
+      <section ref={listingsRef} className="relative bg-white pt-10 md:pt-14" style={{ zIndex: 2 }}>
         <div className="relative">
           <FiltersBar
             cities={facets.cities}

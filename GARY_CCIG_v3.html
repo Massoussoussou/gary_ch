@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GARY – Présentation CCIG</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-dark: #0D0D0D;
+      --bg-card: rgba(255, 255, 255, 0.03);
+      --bg-glass: rgba(255, 255, 255, 0.05);
+      --gary-red: #FF4539;
+      --gary-red-light: #FF6B62;
+      --gary-red-dark: #E63D32;
+      --text-primary: #FFFFFF;
+      --text-secondary: #A8A8A8;
+      --text-muted: #666666;
+      --border: rgba(255, 255, 255, 0.1);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* Slides container */
+    .presentation {
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 80px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+      background: var(--bg-dark);
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .slide.active .animate-in {
+      animation: fadeSlideUp 0.8s ease forwards;
+    }
+
+    .slide.active .animate-in-delay-1 { animation-delay: 0.1s; }
+    .slide.active .animate-in-delay-2 { animation-delay: 0.2s; }
+    .slide.active .animate-in-delay-3 { animation-delay: 0.3s; }
+    .slide.active .animate-in-delay-4 { animation-delay: 0.4s; }
+    .slide.active .animate-in-delay-5 { animation-delay: 0.5s; }
+    .slide.active .animate-in-delay-6 { animation-delay: 0.6s; }
+    .slide.active .animate-in-delay-7 { animation-delay: 0.7s; }
+
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes lineGrow {
+      from { width: 0; }
+      to { width: 60px; }
+    }
+
+    .animate-in {
+      opacity: 0;
+    }
+
+    /* Typography */
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-size: 3.5rem;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-size: 2.8rem;
+      line-height: 1.2;
+    }
+
+    .label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gary-red);
+      margin-bottom: 16px;
+    }
+
+    .subtitle {
+      font-size: 1.4rem;
+      font-weight: 300;
+      color: var(--text-secondary);
+      margin-top: 20px;
+    }
+
+    /* Slide 1 - Title */
+    .slide-title {
+      text-align: center;
+    }
+
+    .slide-title .logo-svg {
+      width: 400px;
+      height: auto;
+      margin-bottom: 30px;
+    }
+
+    .slide-title .logo-svg path {
+      fill: var(--gary-red);
+    }
+
+    .slide-title .separator {
+      width: 60px;
+      height: 3px;
+      background: var(--gary-red);
+      margin: 30px auto;
+    }
+
+    .slide.active .separator {
+      animation: lineGrow 0.8s ease 0.4s forwards;
+      width: 0;
+    }
+
+    .slide-title .tagline {
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: var(--text-secondary);
+    }
+
+    /* Content slides */
+    .slide-content {
+      width: 100%;
+      max-width: 1200px;
+      align-items: flex-start;
+    }
+
+    .slide-header {
+      margin-bottom: 50px;
+    }
+
+    /* Cards grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      width: 100%;
+    }
+
+    .card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--gary-red);
+    }
+
+    .card-accent {
+      border-left: 3px solid var(--gary-red);
+      border-radius: 0 16px 16px 0;
+    }
+
+    .card h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Two columns layout */
+    .two-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      width: 100%;
+    }
+
+    .col-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .big-text {
+      font-size: 1.6rem;
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--text-primary);
+    }
+
+    .big-text .accent {
+      color: var(--gary-red);
+      font-weight: 400;
+    }
+
+    .points-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .point {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .point-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--gary-red);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .point span {
+      font-size: 1.1rem;
+      color: var(--text-primary);
+    }
+
+    /* Timeline / Steps */
+    .steps {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      width: 100%;
+      gap: 20px;
+    }
+
+    .step {
+      flex: 1;
+      text-align: center;
+      position: relative;
+    }
+
+    .step-circle {
+      width: 70px;
+      height: 70px;
+      border: 2px solid var(--gary-red);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--gary-red);
+      transition: all 0.3s ease;
+    }
+
+    .step:hover .step-circle {
+      background: var(--gary-red);
+      color: var(--bg-dark);
+    }
+
+    .step h4 {
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .step p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .step-line {
+      position: absolute;
+      top: 35px;
+      left: calc(50% + 45px);
+      width: calc(100% - 90px);
+      height: 2px;
+      background: linear-gradient(90deg, var(--gary-red), var(--border));
+    }
+
+    .step:last-child .step-line {
+      display: none;
+    }
+
+    /* Client types */
+    .client-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      width: 100%;
+    }
+
+    .client-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .client-card:hover {
+      border-color: var(--gary-red);
+      transform: translateY(-4px);
+    }
+
+    .client-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      color: var(--gary-red);
+      margin-bottom: 12px;
+    }
+
+    .client-card p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Differentiators */
+    .diff-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 50px;
+      width: 100%;
+    }
+
+    .diff-item {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      padding: 8px 0;
+    }
+
+    .diff-bar {
+      width: 3px;
+      height: 50px;
+      background: var(--gary-red);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .diff-content h4 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .diff-content p {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+
+    /* ===== SLIDE INFLUENCEUR / DIGITAL ===== */
+    .slide-digital {
+      text-align: center;
+    }
+
+    .digital-hero {
+      margin-bottom: 50px;
+    }
+
+    .digital-stats {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 80px;
+      margin: 40px 0;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 5rem;
+      font-weight: 400;
+      color: var(--gary-red);
+      line-height: 1;
+    }
+
+    .stat-number-large {
+      font-size: 6.5rem;
+    }
+
+    .stat-label {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      margin-top: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .social-platforms {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 50px 0 40px;
+    }
+
+    .platform {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      opacity: 0.7;
+      transition: all 0.3s ease;
+    }
+
+    .platform:hover {
+      opacity: 1;
+      transform: translateY(-4px);
+    }
+
+    .platform-icon {
+      width: 50px;
+      height: 50px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      padding: 12px;
+      color: var(--text-secondary);
+    }
+
+    .platform-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .platform:hover .platform-icon {
+      border-color: var(--gary-red);
+      background: var(--bg-glass);
+      color: var(--text-primary);
+    }
+
+    .platform-name {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .digital-message {
+      font-size: 1.3rem;
+      color: var(--text-secondary);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .digital-message .accent {
+      color: var(--gary-red);
+    }
+
+    /* Slide Promotion */
+    .slide-promotion {
+      text-align: center;
+    }
+
+    .slide-promotion h2 {
+      font-size: 3rem;
+      margin-bottom: 50px;
+    }
+
+    .slide-promotion h2 .thin {
+      font-weight: 300;
+      color: var(--text-secondary);
+    }
+
+    .promo-points {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 30px 60px;
+      max-width: 900px;
+      margin: 0 auto 50px;
+      text-align: left;
+    }
+
+    .promo-point {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .promo-number {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--gary-red);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--gary-red);
+      flex-shrink: 0;
+    }
+
+    .promo-point p {
+      font-size: 1.15rem;
+      line-height: 1.5;
+      color: var(--text-primary);
+      padding-top: 4px;
+    }
+
+    .promo-conclusion {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      font-style: italic;
+      max-width: 700px;
+      margin: 0 auto;
+      padding-top: 30px;
+      border-top: 1px solid var(--border);
+    }
+
+    .promo-conclusion .accent {
+      color: var(--gary-red);
+      font-style: normal;
+    }
+
+    .promo-foundation {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      max-width: 500px;
+      margin: 10px auto 50px;
+    }
+
+    .promo-foundation .foundation-bar {
+      width: 3px;
+      height: 40px;
+      background: var(--gary-red);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .promo-foundation p {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.3rem;
+      color: var(--text-primary);
+      font-style: italic;
+    }
+
+    /* Conclusion slide */
+    .slide-conclusion {
+      text-align: center;
+    }
+
+    .slide-conclusion h1 {
+      font-size: 3rem;
+      max-width: 800px;
+      margin-bottom: 30px;
+    }
+
+    .slide-conclusion .separator {
+      width: 60px;
+      height: 3px;
+      background: var(--gary-red);
+      margin: 0 auto 30px;
+    }
+
+    .slide-conclusion .message {
+      font-size: 1.3rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      max-width: 600px;
+    }
+
+    .slide-conclusion .message .accent {
+      color: var(--gary-red);
+    }
+
+    .slide-conclusion .footer-info {
+      margin-top: 60px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .slide-conclusion .footer-info .red {
+      color: var(--gary-red);
+    }
+
+    /* Quote */
+    .quote {
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px 40px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Progress bar */
+    .progress-container {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 100;
+    }
+
+    .progress-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--border);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .progress-dot.active {
+      background: var(--gary-red);
+      transform: scale(1.2);
+    }
+
+    .progress-dot:hover {
+      background: var(--gary-red-light);
+    }
+
+    /* Navigation hint */
+    .nav-hint {
+      position: fixed;
+      bottom: 30px;
+      right: 40px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-hint kbd {
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-family: inherit;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .slide {
+        padding: 40px 50px;
+      }
+      
+      h1 { font-size: 2.5rem; }
+      h2 { font-size: 2rem; }
+      
+      .client-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .steps {
+        flex-wrap: wrap;
+      }
+      
+      .step {
+        flex: 0 0 45%;
+      }
+      
+      .step-line {
+        display: none;
+      }
+
+      .stat-number {
+        font-size: 3.5rem;
+      }
+
+      .stat-number-large {
+        font-size: 4.5rem;
+      }
+
+      .digital-stats {
+        gap: 40px;
+      }
+
+      .social-platforms {
+        gap: 25px;
+      }
+
+      .slide-title .logo-svg {
+        width: 280px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="presentation">
+    
+    <!-- Slide 1: Title -->
+    <div class="slide slide-title active" data-slide="0">
+      <p class="label animate-in">Genève</p>
+      <svg class="logo-svg animate-in animate-in-delay-1" viewBox="0 0 1372 309" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12,156.2C12,72.9,73.2,9.4,162.1,9.4c58.5,0,102.7,25.5,127,62l-42.8,27.8c-15.7-26.5-44.7-44.1-84.2-44.1c-57.8,0-96.3,43.4-96.3,101.1c0,58.1,38.6,101.9,96.3,101.9c47.2,0,81-26.3,89.6-68.5h-92.5v-43.9h151c0,93.3-57.2,157.4-148.1,157.4C73.2,303,12,239.5,12,156.2z"/>
+        <path d="M505.7,15.2h57l114.6,282.1h-53.5L594.4,223H474l-29.4,74.3h-53.3L505.7,15.2z M577.9,178.5L534.3,67.7l-43.8,110.7H577.9z"/>
+        <path d="M787.6,15.2h100.4c69.1,0,101.1,32.2,101.1,80.2c0,40.1-26.1,71-76,77.3l110.3,124.5h-63.1L854.7,175.8h-16.5v121.5h-50.7V15.2z M883.7,134.1c34.7,0,51.4-13.2,51.4-38.2c0-24.9-16.7-38.2-51.4-38.2h-45.5v76.4H883.7z"/>
+        <path d="M1192.1,177.1l-112.3-162h56.6l81.2,119.5l81.2-119.5h56.4l-112.4,162v120.1h-50.7V177.1z"/>
+      </svg>
+      <div class="separator animate-in animate-in-delay-2"></div>
+      <p class="tagline animate-in animate-in-delay-3">La stratégie avant l'exposition</p>
+    </div>
+
+    <!-- Slide 2: DIGITAL / INFLUENCEUR - FRAPPE D'ENTRÉE -->
+    <div class="slide slide-digital" data-slide="1">
+      <div class="digital-hero">
+        <p class="label animate-in">Notre identité</p>
+        <h2 class="animate-in animate-in-delay-1" style="font-size: 3rem;">Les influenceurs de l'immobilier suisse</h2>
+      </div>
+      
+      <div class="digital-stats">
+        <div class="stat-item animate-in animate-in-delay-2">
+          <div class="stat-number stat-number-large">+40K</div>
+          <div class="stat-label">Abonnés</div>
+        </div>
+        <div class="stat-item animate-in animate-in-delay-3">
+          <div class="stat-number">500K</div>
+          <div class="stat-label">Vues / mois</div>
+        </div>
+      </div>
+
+      <div class="social-platforms">
+        <div class="platform animate-in animate-in-delay-4">
+          <div class="platform-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </div>
+          <span class="platform-name">Instagram</span>
+        </div>
+        <div class="platform animate-in animate-in-delay-4">
+          <div class="platform-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+          </div>
+          <span class="platform-name">TikTok</span>
+        </div>
+        <div class="platform animate-in animate-in-delay-5">
+          <div class="platform-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </div>
+          <span class="platform-name">LinkedIn</span>
+        </div>
+        <div class="platform animate-in animate-in-delay-5">
+          <div class="platform-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </div>
+          <span class="platform-name">Facebook</span>
+        </div>
+        <div class="platform animate-in animate-in-delay-6">
+          <div class="platform-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </div>
+          <span class="platform-name">YouTube</span>
+        </div>
+      </div>
+
+      <p class="digital-message animate-in animate-in-delay-7">
+        Votre bien touche une <span class="accent">audience que les portails n'atteignent pas</span>.<br>
+        Nous créons le désir avant même la mise en vente.
+      </p>
+    </div>
+
+    <!-- Slide 3: Problem / Constat -->
+    <div class="slide slide-content" data-slide="2">
+      <div class="slide-header">
+        <p class="label animate-in">Constat</p>
+        <h2 class="animate-in animate-in-delay-1">Ce qui fragilise les ventes aujourd'hui</h2>
+      </div>
+      <div class="cards-grid">
+        <div class="card card-accent animate-in animate-in-delay-2">
+          <h3>Surexposition trop rapide</h3>
+          <p>Un bien visible partout perd sa valeur perçue</p>
+        </div>
+        <div class="card card-accent animate-in animate-in-delay-3">
+          <h3>Signaux irréversibles</h3>
+          <p>Le marché n'oublie pas un bien "qui ne se vend pas"</p>
+        </div>
+        <div class="card card-accent animate-in animate-in-delay-4">
+          <h3>Prix mal testés</h3>
+          <p>Un prix public mal calibré crée un signal négatif durable</p>
+        </div>
+        <div class="card card-accent animate-in animate-in-delay-5">
+          <h3>Confusion stratégique</h3>
+          <p>La visibilité n'est pas synonyme d'efficacité</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: Philosophy -->
+    <div class="slide slide-content" data-slide="3">
+      <div class="slide-header">
+        <p class="label animate-in">Philosophie</p>
+        <h2 class="animate-in animate-in-delay-1">Progressivité, contrôle, information</h2>
+      </div>
+      <div class="two-cols">
+        <div class="col-content animate-in animate-in-delay-2">
+          <p class="big-text">
+            Nous ne cherchons pas à vendre vite.<br>
+            <span class="accent">Nous cherchons à vendre juste.</span>
+          </p>
+          <p class="subtitle" style="margin-top: 24px; font-size: 1.1rem;">
+            En protégeant la valeur du bien et la position du propriétaire.
+          </p>
+        </div>
+        <div class="col-content">
+          <div class="points-list">
+            <div class="point animate-in animate-in-delay-3">
+              <div class="point-dot"></div>
+              <span>La publicité n'est jamais un réflexe</span>
+            </div>
+            <div class="point animate-in animate-in-delay-4">
+              <div class="point-dot"></div>
+              <span>L'information marché est un actif stratégique</span>
+            </div>
+            <div class="point animate-in animate-in-delay-5">
+              <div class="point-dot"></div>
+              <span>La relation vendeur prime sur la pression</span>
+            </div>
+            <div class="point animate-in animate-in-delay-6">
+              <div class="point-dot"></div>
+              <span>Chaque bien suit une stratégie sur mesure</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: Method -->
+    <div class="slide slide-content" data-slide="4">
+      <div class="slide-header">
+        <p class="label animate-in">Méthode</p>
+        <h2 class="animate-in animate-in-delay-1">Une approche en phases</h2>
+      </div>
+      <div class="steps" style="margin-top: 30px;">
+        <div class="step animate-in animate-in-delay-2">
+          <div class="step-circle">1</div>
+          <h4>Compréhension</h4>
+          <p>Cadrage & analyse</p>
+          <div class="step-line"></div>
+        </div>
+        <div class="step animate-in animate-in-delay-3">
+          <div class="step-circle">2</div>
+          <h4>Test marché</h4>
+          <p>Validation maîtrisée</p>
+          <div class="step-line"></div>
+        </div>
+        <div class="step animate-in animate-in-delay-4">
+          <div class="step-circle">3</div>
+          <h4>Ouverture</h4>
+          <p>Progressive & ciblée</p>
+          <div class="step-line"></div>
+        </div>
+        <div class="step animate-in animate-in-delay-5">
+          <div class="step-circle">4</div>
+          <h4>Ajustement</h4>
+          <p>Basé sur les faits</p>
+        </div>
+      </div>
+      <p class="quote animate-in animate-in-delay-6">
+        "Nous observons, testons et écoutons avant que le marché ne juge publiquement."
+      </p>
+    </div>
+
+    <!-- Slide 6: Clients -->
+    <div class="slide slide-content" data-slide="5">
+      <div class="slide-header">
+        <p class="label animate-in">Clientèle</p>
+        <h2 class="animate-in animate-in-delay-1">De l'entrepreneur au propriétaire privé</h2>
+      </div>
+      <div class="client-cards">
+        <div class="client-card animate-in animate-in-delay-2">
+          <h3>Chefs d'entreprise</h3>
+          <p>Une lecture claire du marché, sans discours commercial</p>
+        </div>
+        <div class="client-card animate-in animate-in-delay-3">
+          <h3>Familles en transition</h3>
+          <p>Accompagnement discret dans les moments clés</p>
+        </div>
+        <div class="client-card animate-in animate-in-delay-4">
+          <h3>Investisseurs</h3>
+          <p>Optimisation du timing et de la valeur de sortie</p>
+        </div>
+        <div class="client-card animate-in animate-in-delay-5">
+          <h3>Biens complexes</h3>
+          <p>Propriétés sensibles ou atypiques nécessitant finesse</p>
+        </div>
+      </div>
+      <p class="quote animate-in animate-in-delay-6">
+        Nos clients attendent une <span style="color: var(--gary-red);">aide à la décision</span>, pas une pression à la vente.
+      </p>
+    </div>
+
+    <!-- Slide 7: Promotion immobilière -->
+    <div class="slide slide-promotion" data-slide="6">
+      <p class="label animate-in">Promotion immobilière</p>
+      <h2 class="animate-in animate-in-delay-1">Autrement<span class="thin">.</span></h2>
+      
+      <div class="promo-points">
+        <div class="promo-point animate-in animate-in-delay-2">
+          <div class="promo-number">1</div>
+          <p>Nous ne rachetons pas votre terrain</p>
+        </div>
+        <div class="promo-point animate-in animate-in-delay-3">
+          <div class="promo-number">2</div>
+          <p>Vous restez propriétaire jusqu'à la vente finale</p>
+        </div>
+        <div class="promo-point animate-in animate-in-delay-4">
+          <div class="promo-number">3</div>
+          <p>Nous finançons et pilotons l'ensemble du projet</p>
+        </div>
+        <div class="promo-point animate-in animate-in-delay-5">
+          <div class="promo-number">4</div>
+          <p>Rémunérés uniquement si le projet aboutit</p>
+        </div>
+      </div>
+
+      <div class="promo-foundation animate-in animate-in-delay-6">
+        <div class="foundation-bar"></div>
+        <p>Nos intérêts sont alignés avec les vôtres.</p>
+      </div>
+
+      <p class="promo-conclusion animate-in animate-in-delay-7">
+        La valeur de votre bien se révèle par la <span class="accent">performance</span>, pas par une négociation initiale.
+      </p>
+    </div>
+
+    <!-- Slide 8: Differentiation -->
+    <div class="slide slide-content" data-slide="7">
+      <div class="slide-header">
+        <p class="label animate-in">Différenciation</p>
+        <h2 class="animate-in animate-in-delay-1">Ce que les autres ne font pas</h2>
+      </div>
+      <div class="diff-grid">
+        <div class="diff-item animate-in animate-in-delay-2">
+          <div class="diff-bar"></div>
+          <div class="diff-content">
+            <h4>GARY Boat</h4>
+            <p>Visites en bateau pour les biens pieds dans l'eau</p>
+          </div>
+        </div>
+        <div class="diff-item animate-in animate-in-delay-3">
+          <div class="diff-bar"></div>
+          <div class="diff-content">
+            <h4>Zéro tourisme immobilier</h4>
+            <p>Visites ciblées, pas de curieux</p>
+          </div>
+        </div>
+        <div class="diff-item animate-in animate-in-delay-4">
+          <div class="diff-bar"></div>
+          <div class="diff-content">
+            <h4>Contenus drone & immersifs</h4>
+            <p>Chaque bien mérite une mise en scène unique</p>
+          </div>
+        </div>
+        <div class="diff-item animate-in animate-in-delay-5">
+          <div class="diff-bar"></div>
+          <div class="diff-content">
+            <h4>Un seul interlocuteur</h4>
+            <p>Du premier contact à la signature notaire</p>
+          </div>
+        </div>
+        <div class="diff-item animate-in animate-in-delay-5">
+          <div class="diff-bar"></div>
+          <div class="diff-content">
+            <h4>40 ans d'expertise collective</h4>
+            <p>10 experts du marché genevois</p>
+          </div>
+        </div>
+        <div class="diff-item animate-in animate-in-delay-6">
+          <div class="diff-bar"></div>
+          <div class="diff-content">
+            <h4>Réseau de partenaires</h4>
+            <p>Notaires · avocats · architectes · banques</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 9: Conclusion -->
+    <div class="slide slide-conclusion" data-slide="8">
+      <h1 class="animate-in">Vendre un bien est une décision stratégique</h1>
+      <div class="separator animate-in animate-in-delay-1"></div>
+      <p class="message animate-in animate-in-delay-2">
+        La vraie question n'est pas où publier,<br>
+        mais <span class="accent">comment aborder le marché intelligemment</span>.
+      </p>
+      <p class="subtitle animate-in animate-in-delay-3" style="margin-top: 30px; font-size: 1.1rem; color: var(--text-secondary);">
+        Nous accompagnons cette réflexion avant même de parler de vente.
+      </p>
+      <div class="footer-info animate-in animate-in-delay-4">
+        <p>GARY SA – Genève</p>
+        <p><span class="red">Stratégie immobilière</span> · Vente résidentielle · Commercialisation maîtrisée</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Progress dots -->
+  <div class="progress-container">
+    <div class="progress-dot active" data-goto="0"></div>
+    <div class="progress-dot" data-goto="1"></div>
+    <div class="progress-dot" data-goto="2"></div>
+    <div class="progress-dot" data-goto="3"></div>
+    <div class="progress-dot" data-goto="4"></div>
+    <div class="progress-dot" data-goto="5"></div>
+    <div class="progress-dot" data-goto="6"></div>
+    <div class="progress-dot" data-goto="7"></div>
+    <div class="progress-dot" data-goto="8"></div>
+  </div>
+
+  <!-- Navigation hint -->
+  <div class="nav-hint">
+    <kbd>←</kbd> <kbd>→</kbd> pour naviguer · <kbd>F11</kbd> plein écran
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.progress-dot');
+    let currentSlide = 0;
+    const totalSlides = slides.length;
+
+    function goToSlide(index) {
+      if (index < 0 || index >= totalSlides) return;
+      
+      slides[currentSlide].classList.remove('active');
+      dots[currentSlide].classList.remove('active');
+      
+      slides[index].querySelectorAll('.animate-in').forEach(el => {
+        el.style.animation = 'none';
+        el.offsetHeight;
+        el.style.animation = null;
+      });
+      
+      currentSlide = index;
+      slides[currentSlide].classList.add('active');
+      dots[currentSlide].classList.add('active');
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) goToSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        goToSlide(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        goToSlide(totalSlides - 1);
+      }
+    });
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        goToSlide(parseInt(dot.dataset.goto));
+      });
+    });
+
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      const diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > 50) {
+        diff > 0 ? nextSlide() : prevSlide();
+      }
+    });
+  </script>
+</body>
+</html>

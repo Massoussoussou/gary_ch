@@ -58,9 +58,9 @@ function TinyButton({ active, children, className = "", ...rest }) {
     <button
       type="button"
       {...rest}
-      className={`relative inline-flex h-14 md:h-16 items-center justify-center gap-2 rounded-xl border px-4 md:px-6 text-[15px] md:text-[16px] ${
+      className={`relative inline-flex h-16 md:h-[4.5rem] items-center justify-center gap-2 border px-5 md:px-7 text-[15px] md:text-base ${
         active
-          ? "border-primary/70 bg-primary/5 text-primary shadow-[0_0_0_1px_rgba(0,0,0,0.02)]"
+          ? "border-[#FF4A3E]/50 bg-[#FF4A3E]/5 text-[#FF4A3E] shadow-[0_0_0_1px_rgba(0,0,0,0.02)]"
           : "border-line/70 bg-white text-text"
       } hover:bg-bgAlt/80 transition-colors ${className}`}
     >
@@ -83,7 +83,7 @@ function Stepper({ value = 0, onChange, min = 0, max = 10, className = "", size 
   return (
     <div className={`space-y-1 ${className}`}>
       {label && <label className="text-xs text-text/70">{label}</label>}
-      <div className={`inline-flex items-center rounded-xl border border-line/70 bg-white ${h}`}>
+      <div className={`inline-flex items-center border border-line/70 bg-white ${h}`}>
         <button
           type="button"
           onClick={() => set(v - 1)}
@@ -115,7 +115,7 @@ function Popover({ open, onClose, children, className = "" }) {
   return (
     <div
       ref={popRef}
-      className={`absolute left-0 top-full z-30 mt-2 w-[min(92vw,36rem)] rounded-2xl border border-line/70 bg-white p-3 shadow-xl ${className}`}
+      className={`absolute left-0 top-full z-30 mt-2 w-[min(92vw,36rem)] border border-line/70 bg-white p-3 shadow-xl ${className}`}
     >
       {children}
     </div>
@@ -149,7 +149,7 @@ function CityAutosuggest({ options = [], value, onChange, placeholder = "Ville" 
 
   return (
     <div className="relative" ref={wrapRef}>
-      <div className="h-12 md:h-14 flex items-center gap-2 rounded-2xl border border-line/70 bg-white px-4 md:px-5">
+      <div className="h-12 md:h-14 flex items-center gap-2 border border-line/70 bg-white px-4 md:px-5">
         <Search className="h-4 w-4 opacity-60" />
         <input
           className="w-full outline-none text-[15px] md:text-[16px]"
@@ -178,7 +178,7 @@ function CityAutosuggest({ options = [], value, onChange, placeholder = "Ville" 
       </div>
 
       {open && (
-        <div className="absolute z-30 mt-1 w-full rounded-xl border border-line/70 bg-white shadow-md">
+        <div className="absolute z-30 mt-1 w-full border border-line/70 bg-white shadow-md">
           {noResult ? (
             <div className="px-3 py-2 text-sm text-red-600">Cette ville n’est pas disponible</div>
           ) : (
@@ -225,7 +225,7 @@ function AdvancedModal({ open, onClose, children, activeCount = 0 }) {
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/20 backdrop-blur-[1px] px-4">
       <div
         ref={panelRef}
-        className="w-full max-w-5xl rounded-3xl border border-line/60 bg-white shadow-2xl"
+        className="w-full max-w-5xl border border-line/60 bg-white shadow-2xl"
       >
         {/* Header */}
         <div className="flex items-start justify-between gap-4 px-5 md:px-6 py-4 border-b border-line/60">
@@ -260,7 +260,7 @@ function AdvancedModal({ open, onClose, children, activeCount = 0 }) {
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex items-center justify-center rounded-xl border border-line/70 bg-bgAlt px-4 py-2 text-xs md:text-sm hover:bg-white"
+            className="inline-flex items-center justify-center border border-line/70 bg-bgAlt px-4 py-2 text-xs md:text-sm hover:bg-white"
           >
             Fermer
           </button>
@@ -284,6 +284,12 @@ export default function FiltersBar({
 }) {
   const [openKey, setOpenKey] = useState(null); // 'ville' | 'type' | 'budget' | 'chambres' | 'surface'
   const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [barRevealed, setBarRevealed] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setBarRevealed(true), 80);
+    return () => clearTimeout(t);
+  }, []);
 
   // Filtres principaux
   const [city, setCity] = useState(initialFilters.city || "");
@@ -430,11 +436,19 @@ export default function FiltersBar({
   /* --------------------------------- Render -------------------------------- */
 
   return (
-    <section className="my-10 md:my-14">
-      <div className="max-w-6xl mx-auto px-4">
-        {/* Carte principale : bords plus carrés, hauteur auto */}
-        <div className="relative z-[10] rounded-2xl border border-line/60 bg-white/98 shadow-xl ring-1 ring-black/5">
-          <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap lg:flex-nowrap items-center gap-3">
+    <section className="mt-6 mb-10 md:mt-8 md:mb-14">
+      <div className="max-w-7xl mx-auto px-4">
+        {/* Carte principale : rectangulaire, animation du centre vers les côtés */}
+        <div
+          className="relative z-[10] border border-line/60 bg-[#F5F0EB] shadow-xl ring-1 ring-black/5"
+          style={{
+            transform: barRevealed ? "scaleX(1)" : "scaleX(0)",
+            opacity: barRevealed ? 1 : 0,
+            transformOrigin: "center",
+            transition: "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease",
+          }}
+        >
+          <div className="px-5 py-5 md:px-6 md:py-6 flex flex-wrap lg:flex-nowrap items-center gap-3">
             {/* Boutons principaux */}
             <div className="flex items-center gap-2 flex-wrap lg:flex-nowrap">
               {/* Ville */}
@@ -475,7 +489,7 @@ export default function FiltersBar({
                           setType((prev) => (t === prev ? "" : t));
                           setOpenKey(null);
                         }}
-                        className={`rounded-xl border px-3 py-2 text-sm text-left ${
+                        className={`border px-3 py-2 text-sm text-left ${
                           t === type
                             ? "border-primary/60 bg-primary/5 text-primary"
                             : "border-line/70 hover:bg-bgAlt"
@@ -503,7 +517,7 @@ export default function FiltersBar({
                       placeholder="Min"
                       value={priceMin}
                       onChange={(e) => setPriceMin(e.target.value)}
-                      className="h-12 w-full rounded-xl border border-line/70 bg-white px-3"
+                      className="h-12 w-full border border-line/70 bg-white px-3"
                     />
                     <div className="flex gap-2">
                       <input
@@ -511,9 +525,9 @@ export default function FiltersBar({
                         placeholder="Max"
                         value={priceMax}
                         onChange={(e) => setPriceMax(e.target.value)}
-                        className="h-12 w-full rounded-xl border border-line/70 bg-white px-3"
+                        className="h-12 w-full border border-line/70 bg-white px-3"
                       />
-                      <div className="inline-flex h-12 items-center rounded-xl border border-line/70 bg-white px-3 text-sm">
+                      <div className="inline-flex h-12 items-center border border-line/70 bg-white px-3 text-sm">
                         CHF
                       </div>
                     </div>
@@ -566,14 +580,14 @@ export default function FiltersBar({
                       placeholder="Min (m²)"
                       value={surfaceMin}
                       onChange={(e) => setSurfaceMin(e.target.value)}
-                      className="h-12 w-full rounded-xl border border-line/70 bg-white px-3"
+                      className="h-12 w-full border border-line/70 bg-white px-3"
                     />
                     <input
                       inputMode="numeric"
                       placeholder="Max (m²)"
                       value={surfaceMax}
                       onChange={(e) => setSurfaceMax(e.target.value)}
-                      className="h-12 w-full rounded-xl border border-line/70 bg-white px-3"
+                      className="h-12 w-full border border-line/70 bg-white px-3"
                     />
                   </div>
                 </Popover>
@@ -584,14 +598,14 @@ export default function FiltersBar({
             <div className="ml-auto flex items-center gap-3 shrink-0">
               <button
                 type="button"
-                className="inline-flex h-14 md:h-16 items-center justify-center gap-2 rounded-xl border border-line/70 bg-white px-4 md:px-5 text-[15px] md:text-[16px] hover:bg-bgAlt/80"
+                className="inline-flex h-16 md:h-[4.5rem] items-center justify-center gap-2 border border-[#FF4A3E] bg-[#FF4A3E] text-white px-5 md:px-6 text-[15px] md:text-base hover:bg-[#e8423a] transition-colors"
                 onClick={() => setAdvancedOpen(true)}
                 aria-expanded={advancedOpen}
               >
                 <Filter className="h-4 w-4" />
-                <span>Avancés</span>
+                <span className="font-medium">Avancés</span>
                 {advancedCount > 0 && (
-                  <span className="text-xs rounded-full bg-primary/10 text-primary px-2 py-0.5">
+                  <span className="text-xs rounded-full bg-white/25 text-white px-2 py-0.5">
                     {advancedCount}
                   </span>
                 )}
@@ -609,12 +623,12 @@ export default function FiltersBar({
 
               <button
                 type="button"
-                className="inline-flex h-14 md:h-16 items-center justify-center gap-2 rounded-xl border border-line/70 bg-white px-4 md:px-5 text-[15px] md:text-[16px] hover:bg-bgAlt/80"
+                className="inline-flex h-16 md:h-[4.5rem] items-center justify-center gap-2 border border-[#FF4A3E]/30 bg-[#FF4A3E]/5 text-[#FF4A3E] px-5 md:px-6 text-[15px] md:text-base hover:bg-[#FF4A3E]/10 transition-colors"
                 onClick={resetAll}
                 title="Réinitialiser tous les filtres"
               >
                 <RotateCcw className="h-4 w-4" />
-                <span>Reset</span>
+                <span className="font-medium">Reset</span>
               </button>
             </div>
           </div>
@@ -647,7 +661,7 @@ export default function FiltersBar({
             <select
               value={canton}
               onChange={(e) => setCanton(e.target.value)}
-              className="h-10 w-full rounded-xl border border-line/70 bg-white px-3 text-sm"
+              className="h-10 w-full border border-line/70 bg-white px-3 text-sm"
             >
               <option value="">Tous</option>
               {cantons.map((c) => (
@@ -664,7 +678,7 @@ export default function FiltersBar({
               type="date"
               value={dispoBefore}
               onChange={(e) => setDispoBefore(e.target.value)}
-              className="h-10 w-full rounded-xl border border-line/70 bg-white px-3 text-sm"
+              className="h-10 w-full border border-line/70 bg-white px-3 text-sm"
             />
           </div>
 
@@ -674,7 +688,7 @@ export default function FiltersBar({
               inputMode="numeric"
               value={terrainMin}
               onChange={(e) => setTerrainMin(e.target.value)}
-              className="h-10 w-full rounded-xl border border-line/70 bg-white px-3 text-sm"
+              className="h-10 w-full border border-line/70 bg-white px-3 text-sm"
             />
           </div>
 
@@ -683,7 +697,7 @@ export default function FiltersBar({
             <button
               type="button"
               onClick={() => setMeuble((m) => !m)}
-              className={`w-full h-10 rounded-xl border px-3 text-sm ${
+              className={`w-full h-10 border px-3 text-sm ${
                 meuble
                   ? "border-primary/60 bg-primary/5 text-primary"
                   : "border-line/70 bg-white"
@@ -701,7 +715,7 @@ export default function FiltersBar({
                 {Object.values(atouts).filter(Boolean).length} sélectionné(s)
               </span>
             </div>
-            <div className="rounded-2xl border border-line/60 bg-white p-3">
+            <div className="border border-line/60 bg-white p-3">
               <div className="flex flex-wrap gap-2">
                 {ATOUTS_LIST.map((a) => {
                   const active = !!atouts[a.key];
@@ -734,7 +748,7 @@ export default function FiltersBar({
                 {extraFeatures.length} sélectionné(s)
               </span>
             </div>
-            <div className="rounded-2xl border border-line/60 bg-white p-3">
+            <div className="border border-line/60 bg-white p-3">
               <div className="flex flex-wrap gap-2">
                 {features.map((f) => {
                   const active = extraFeatures.includes(f);
@@ -788,7 +802,7 @@ export default function FiltersBar({
               inputMode="numeric"
               value={surfaceMin}
               onChange={(e) => setSurfaceMin(e.target.value)}
-              className="h-10 w-full rounded-xl border border-line/70 bg-white px-3 text-sm"
+              className="h-10 w-full border border-line/70 bg-white px-3 text-sm"
             />
           </div>
           <div className="space-y-2">
@@ -797,7 +811,7 @@ export default function FiltersBar({
               inputMode="numeric"
               value={surfaceMax}
               onChange={(e) => setSurfaceMax(e.target.value)}
-              className="h-10 w-full rounded-xl border border-line/70 bg-white px-3 text-sm"
+              className="h-10 w-full border border-line/70 bg-white px-3 text-sm"
             />
           </div>
         </div>

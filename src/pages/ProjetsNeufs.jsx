@@ -371,58 +371,68 @@ function CTAEnrollButton(){
           "url(https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2000&auto=format&fit=crop)",
       }}
     />
-    {/* filtre orange + léger assombrissement pour la lisibilité */}
-    <div
-      className="absolute inset-0"
-      style={{
-        background:
-          "linear-gradient(0deg, rgba(255,74,62,.22), rgba(255,74,62,.22)), radial-gradient(80% 80% at 50% 50%, rgba(0,0,0,.06), rgba(0,0,0,.18))",
-      }}
-      aria-hidden
-    />
+    {/* Voile blanc identique aux heros */}
+    <div aria-hidden className="absolute inset-0 z-[1] pointer-events-none">
+      <div className="absolute inset-0 bg-black/10" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/50 via-white/25 to-transparent md:from-white/60 md:via-white/30 md:to-transparent" />
+      <div className="absolute inset-0 md:bg-gradient-to-r md:from-white/55 md:via-white/25 md:to-transparent" />
+    </div>
 
     <div className="cta-coming-wrap">
-      <div className="cta-coming-inner">
-        <h2 className="cta-coming-title proj-serif">COMING&nbsp;SOON</h2>
+      <section className="relative mx-auto w-full max-w-7xl px-6 md:px-8">
+        <div className="relative flex justify-center">
+          <div className="relative w-full max-w-[min(680px,92vw)]">
+            {/* Tuile verre/blanc */}
+            <div className="absolute -inset-y-6 -inset-x-6 bg-white/55 backdrop-blur-sm z-0 rounded-3xl md:rounded-none" />
 
-        <p className="cta-coming-sub">
-          Inscrivez-vous pour recevoir en avant-première les
-          informations sur nos futurs programmes neufs.
-        </p>
+            <div className="relative z-10 text-center text-black">
+              <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-neutral-600 mb-3">
+                Projets à venir
+              </p>
 
-        {/* Form posé directement sur la slide */}
-        <form className="cta-coming-form">
-          <div className="field">
-            <label>Prénom</label>
-            <input type="text" placeholder="Votre prénom" />
-          </div>
-          <div className="field">
-            <label>Nom</label>
-            <input type="text" placeholder="Votre nom" />
-          </div>
-          <div className="field">
-            <label>Adresse e-mail</label>
-            <input type="email" placeholder="prenom.nom@email.com" />
-          </div>
-          <div className="field">
-            <label>Téléphone</label>
-            <input type="tel" placeholder="+33 6 12 34 56 78" />
-          </div>
-          <div className="field field--full">
-            <label>Je suis intéressé par</label>
-            <select defaultValue="maison">
-              <option value="maison">Maison</option>
-              <option value="appartement">Appartement</option>
-              <option value="autre">Autre</option>
-            </select>
-          </div>
+              <h2 className="font-serif tracking-[-0.03em] leading-[0.9] text-[clamp(2.4rem,7vw,4.8rem)]">
+                Coming<span className="text-[#FF4A3E]">&nbsp;</span>Soon
+              </h2>
 
-          {/* Bouton identique à la page About */}
-          <div className="field field--full flex justify-center pt-1">
-            <CTAEnrollButton />
+              <p className="mt-4 text-[clamp(1rem,2vw,1.2rem)] text-neutral-900/80 max-w-[46ch] mx-auto">
+                Inscrivez-vous pour recevoir en avant-première les
+                informations sur nos futurs programmes neufs.
+              </p>
+
+              <form className="cta-coming-form mt-7">
+                <div className="field">
+                  <label>Prénom</label>
+                  <input type="text" placeholder="Votre prénom" />
+                </div>
+                <div className="field">
+                  <label>Nom</label>
+                  <input type="text" placeholder="Votre nom" />
+                </div>
+                <div className="field">
+                  <label>Adresse e-mail</label>
+                  <input type="email" placeholder="prenom.nom@email.com" />
+                </div>
+                <div className="field">
+                  <label>Téléphone</label>
+                  <input type="tel" placeholder="+41 79 123 45 67" />
+                </div>
+                <div className="field field--full">
+                  <label>Je suis intéressé par</label>
+                  <select defaultValue="maison">
+                    <option value="maison">Maison</option>
+                    <option value="appartement">Appartement</option>
+                    <option value="autre">Autre</option>
+                  </select>
+                </div>
+
+                <div className="field field--full flex justify-center pt-2">
+                  <CTAEnrollButton />
+                </div>
+              </form>
+            </div>
           </div>
-        </form>
-      </div>
+        </div>
+      </section>
     </div>
   </>
 )}

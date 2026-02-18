@@ -222,7 +222,7 @@ function ActuHeroContent({ scrollToArticles }) {
               Actualités
             </p>
 
-            <h1 className="font-serif tracking-[-0.03em] leading-[0.95] md:leading-[0.9] text-[clamp(2.6rem,11vw,4.2rem)] md:text-[clamp(4.2rem,10vw,7.6rem)]">
+            <h1 className="font-serif tracking-[-0.03em] leading-[1.05] md:leading-[1] text-[clamp(2.6rem,11vw,4.2rem)] md:text-[clamp(4.2rem,10vw,7.6rem)]">
               Analyses et insights<span className="text-[#FF4A3E]">,</span>
               <br />
               <span className="block">par GARY.</span>

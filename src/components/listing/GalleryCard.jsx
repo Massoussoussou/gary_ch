@@ -133,18 +133,15 @@ export default function GalleryCard({ images = [], widthPx, onImageLoad, item })
           aria-modal="true"
           onClick={() => setOpen(false)}  // clic hors contenu => ferme
         >
-          {/* Conteneur image, on stoppe la propagation pour éviter la fermeture */}
+          {/* Conteneur image 3:2, centré, prend toute la largeur dispo */}
           <div
-            className="relative
-                       w-[92vw] max-w-[1200px] 
-                       h-[calc(100vh-var(--header-h,64px)-32px)] max-h-[820px]
-                       p-4 md:p-6"
+            className="relative w-[94vw] max-w-[1400px] aspect-[3/2]"
             onClick={(e) => e.stopPropagation()}
           >
             <img
               src={pics[i]}
               alt={item?.titre || ""}
-              className="absolute inset-0 w-full h-full object-contain"
+              className="absolute inset-0 w-full h-full object-contain rounded-sm"
             />
 
             {/* Croix de fermeture */}

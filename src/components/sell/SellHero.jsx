@@ -38,18 +38,15 @@ function SellHeroContent() {
 
           <div className="relative text-center px-3 sm:px-0 py-5 sm:py-0">
             <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-neutral-600 mb-3">
-              Vendre
+              Vendre avec GARY
             </p>
 
             <h1 className="font-serif tracking-[-0.03em] leading-[0.95] md:leading-[0.9] text-[clamp(2.6rem,11vw,4.2rem)] md:text-[clamp(4.2rem,10vw,7.6rem)]">
-              Vendez votre bien d'exception<span className="text-[#FF4A3E]">,</span>
-              <br />
-              <span className="block">discrètement.</span>
+              Vendre un bien est une décision stratégique<span className="text-[#FF4A3E]">.</span>
             </h1>
 
             <p className="mt-5 text-[clamp(1.05rem,2.1vw,1.4rem)] text-neutral-900/90 max-w-[52ch] mx-auto">
-              Sélection stricte d'acheteurs, marketing premium et accompagnement senior
-              pour optimiser votre prix et sécuriser la vente.
+              La vraie question n'est pas où publier, mais comment aborder le marché intelligemment.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">

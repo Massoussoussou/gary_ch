@@ -2,6 +2,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { ArrowLeft, Calendar, Tag } from "lucide-react";
 import actualites from "../data/actualites.json";
+import "../styles/projet.css";
 
 const categoryColors = {
   Article: "bg-black/80 text-white",
@@ -107,16 +108,17 @@ export default function ActualiteDetail() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Back button */}
-      <div className="max-w-4xl mx-auto px-4 md:px-6 pt-8 md:pt-12">
-        <button
-          onClick={() => navigate("/actualites")}
-          className="inline-flex items-center gap-2 text-neutral-600 hover:text-black transition-colors mb-8"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span className="font-medium">Retour aux actualités</span>
-        </button>
-      </div>
+      {/* Close button */}
+      <Link
+        to="/actualites"
+        className="close-back-btn"
+        aria-label="Revenir aux actualités"
+        title="Revenir aux actualités"
+      >
+        <svg className="close-back-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
+      </Link>
 
       {/* Hero image */}
       <div className="w-full aspect-[21/9] md:aspect-[21/7] overflow-hidden bg-neutral-100">
