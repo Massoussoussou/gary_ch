@@ -4,6 +4,7 @@ import { NavLink, Link, useLocation } from "react-router-dom";
 export default function DrawerNav({ open, onClose }) {
   const { pathname } = useLocation();
   const firstLinkRef = useRef(null);
+  const aboutSubsRef = useRef(null);
   const [aboutOpen, setAboutOpen] = useState(false);
 
   const isPathActive = (to) =>
@@ -53,7 +54,7 @@ export default function DrawerNav({ open, onClose }) {
   return (
     <div
       className={`
-        xl:hidden fixed inset-0 z-[9999]
+        xl:hidden fixed inset-0 z-[10000]
         transition-[visibility] duration-300
         ${open ? "visible" : "invisible"}
       `}
@@ -175,7 +176,23 @@ export default function DrawerNav({ open, onClose }) {
               <li>
                 <button
                   type="button"
-                  onClick={() => setAboutOpen((v) => !v)}
+                  onClick={() => {
+                    setAboutOpen((v) => {
+                      if (!v) {
+                        // Scroll le conteneur nav pour mettre les sous-options bien en vue
+                        setTimeout(() => {
+                          const el = aboutSubsRef.current;
+                          if (!el) return;
+                          const scrollParent = el.closest("[class*='overflow-y']") || el.closest("nav");
+                          if (scrollParent) {
+                            const target = el.offsetTop - 20;
+                            scrollParent.scrollTo({ top: target, behavior: "smooth" });
+                          }
+                        }, 100);
+                      }
+                      return !v;
+                    });
+                  }}
                   className={`
                     group relative w-full text-left block rounded-2xl px-5 py-3.5 overflow-hidden
                     border border-black/12
@@ -223,6 +240,7 @@ export default function DrawerNav({ open, onClose }) {
 
                 {/* Sous-menu dépliable */}
                 <div
+                  ref={aboutSubsRef}
                   className="overflow-hidden transition-all duration-300 ease-out"
                   style={{
                     maxHeight: aboutOpen ? `${aboutSubs.length * 56}px` : "0px",

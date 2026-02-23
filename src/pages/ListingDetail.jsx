@@ -31,7 +31,22 @@ function fmtPrice(amount, currency = "CHF") {
 const THUMB_W = 150;
 const THUMB_GAP = 10;
 const THUMB_STEP = THUMB_W + THUMB_GAP;
-const THUMB_VISIBLE = 4;
+// THUMB_VISIBLE est maintenant dynamique (3 ou 4) — voir useThumbVisible() ci-dessous
+const THUMB_BREAKPOINT = 1536; // en dessous → 3 vignettes, au dessus → 4
+
+function useThumbVisible() {
+  const [count, setCount] = useState(() =>
+    typeof window !== "undefined" && window.innerWidth >= THUMB_BREAKPOINT ? 4 : 3
+  );
+  useEffect(() => {
+    const mql = window.matchMedia(`(min-width: ${THUMB_BREAKPOINT}px)`);
+    const handler = (e) => setCount(e.matches ? 4 : 3);
+    handler(mql);              // sync initial
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, []);
+  return count;
+}
 
 // Carrousel miniatures — constantes mobile
 const M_THUMB_W = 80;
@@ -42,6 +57,8 @@ export default function ListingDetail() {
   const { id } = useParams();
   const { data, loading, error } = useProperties();
   const item = pickByIdOrSlug(data, id);
+
+  const THUMB_VISIBLE = useThumbVisible();
 
   const [isReady, setIsReady] = useState(false);
   const [isTileVisible, setIsTileVisible] = useState(true);
@@ -447,7 +464,7 @@ export default function ListingDetail() {
         /* === CARROUSEL MINIATURES === */
         .listing-thumbs-carousel {
           overflow: hidden;
-          width: calc(150px * 4 + 10px * 3); /* 4 thumbs + 3 gaps */
+          /* width dynamique via inline style (3 ou 4 thumbs selon écran) */
           padding: 10px;
           margin: -10px;
         }
@@ -605,7 +622,7 @@ export default function ListingDetail() {
       `}</style>
 
       {/* IMAGE HERO FIXÉE — desktop uniquement */}
-      <div className="hidden md:block fixed inset-0" style={{ zIndex: 0 }}>
+      <div className="hidden xl:block fixed inset-0" style={{ zIndex: 0 }}>
         <div className={["listing-hero", isReady ? "is-visible" : ""].join(" ")} style={{ position: "absolute", inset: 0 }}>
           {/* Images empilées + wipe */}
           <div className="absolute inset-0 overflow-hidden">
@@ -686,7 +703,7 @@ export default function ListingDetail() {
       </div>
 
       {/* SPACER hero — desktop uniquement */}
-      <section className={`listing-spacer ${isReady ? "is-visible" : ""} hidden md:block relative w-full pointer-events-none`} style={{ zIndex: 1, height: "calc(100vh - var(--header-h, 72px))" }}>
+      <section className={`listing-spacer ${isReady ? "is-visible" : ""} hidden xl:block relative w-full pointer-events-none`} style={{ zIndex: 1, height: "calc(100vh - var(--header-h, 72px))" }}>
         {/* Tuile + miniatures avec parallax */}
         <div
           ref={tileRef}
@@ -717,9 +734,12 @@ export default function ListingDetail() {
               </h1>
             </div>
 
-            {/* Carrousel miniatures infini — 4 visibles, active en position 2 */}
+            {/* Carrousel miniatures infini — 3 ou 4 visibles selon écran, active en position 2 */}
             {totalImages > 1 && (
-              <div className={`listing-thumbs-carousel hidden md:block ${thumbCarousel.simple ? "listing-thumbs-carousel--simple" : ""}`}>
+              <div
+                className={`listing-thumbs-carousel hidden md:block ${thumbCarousel.simple ? "listing-thumbs-carousel--simple" : ""}`}
+                style={thumbCarousel.simple ? {} : { width: `${THUMB_W * THUMB_VISIBLE + THUMB_GAP * (THUMB_VISIBLE - 1)}px` }}
+              >
                 <div
                   className="listing-thumbs-track"
                   style={thumbCarousel.simple ? {} : {
@@ -763,7 +783,7 @@ export default function ListingDetail() {
       </section>
 
       {/* === VERSION MOBILE — galerie + miniatures + titre === */}
-      <div className="md:hidden" style={{ zIndex: 2, position: "relative" }}>
+      <div className="xl:hidden" style={{ zIndex: 2, position: "relative" }}>
         {/* Galerie swipeable style iPhone */}
         <div className="relative">
           <div ref={galleryRef} className="listing-mobile-gallery" onScroll={onGalleryScroll}>
@@ -944,9 +964,9 @@ export default function ListingDetail() {
               )}
 
               <div className="agent-contacts">
-                {agent.phone && (
-                  <a className="agent-chip" href={`tel:${agent.phone}`}>
-                    {agent.phone}
+                {(agent.phoneMobile || agent.phone) && (
+                  <a className="agent-chip" href={`tel:${agent.phoneMobile || agent.phone}`}>
+                    {agent.phoneMobile || agent.phone}
                   </a>
                 )}
                 {agent.email && (

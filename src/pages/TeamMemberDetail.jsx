@@ -3,8 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import team from '../data/team.json';
 import { Linkedin } from "lucide-react";
 
-
-
+import "../styles/projet.css";
 
 export default function Member() {
   const { slug } = useParams();
@@ -15,19 +14,24 @@ export default function Member() {
       <main className="mx-auto max-w-4xl px-4 py-16 text-center">
         <p className="text-gray-600">Membre introuvable.</p>
         <Link to="/a-propos" className="text-brand underline">
-          Retour à l’équipe
+          Retour à l'équipe
         </Link>
       </main>
     );
   }
 
-  
-
-
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 md:py-14">
-      <Link to="/a-propos" className="text-sm text-gray-500 hover:text-brand">
-        &larr; Retour à l’équipe
+      {/* Bouton croix animé (style ProjetNeufDetail) */}
+      <Link
+        to="/a-propos"
+        className="close-back-btn close-back-btn--inverted"
+        aria-label="Retour à l'équipe"
+        title="Retour à l'équipe"
+      >
+        <svg className="close-back-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
       </Link>
 
       <h1 className="mt-6 text-3xl font-bold md:text-4xl">{member.name}</h1>
@@ -62,27 +66,44 @@ export default function Member() {
 
           {/* Coordonnées cliquables */}
           <div className="flex flex-col gap-1.5 leading-6">
-            <a href={`tel:${member.phoneMobile}`} className="hover:underline">
-              {member.phoneMobile}
-            </a>
-            <a href={`tel:${member.phoneOffice}`} className="hover:underline">
-              {member.phoneOffice}
-            </a>
-            <a
-              href={`mailto:${member.email}`}
-              className="text-brand hover:underline"
-            >
-              {member.email}
-            </a>
-            <a
-              href={member.linkedin}
-              target="_blank"
-              rel="noreferrer"
-              className="text-brand hover:underline"
-            >
-              Profil LinkedIn
-            </a>
+            {member.phoneMobile && (
+              <a href={`tel:${member.phoneMobile}`} className="hover:underline">
+                {member.phoneMobile}
+              </a>
+            )}
+            {member.phoneOffice && (
+              <a href={`tel:${member.phoneOffice}`} className="hover:underline text-gray-500">
+                {member.phoneOffice}
+              </a>
+            )}
+            {member.email && (
+              <a
+                href={`mailto:${member.email}`}
+                className="text-brand hover:underline"
+              >
+                {member.email}
+              </a>
+            )}
+            {member.linkedin && (
+              <a
+                href={member.linkedin}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-brand hover:underline"
+              >
+                <Linkedin size={14} />
+                Profil LinkedIn
+              </a>
+            )}
           </div>
+
+          {/* Langues */}
+          {member.languages?.length > 0 && (
+            <div className="mt-4 pt-3 border-t border-gray-200">
+              <p className="text-xs text-gray-400 mb-1">Langues</p>
+              <p className="text-sm text-gray-700">{member.languages.join(", ")}</p>
+            </div>
+          )}
         </aside>
       </section>
     </main>

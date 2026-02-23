@@ -31,6 +31,7 @@ const constatCards = [
   {
     title: "Confusion stratégique",
     desc: "La visibilité n'est pas synonyme d'efficacité.",
+    mobileImg: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1200",
   },
 ];
 
@@ -163,10 +164,10 @@ function ConstatSection() {
 
           {constatCards.map((card, i) => (
             <div key={i} className="mb-14 last:mb-0">
-              {card.img && (
+              {(card.img || card.mobileImg) && (
                 <div className="overflow-hidden rounded-sm shadow-[0_4px_24px_rgba(0,0,0,0.06)] mb-5">
                   <img
-                    src={card.img}
+                    src={card.img || card.mobileImg}
                     alt={card.title}
                     className="w-full aspect-[4/3] object-cover"
                     loading="lazy"
@@ -261,16 +262,16 @@ function PhilosophieSection() {
                   }}
                 >
                   <div className="flex items-center gap-5 py-8 md:py-10 transition-all duration-500
-                                  group-hover:py-12 md:group-hover:py-14">
+                                  lg:group-hover:py-12 lg:group-hover:py-14">
                     <span className="w-[10px] h-[10px] rounded-full bg-[#FF4A3E] shrink-0
-                                     transition-transform duration-300 group-hover:scale-125" />
+                                     transition-transform duration-300 lg:group-hover:scale-125" />
                     <span className="font-serif text-[clamp(1.3rem,2.5vw,1.8rem)] tracking-[-0.01em]
                                      leading-[1.25] text-[#1A1A1A] flex-1">
                       {point.text}
                     </span>
-                    {/* Image au hover */}
-                    <div className="w-0 group-hover:w-[160px] lg:group-hover:w-[200px]
-                                    h-[90px] lg:h-[115px] shrink-0
+                    {/* Image au hover — desktop uniquement */}
+                    <div className="hidden lg:block w-0 group-hover:w-[200px]
+                                    h-[115px] shrink-0
                                     overflow-hidden rounded-sm
                                     transition-all duration-500 opacity-0 group-hover:opacity-100">
                       <img
@@ -280,6 +281,15 @@ function PhilosophieSection() {
                         loading="lazy"
                       />
                     </div>
+                  </div>
+                  {/* Image visible directement — mobile/tablette */}
+                  <div className="lg:hidden overflow-hidden rounded-sm mb-6 -mt-2">
+                    <img
+                      src={point.img}
+                      alt=""
+                      className="w-full aspect-[16/9] object-cover"
+                      loading="lazy"
+                    />
                   </div>
                 </div>
               ))}

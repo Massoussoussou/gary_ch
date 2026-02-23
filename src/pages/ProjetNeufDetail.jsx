@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { usePromotionDetail } from "../hooks/usePromotions.js";
 import team from "../data/team.json";
@@ -66,6 +66,8 @@ export default function ProjetNeufDetail() {
   const specsRef = useRef(null);   // ancre 2e description (juste sous le hero)
   const catRef = useRef(null);     // ancre galerie
   const bottomRef = useRef(null);  // ancre bas de page (carte + agent)
+  const mobileGalleryRef = useRef(null);
+  const [mobileImgIdx, setMobileImgIdx] = useState(0);
 
   /* --------- Overlay d'entrée (voile court) --------- */
   useEffect(() => {
@@ -98,6 +100,14 @@ export default function ProjetNeufDetail() {
     );
     io.observe(el);
     return () => io.disconnect();
+  }, [loading]);
+
+  /* --------- Galerie mobile : scroll snap --------- */
+  const onMobileGalleryScroll = useCallback(() => {
+    const el = mobileGalleryRef.current;
+    if (!el || !el.clientWidth) return;
+    const idx = Math.round(el.scrollLeft / el.clientWidth);
+    setMobileImgIdx(idx);
   }, []);
 
   /* --------- Images de la galerie (hook AVANT les early returns) --------- */
@@ -189,6 +199,9 @@ export default function ProjetNeufDetail() {
         <section className={`hero-pane ${isReady ? "is-visible" : ""}`}>
           <header className="detail-hero__title">
             <h1 className="proj-serif">{p.name || "Projet"}</h1>
+            {p.city && (
+              <p className="proj-city">{p.city}</p>
+            )}
           </header>
 
           {/* Flèche -> 2e description (juste sous le hero) */}
@@ -206,6 +219,56 @@ export default function ProjetNeufDetail() {
             </svg>
           </button>
         </section>
+
+        {/* ======= GALERIE MOBILE — swipeable, entre hero et description ======= */}
+        {images.length > 0 && (
+          <section className="xl:hidden" style={{ position: "relative", zIndex: 3, marginTop: "4vh" }}>
+            <div className="relative">
+              <div
+                ref={mobileGalleryRef}
+                className="pn-mobile-gallery"
+                onScroll={onMobileGalleryScroll}
+              >
+                {images.map((src, idx) => (
+                  <img
+                    key={idx}
+                    src={src}
+                    alt={`${p.name} - photo ${idx + 1}`}
+                    className="pn-mobile-gallery__img"
+                    loading={idx < 2 ? "eager" : "lazy"}
+                  />
+                ))}
+              </div>
+              {images.length > 1 && (
+                <div className="pn-mobile-counter">
+                  {mobileImgIdx + 1} / {images.length}
+                </div>
+              )}
+            </div>
+
+            {/* Miniatures cliquables */}
+            {images.length > 1 && (
+              <div className="flex justify-center py-3">
+                <div className="pn-mobile-thumbs">
+                  {images.map((src, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        const el = mobileGalleryRef.current;
+                        if (el) el.scrollTo({ left: idx * el.clientWidth, behavior: "smooth" });
+                      }}
+                      className={`pn-mobile-thumb ${idx === mobileImgIdx ? "pn-mobile-thumb--active" : ""}`}
+                      aria-label={`Photo ${idx + 1}`}
+                    >
+                      <img src={src} alt={`Miniature ${idx + 1}`} loading="lazy" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* ======= 2e DESCRIPTION (fond page, pas d'overlay) ======= */}
         <section ref={specsRef} className="detail-specs detail-specs--plain hero-like-anim">
@@ -254,8 +317,8 @@ export default function ProjetNeufDetail() {
 
         </section>
 
-        {/* ======= GALERIE ======= */}
-        <section ref={catRef} className="catalogue">
+        {/* ======= GALERIE DESKTOP — catalogue plein écran ======= */}
+        <section ref={catRef} className="catalogue hidden xl:block">
           {grouped.length === 0 ? (
             <div className="catalogue-slide">
               <div className="proj-overlay">Aucune image disponible.</div>
@@ -320,9 +383,9 @@ export default function ProjetNeufDetail() {
                 {agent.quote && <div className="agent-quote">“{agent.quote}”</div>}
 
                 <div className="agent-contacts">
-                  {agent.phone && (
-                    <a className="agent-chip" href={`tel:${agent.phone}`}>
-                      {agent.phone}
+                  {(agent.phoneMobile || agent.phone) && (
+                    <a className="agent-chip" href={`tel:${agent.phoneMobile || agent.phone}`}>
+                      {agent.phoneMobile || agent.phone}
                     </a>
                   )}
                   {agent.email && (

@@ -5,10 +5,12 @@
     "role": "Associé & CEO",
     "photo": "/team/gregory-autieri.jpg",
     "email": "gregory@gary.ch",
-    "phone": "+41 22 557 07 00",
+    "phoneMobile": "+41 76 426 67 04",
+    "phoneOffice": "+41 22 557 07 00",
     "linkedin": "",
-    "quote": "Vision long terme, exigence et proximité.",
-    "bio": "Bio à compléter…"
+    "languages": ["Français", "Anglais", "Italien", "Espagnol"],
+    "quote": "Ce qui m'anime, ce sont les liens créés et les relations tissées.",
+    "bio": "Je suis né et j'ai grandi à Genève. 10 années en banque privée et dans le trading de métaux précieux puis 10 années dans le courtage immobilier, m'ont permis d'acquérir une profonde connaissance de l'écosystème genevois.\n\nAudacieux, je me lance dans l'entrepreneuriat dans le secteur du sport (studio URBANRIDE) en parallèle de mes activités.\n\nJe retiens de toutes ces expériences que ce qui m'anime le plus ce sont les liens que j'ai pu créer et les relations que j'ai pu tisser.\n\nAujourd'hui chez GARY, j'ai réuni une équipe qui partage la même ambition : construire une relation forte et fructueuse avec nos clients et réaliser notre métier avec passion et panache."
   },
   {
     "slug": "steven-bourg",
@@ -16,10 +18,12 @@
     "role": "Associé & Courtier",
     "photo": "/team/steven-bourg.jpg",
     "email": "steven@gary.ch",
-    "phone": "+41 78 243 05 08",
+    "phoneMobile": "+41 78 243 05 08",
+    "phoneOffice": "+41 22 557 07 00",
     "linkedin": "",
-    "quote": "Accompagnement sur-mesure et résultats.",
-    "bio": "Bio à compléter…"
+    "languages": ["Français", "Anglais"],
+    "quote": "Seule une approche personnalisée peut mener à bien un projet.",
+    "bio": "Après des études spécialisées dans l'immobilier, c'est sur le terrain que j'ai forgé une expérience solide et polyvalente.\n\nAvec plus de dix années d'expérience dans l'immobilier sur le marché Genevois, j'ai acquis une expertise polyvalente qui englobe tous les aspects des transactions immobilières. Vente d'appartements, de belles demeures ou de projets neufs, je maîtrise aujourd'hui tous les aspects d'une transaction immobilière.\n\nJe suis profondément convaincu que seule une approche personnalisée peut mener à bien un projet immobilier.\n\nProactif et déterminé, je mets tout en œuvre pour répondre et dépasser les attentes de mes clients.\n\nAujourd'hui chez GARY, je mets toute mon expérience et ma passion au service de l'équipe et de nos clients."
   },
   {
     "slug": "frederic-batista",
@@ -27,43 +31,51 @@
     "role": "Associé & Courtier",
     "photo": "/team/frederic-batista.jpg",
     "email": "frederic@gary.ch",
-    "phone": "",
+    "phoneMobile": "+41 79 131 67 90",
+    "phoneOffice": "+41 22 557 07 00",
     "linkedin": "",
-    "quote": "Négociation rigoureuse, dossiers solides.",
-    "bio": "Bio à compléter…"
+    "languages": ["Français", "Portugais", "Espagnol"],
+    "quote": "Ma force, c'est de trouver des solutions là où d'autres voient des impasses.",
+    "bio": "Il m'a fallu beaucoup de passion et d'acharnement pour construire mon parcours professionnel. J'ai dû trouver des solutions par moi-même, me forger une expérience et faire les bons choix.\n\nJ'ai appris les bases du métier en intégrant le conseil d'administration de la coopérative d'habitation Claire-Matin Les Mouilles et en suivant les cours de l'USPI, l'APGCI et le SVIT.\n\nJ'ai compris que je devais d'abord écouter et orienter mes clients de manière respectueuse et pragmatique pour pouvoir ensuite correctement les accompagner et les satisfaire dans leurs projets de vie.\n\nEt puis j'ai fait de bonnes rencontres. Avec des clients, qui m'ont fait réaliser l'importance de l'humain dans notre métier. Et avec l'un de mes associés, Gregory, avec qui j'ai découvert une autre facette du métier, celle de l'humain.\n\nMa force c'est d'aller au bout des choses et de trouver des solutions là où d'autres voient des impasses.\n\nAujourd'hui chez GARY je fais partie d'une équipe de choc et je suis aligné avec mes valeurs."
   },
   {
     "slug": "guive-emami",
     "name": "Guive Emami, MRICS",
-    "role": "Courtier Senior",
+    "role": "Consultant externe",
     "photo": "/team/guive-emami.jpg",
     "email": "guive@gary.ch",
-    "phone": "+41 78 689 06 86",
+    "phoneMobile": "+41 78 689 06 86",
+    "phoneOffice": "+41 22 557 07 00",
     "linkedin": "",
-    "quote": "Expertise MRICS, précision et transparence.",
-    "bio": "Bio à compléter…"
+    "languages": ["Français", "Anglais"],
+    "quote": "20 ans d'expérience, de Londres à Genève, au service de mes clients.",
+    "bio": "En 20 ans, de Londres à Genève, du canton de Vaud, jusqu'en Valais ; de ventes sur plan ou de chalets luxueux, des propriétés de prestige ou des enchères immobilières, j'ai acquis une profonde connaissance du marché immobilier et clôturé de nombreuses transactions avec succès.\n\nFier membre de la RICS (Royal Institution of Chartered Surveyors), je me suis toujours engagé à fournir un service sur-mesure qui dépasse les standards du marché et qui satisfasse pleinement mes clients.\n\nPassionné de nouvelles technologies, j'aime aborder mon métier d'un œil nouveau. Aujourd'hui chez GARY, je m'efforce de toujours mettre en place des pratiques agiles et innovantes."
   },
   {
     "slug": "jared-camaddo",
     "name": "Jared Camaddo",
-    "role": "Associé, Opérations & Marketing",
+    "role": "Associé | Opérations & Marketing",
     "photo": "/team/jared-camaddo.jpg",
     "email": "jared@gary.ch",
-    "phone": "",
+    "phoneMobile": "+41 79 756 79 99",
+    "phoneOffice": "+41 22 557 07 00",
     "linkedin": "",
-    "quote": "Opérations fluides, marketing efficace.",
-    "bio": "Bio à compléter…"
+    "languages": ["Français", "Anglais"],
+    "quote": "Faire briller chaque propriété et assurer le succès de la vente.",
+    "bio": "Quand on réalise une transaction immobilière il faut être précis, rigoureux et également faire preuve d'initiatives. Qualités que j'ai acquises dans mes précédentes expériences dans le domaine bancaire et dans l'aviation privée suisse.\n\nJ'aime que les choses soient faites dans les règles de l'art. Titulaire d'une certification de courtage immobilier au sein de l'USPI (Union suisse des professionnels de l'immobilier) je mets à profit mes compétences pour garantir une gestion fluide et efficace de chaque transaction.\n\nAujourd'hui chez GARY, je veille à ce que l'expérience client soit optimale. Du côté Marketing, je conçois des stratégies percutantes pour promouvoir la société et nos biens. Mon objectif : faire briller chaque propriété sur le marché, la mettre pleinement en valeur et assurer le succès de la vente."
   },
   {
     "slug": "florie-autieri",
     "name": "Florie Autieri",
-    "role": "Responsable Opérations",
+    "role": "Responsable des Opérations",
     "photo": "/team/florie-autieri.jpg",
     "email": "florie@gary.ch",
-    "phone": "",
+    "phoneMobile": "+41 76 561 23 21",
+    "phoneOffice": "+41 22 557 07 00",
     "linkedin": "",
-    "quote": "Process clairs, qualité d’exécution.",
-    "bio": "Bio à compléter…"
+    "languages": [],
+    "quote": "Rigueur, adaptabilité et un excellent sens du relationnel.",
+    "bio": "Florie a travaillé pendant 12 ans au Tribunal pénal de Genève, d'abord en tant que greffière, puis en tant que greffière-référente. À ce poste, elle gérait une chambre tout en apportant son expertise à la direction et en veillant au bon fonctionnement et à la qualité du travail de l'équipe.\n\nElle était également chargée d'optimiser les processus pour garantir une efficacité maximale des collaborateurs. Ces responsabilités lui ont permis de développer des qualités essentielles telles que l'adaptabilité, la résilience, la rigueur, ainsi qu'un excellent sens du relationnel.\n\nParallèlement, elle s'est lancée dans la gestion de locations immobilières, ce qui lui a permis de se familiariser avec ce secteur.\n\nAujourd'hui, forte de son expérience et prête à relever de nouveaux défis, elle rejoint GARY en qualité de Responsable des Opérations."
   },
   {
     "slug": "michel-angot",
@@ -71,9 +83,24 @@
     "role": "Courtier Senior",
     "photo": "/team/michel-angot.jpg",
     "email": "michel@gary.ch",
-    "phone": "",
+    "phoneMobile": "+41 78 658 38 68",
+    "phoneOffice": "",
     "linkedin": "",
-    "quote": "Expérience et fiabilité.",
-    "bio": "Bio à compléter…"
+    "languages": ["Français", "Anglais"],
+    "quote": "Une approche humaine pour sécuriser la meilleure affaire possible.",
+    "bio": "Fort de plus de 10 ans d'expérience dans le courtage immobilier, en Suisse et à l'international, Michel est reconnu pour son expertise solide et son sens aigu du service client.\n\nDiplômé en économie et gestion, bilingue français-anglais, il possède une maîtrise approfondie du marché immobilier local.\n\nSa méthode ? Une approche humaine, comprendre les attentes de ses clients pour leur offrir des solutions efficaces, tout en anticipant leurs besoins.\n\nQue vous soyez acheteur ou vendeur, Michel mettra toute son énergie et son savoir-faire à sécuriser la meilleure affaire possible."
+  },
+  {
+    "slug": "zoe-demange",
+    "name": "Zoé Demange",
+    "role": "Assistante Marketing & Communication",
+    "photo": "/team/zoe-demange.jpg",
+    "email": "zoe@gary.ch",
+    "phoneMobile": "",
+    "phoneOffice": "",
+    "linkedin": "",
+    "languages": [],
+    "quote": "Transformer ma créativité en projets concrets.",
+    "bio": "Animée par une curiosité constante et une sensibilité aux tendances, j'ai choisi de me spécialiser dans le marketing et la communication pour transformer ma créativité en projets concrets.\n\nMon parcours m'a naturellement conduite vers ce domaine, où je peux donner vie à mes idées. Que ce soit à travers la création de contenus ou l'élaboration de stratégies digitales, j'aime explorer, apprendre et tester de nouvelles approches.\n\nChaque projet représente pour moi une occasion d'expérimenter et de repousser mes limites."
   }
 ]

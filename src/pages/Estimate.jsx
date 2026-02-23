@@ -150,7 +150,7 @@ export default function Estimate() {
               <div className="relative mx-auto w-full max-w-7xl px-5 sm:px-6 md:px-8 py-14 sm:py-16 md:py-28">
                 <div className="relative flex justify-center md:justify-start">
                   <div className="relative w-full max-w-[92vw] sm:max-w-[min(900px,84vw)] mx-auto md:mx-0 md:translate-x-[-160px] md:-translate-y-[-50px]">
-                    <div className="absolute -inset-y-5 -inset-x-4 sm:-inset-y-6 sm:-inset-x-6 md:-inset-y-6 md:-left-6 md:-right-6 bg-white/55 backdrop-blur-sm rounded-3xl md:rounded-none shadow-[0_22px_70px_-45px_rgba(0,0,0,0.45)] md:shadow-none" />
+                    <div className="absolute -inset-y-5 -inset-x-4 sm:-inset-y-6 sm:-inset-x-6 md:-inset-y-6 md:-left-6 md:-right-6 bg-white/55 backdrop-blur-sm rounded-none shadow-[0_22px_70px_-45px_rgba(0,0,0,0.45)] md:shadow-none" />
 
                     <div className="relative z-10 text-center text-black px-3 sm:px-0 py-5 sm:py-0">
                       <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-neutral-600 mb-3">
@@ -199,7 +199,7 @@ export default function Estimate() {
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               className="w-full md:w-[min(96vw,1400px)] mx-auto pointer-events-auto"
             >
-              <div className="rounded-3xl border border-white/20 bg-white/70 backdrop-blur-sm shadow-md overflow-hidden">
+              <div className="rounded-none border border-white/20 bg-white/70 backdrop-blur-sm shadow-md overflow-hidden">
                 <div
                   ref={scrollRef}
                   className={`px-8 md:px-14 py-8 md:py-10 min-h-[420px] ${

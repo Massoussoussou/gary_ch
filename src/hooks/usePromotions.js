@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import MOCK_PROMOTION from "../data/mock-promotion.js";
 
 /* ===== Cache module-level ===== */
 let listCache = null;
@@ -45,7 +46,11 @@ export function usePromotionsList({ perPage = 50, page = 1, lang = "fr" } = {}) 
         return res.json();
       })
       .then((json) => {
-        const items = normalizePromotionsList(json.data || []);
+        let items = normalizePromotionsList(json.data || []);
+        // En dev, si l'API ne renvoie rien, injecter le mock
+        if (items.length === 0 && import.meta.env.DEV) {
+          items = [MOCK_PROMOTION];
+        }
         listCache = { data: items };
         listCacheTs = Date.now();
         setData(items);
@@ -54,6 +59,12 @@ export function usePromotionsList({ perPage = 50, page = 1, lang = "fr" } = {}) 
       .catch((err) => {
         if (err.name === "AbortError") return;
         console.error("usePromotionsList error:", err);
+        // En dev, fallback sur le mock en cas d'erreur API
+        if (import.meta.env.DEV) {
+          setData([MOCK_PROMOTION]);
+          setLoading(false);
+          return;
+        }
         setError(err.message);
         setLoading(false);
       });
@@ -105,6 +116,12 @@ export function usePromotionDetail(promotionId) {
       })
       .then((json) => {
         const item = normalizePromotionDetail(json);
+        // En dev, si l'API renvoie null, fallback sur le mock
+        if (!item && import.meta.env.DEV) {
+          setData(MOCK_PROMOTION);
+          setLoading(false);
+          return;
+        }
         detailCache.set(promotionId, { data: item, ts: Date.now() });
         setData(item);
         setLoading(false);
@@ -112,6 +129,12 @@ export function usePromotionDetail(promotionId) {
       .catch((err) => {
         if (err.name === "AbortError") return;
         console.error("usePromotionDetail error:", err);
+        // En dev, fallback sur le mock en cas d'erreur API
+        if (import.meta.env.DEV) {
+          setData(MOCK_PROMOTION);
+          setLoading(false);
+          return;
+        }
         setError(err.message);
         setLoading(false);
       });

@@ -31,7 +31,7 @@ function SellHeroContent() {
               sm:-inset-y-6 sm:-inset-x-6
               md:-inset-y-6 md:-left-6 md:-right-6
               bg-white/55 backdrop-blur-sm
-              rounded-3xl md:rounded-none
+              rounded-none
               shadow-[0_22px_70px_-45px_rgba(0,0,0,0.45)] md:shadow-none
             "
           />
