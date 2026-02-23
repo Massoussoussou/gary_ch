@@ -109,10 +109,14 @@ export default function Header(){
   const headerRef = useRef(null)
   const [headerH, setHeaderH] = useState(0)
 
-  // Mesurer la hauteur du header pour le spacer
+  // Mesurer la hauteur du header pour le spacer + variable CSS globale
   useEffect(() => {
     if (!headerRef.current) return
-    const ro = new ResizeObserver(([e]) => setHeaderH(e.contentRect.height))
+    const ro = new ResizeObserver(([e]) => {
+      const h = e.contentRect.height
+      setHeaderH(h)
+      document.documentElement.style.setProperty('--header-h', `${h}px`)
+    })
     ro.observe(headerRef.current)
     return () => ro.disconnect()
   }, [])
@@ -140,8 +144,8 @@ export default function Header(){
           margin: '0 auto',
           paddingTop: `${S.padY}px`,
           paddingBottom: `${S.padY}px`,
-          paddingLeft: `${Math.max(0, EDGE_LEFT)}px`,
-          paddingRight: `max(${Math.max(0, EDGE_RIGHT)}px, env(safe-area-inset-right, 0px))`,
+          paddingLeft: `clamp(12px, 2.5vw, ${EDGE_LEFT}px)`,
+          paddingRight: `max(clamp(12px, 2.5vw, ${EDGE_RIGHT}px), env(safe-area-inset-right, 0px))`,
           boxSizing: 'border-box',
         }}
       >

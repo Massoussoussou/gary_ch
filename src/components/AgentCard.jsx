@@ -16,7 +16,7 @@ export default function AgentCard({
     role:      agentProp?.role      ?? fromSlug?.role      ?? "Associé & Courtier",
     photo:     agentProp?.photo     ?? fromSlug?.photo     ?? "/team/placeholder.jpg",
     email:     agentProp?.email     ?? fromSlug?.email     ?? "contact@gary.ch",
-    phone:     agentProp?.phone     ?? fromSlug?.phone     ?? "",
+    phone:     agentProp?.phoneMobile ?? agentProp?.phone ?? fromSlug?.phoneMobile ?? fromSlug?.phone ?? "",
     linkedin:  agentProp?.linkedin  ?? fromSlug?.linkedin  ?? "",
     languages: agentProp?.languages ?? fromSlug?.languages ?? ["FR"],
   };

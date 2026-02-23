@@ -228,7 +228,7 @@
   --title-left: 4vw;
   --title-top: 23vh;
   --title-gap: 4vw;
-  --title-maxw: min(62vw, calc(100vw - var(--title-left) - var(--aside-right) - var(--aside-width) - var(--title-gap)));
+  --title-maxw: 90vw;
   --title-size: clamp(72px, 14vw, 172px);
   --aside-right: 5vw;
   --aside-top: 30vh;
@@ -259,6 +259,21 @@
 
 .hero-pane.is-visible .detail-hero__title h1 {
   animation: reveal-left .9s cubic-bezier(.22, 1, .36, 1) both .12s;
+}
+
+/* Sous-titre ville (sous le h1 du projet) */
+.proj-city {
+  margin-top: 0.4em;
+  font-size: clamp(1.3rem, 2.8vw, 2rem);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 8px 28px rgba(0, 0, 0, .4);
+  opacity: 0;
+}
+
+.hero-pane.is-visible .proj-city {
+  animation: reveal-left .9s cubic-bezier(.22, 1, .36, 1) both .3s;
 }
 
 .hero-pane .detail-hero__aside {
@@ -1009,6 +1024,70 @@
   }
 }
 
+/* Tablettes + phones : hero compact, description juste après le titre */
+@media (max-width: 1279px) {
+  .hero-pane {
+    --hero-linger: 0svh;
+    min-height: auto;
+    padding-bottom: 6vh;
+  }
+
+  /* Cacher la flèche "Découvrir le bien" */
+  .hero-pane .detail-hero__cta {
+    display: none;
+  }
+
+  /* Description plus à gauche, sans remonter sur le titre */
+  .overlay-copy {
+    margin-left: 20px;
+  }
+
+  .detail-specs--plain .overlay-copy {
+    transform: none;
+  }
+
+  /* Fiche agent plus compacte */
+  .detail-bottom {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .agent-card.enhanced {
+    grid-template-columns: 56px 1fr;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .agent-card.enhanced .agent-media img {
+    width: 56px;
+    height: 56px;
+  }
+
+  .agent-chip {
+    font-size: .78rem;
+    padding: 6px 8px;
+    word-break: break-all;
+  }
+
+  .agent-name {
+    font-size: .95rem;
+  }
+
+  .agent-quote {
+    font-size: .82rem;
+  }
+
+  .agent-actions {
+    width: 100%;
+  }
+
+  .agent-actions button {
+    width: 100%;
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+  }
+}
+
 @media (max-width: 860px) {
   .proj-overlay {
     left: 20px;
@@ -1021,7 +1100,6 @@
   }
 
   .hero-pane {
-    --hero-linger: 14svh;
     --title-size: clamp(48px, 12vw, 72px);
     --aside-size: clamp(0.95rem, 3.6vw, 1.15rem);
     --cta-bottom: 4vh;
@@ -1030,7 +1108,6 @@
     flex-direction: column;
     align-items: flex-start;
     padding: 12vh 20px 0;
-    min-height: calc(100svh + var(--hero-linger));
   }
 
   .hero-pane .detail-hero__title {
@@ -1060,17 +1137,23 @@
     padding-bottom: 4vh;
   }
 
-  .close-back-btn {
-    top: 16px;
-    right: 16px;
-    width: 40px;
-    height: 40px;
-  }
-
   .cta-coming-form {
     grid-template-columns: 1fr;
   }
 
+}
+
+/* Croix retour — tablettes + phones (< xl) : inversée orange + positionnée sous le header */
+@media (max-width: 1279px) {
+  .close-back-btn {
+    top: calc(var(--header-h, 72px) + 12px);
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    background: var(--gary-orange, #ff4a3e);
+    color: #fff;
+    border-color: transparent;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1096,6 +1179,74 @@
     margin-left: 12px;
     transform: none;
   }
+}
+
+/* ==============================
+   Galerie mobile ProjetNeufDetail (swipeable)
+   ============================== */
+.pn-mobile-gallery {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.pn-mobile-gallery::-webkit-scrollbar { display: none; }
+
+.pn-mobile-gallery__img {
+  min-width: 100%;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  scroll-snap-align: start;
+  flex-shrink: 0;
+  border: 1.5px solid #fff;
+  box-sizing: border-box;
+}
+
+.pn-mobile-thumbs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.pn-mobile-thumbs::-webkit-scrollbar { display: none; }
+
+.pn-mobile-thumb {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 2px solid transparent;
+  transition: border-color 0.2s ease;
+  cursor: pointer;
+  padding: 0;
+  background: none;
+}
+.pn-mobile-thumb--active {
+  border-color: #FF4A3E;
+}
+.pn-mobile-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pn-mobile-counter {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
 }
 
 @media (prefers-color-scheme: dark) {

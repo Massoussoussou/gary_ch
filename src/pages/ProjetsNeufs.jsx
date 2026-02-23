@@ -383,7 +383,7 @@ function CTAEnrollButton(){
         <div className="relative flex justify-center">
           <div className="relative w-full max-w-[min(680px,92vw)]">
             {/* Tuile verre/blanc */}
-            <div className="absolute -inset-y-6 -inset-x-6 bg-white/55 backdrop-blur-sm z-0 rounded-3xl md:rounded-none" />
+            <div className="absolute -inset-y-6 -inset-x-6 bg-white/55 backdrop-blur-sm z-0 rounded-none" />
 
             <div className="relative z-10 text-center text-black">
               <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-neutral-600 mb-3">

@@ -186,7 +186,7 @@ function HeroContent({ scrollToListings }) {
     >
       <div className="relative flex justify-center md:justify-start">
         <div className="relative w-full max-w-[92vw] sm:max-w-[min(900px,84vw)] mx-auto md:mx-0">
-          <div className="absolute -inset-y-5 -inset-x-4 sm:-inset-y-6 sm:-inset-x-6 md:-inset-y-6 md:-left-6 md:-right-6 bg-white/55 backdrop-blur-sm rounded-3xl md:rounded-none shadow-[0_22px_70px_-45px_rgba(0,0,0,0.45)] md:shadow-none" />
+          <div className="absolute -inset-y-5 -inset-x-4 sm:-inset-y-6 sm:-inset-x-6 md:-inset-y-6 md:-left-6 md:-right-6 bg-white/55 backdrop-blur-sm rounded-none shadow-[0_22px_70px_-45px_rgba(0,0,0,0.45)] md:shadow-none" />
 
           <div className="relative text-center px-3 sm:px-0 py-5 sm:py-0">
             <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-neutral-600 mb-3">
@@ -570,7 +570,7 @@ export default function BuyIntro() {
       */}
 
       {/* 10) TrustStrip */}
-      <div className="relative bg-white" style={{ zIndex: 2 }}>
+      <div id="chiffres-cle" className="relative bg-white" style={{ zIndex: 2 }}>
         <TrustStrip
           size="xl"
           reviewsLabel="RealAdvisor"
