@@ -314,6 +314,8 @@ export default async function handler(req, res) {
         description: stripHtml(descriptionHtml),      // Texte brut pour les cards/previews
         descriptionHtml: descriptionHtml,             // HTML pour la page détail
         equipements,
+        bandeau: /sold|vendu/i.test(p.status || "") ? "Vendu" : null,
+        vendu: /sold|vendu/i.test(p.status || ""),
         tags: [],
         createdAt: p.lastupdate || p.publication_date || p.creation || null,
         coords: {

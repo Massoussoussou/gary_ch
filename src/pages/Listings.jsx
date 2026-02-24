@@ -7,6 +7,7 @@ import ListingGrid from "../components/ListingGrid.jsx"
 import SortMenu from "../components/SortMenu.jsx"
 import DesignSwitcher from "../components/DesignSwitcher.jsx"
 import SpecsCard from "../components/listing/SpecsCard.jsx";
+import { hasTag } from "../utils/data.js";
 
 function uniqSorted(arr) {
   return [...new Set(arr.filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b), "fr"))
@@ -139,7 +140,8 @@ export default function Listings(){
   const location = useLocation()
   const { data, loading, error } = useProperties()
 
-  const facets = useMemo(() => deriveFacets(data), [data])
+  const available  = useMemo(() => data.filter(d => !hasTag(d, /vendu/i) && !d.vendu), [data])
+  const facets = useMemo(() => deriveFacets(available), [available])
 
   // init depuis l’URL, et re-sync si l’URL change (back/forward ou navigation depuis BuyIntro)
   const [filters, setFilters] = useState(() => parseFiltersFromQS(location.search))
@@ -150,7 +152,7 @@ export default function Listings(){
     setSort(parseSortFromQS(location.search))
   }, [location.search])
 
-  const filtered   = useMemo(() => sortItems(applyFilters(data, filters), sort), [data, filters, sort])
+  const filtered   = useMemo(() => sortItems(applyFilters(available, filters), sort), [available, filters, sort])
   const isFiltered = hasActiveFilters(filters)
 
   if (loading) {

@@ -225,7 +225,8 @@ export default function BuyIntro() {
   const navigate = useNavigate();
   const location = useLocation();
   const { data, loading } = useProperties();
-  const facets = useMemo(() => deriveFacets(data), [data]);
+  const available = useMemo(() => data.filter(d => !hasTag(d, /vendu/i) && !d.vendu), [data]);
+  const facets = useMemo(() => deriveFacets(available), [available]);
 
   /* ---- Filtres & tri (système complet issu de Listings) ---- */
   const [filters, setFilters] = useState(() =>
@@ -240,8 +241,8 @@ export default function BuyIntro() {
   }, [location.search]);
 
   const filtered = useMemo(
-    () => sortItems(applyFilters(data, filters), sort),
-    [data, filters, sort]
+    () => sortItems(applyFilters(available, filters), sort),
+    [available, filters, sort]
   );
   const isFiltered = hasActiveFilters(filters);
 
@@ -253,26 +254,26 @@ export default function BuyIntro() {
 
   /* sections data */
   const weekItem = useMemo(() => {
-    const bySpotlight = data.find(
+    const bySpotlight = available.find(
       (d) => String(d.spotlight || "").toLowerCase() === "xxl"
     );
     if (bySpotlight) return bySpotlight;
-    const byTag = data.find((d) => hasTag(d, /feature|semaine|week/i));
+    const byTag = available.find((d) => hasTag(d, /feature|semaine|week/i));
     if (byTag) return byTag;
     return (
-      [...data].sort(
+      [...available].sort(
         (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
-      )[0] || data[0]
+      )[0] || available[0]
     );
-  }, [data]);
+  }, [available]);
 
   const nouveautes = useMemo(
-    () => data.filter((d) => hasTag(d, /nouveau/i) || isRecent(d)),
-    [data]
+    () => available.filter((d) => hasTag(d, /nouveau/i) || isRecent(d)),
+    [available]
   );
   const exclusivites = useMemo(
-    () => data.filter((d) => hasTag(d, /exclu/i)),
-    [data]
+    () => available.filter((d) => hasTag(d, /exclu/i)),
+    [available]
   );
   const vendus = useMemo(
     () => data.filter((d) => hasTag(d, /vendu/i) || d.vendu),

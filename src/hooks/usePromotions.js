@@ -300,6 +300,8 @@ function normalizePromotionDetail(p) {
       price: lot.price,
       priceOnRequest: !!lot.price_on_request,
     })),
+    price: p.price || null,
+    currency: str(p.currency) || "CHF",
     aptAvailable: p.apt_available || 0,
     aptActive: p.apt_active || 0,
     aptSold: p.apt_sold || 0,

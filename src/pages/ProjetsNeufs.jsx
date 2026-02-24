@@ -46,11 +46,12 @@ export default function ProjetNeuf() {
     return () => io.disconnect();
   }, [slides.length]);
 
-  // Scroll piloté (molette / clavier / touch) avec freinage en fin
+  // Scroll piloté : molette + clavier en JS, touch = CSS scroll-snap natif
   useEffect(() => {
     const el = wrapRef.current;
     const vh = () => el.clientHeight;
     const total = slides.length;
+    let animating = false;
 
     const goTo = (next) => {
       if (lockRef.current) return;
@@ -58,6 +59,9 @@ export default function ProjetNeuf() {
       if (target === idxRef.current) return;
 
       lockRef.current = true;
+      animating = true;
+      // Désactiver le scroll-snap pendant l'animation JS
+      el.style.scrollSnapType = "none";
       const start = performance.now();
       const dur = 980;
       const startTop = el.scrollTop;
@@ -71,17 +75,38 @@ export default function ProjetNeuf() {
         else {
           idxRef.current = target;
           lockRef.current = false;
+          animating = false;
+          // Réactiver le scroll-snap
+          el.style.scrollSnapType = "";
         }
       };
       requestAnimationFrame(step);
     };
 
+    // Sync idxRef uniquement après un scroll natif (touch/snap), pas pendant l'anim JS
+    let scrollTimer = null;
+    const syncIndex = () => {
+      if (animating) return;
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        if (animating) return;
+        const h = vh();
+        if (h > 0) {
+          idxRef.current = Math.round(el.scrollTop / h);
+          lockRef.current = false;
+        }
+      }, 150);
+    };
+    el.addEventListener("scroll", syncIndex, { passive: true });
+
+    // Molette — fonctionne sur tous les appareils (desktop + hybrides)
     const onWheel = (e) => {
       if (lockRef.current) return e.preventDefault();
       if (Math.abs(e.deltaY) < 6) return;
       e.preventDefault();
       goTo(idxRef.current + (e.deltaY > 0 ? 1 : -1));
     };
+
     const onKey = (e) => {
       if (lockRef.current) return;
       if (e.key === "ArrowDown" || e.key === "PageDown") {
@@ -94,37 +119,14 @@ export default function ProjetNeuf() {
       }
     };
 
-    // touch
-    let touchY = 0;
-    let dragging = false;
-    const onStart = (e) => {
-      touchY = e.touches[0].clientY;
-      dragging = true;
-    };
-    const onMove = (e) => {
-      if (!dragging || lockRef.current) return;
-      const dy = e.touches[0].clientY - touchY;
-      if (Math.abs(dy) > 44) {
-        goTo(idxRef.current + (dy < 0 ? 1 : -1));
-        dragging = false;
-      }
-    };
-    const onEnd = () => {
-      dragging = false;
-    };
-
     el.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("keydown", onKey);
-    el.addEventListener("touchstart", onStart, { passive: true });
-    el.addEventListener("touchmove", onMove, { passive: true });
-    el.addEventListener("touchend", onEnd);
 
     return () => {
+      el.removeEventListener("scroll", syncIndex);
       el.removeEventListener("wheel", onWheel);
       window.removeEventListener("keydown", onKey);
-      el.removeEventListener("touchstart", onStart);
-      el.removeEventListener("touchmove", onMove);
-      el.removeEventListener("touchend", onEnd);
+      clearTimeout(scrollTimer);
     };
   }, [slides.length]);
 
@@ -271,7 +273,7 @@ function CTAEnrollButton(){
 
     {/* === HERO intro : tuile qui s’adapte au contenu + texte étalé === */}
 {/* === HERO intro — version alignée sur le style #2 === */}
-<section className="relative mx-auto w-full max-w-7xl px-6 md:px-8 py-20 md:py-28">
+<section className="relative mx-auto w-full max-w-7xl px-6 md:px-8 py-20 md:pt-40 md:pb-28">
   <div className="relative flex justify-start">
     {/* Tuile verre/blanc derrière le texte */}
     <div className="relative w-full max-w-[min(900px,84vw)]">
@@ -286,8 +288,7 @@ function CTAEnrollButton(){
         <h1 className="font-serif tracking-[-0.03em] leading-[0.9] text-[clamp(3.2rem,8.8vw,7.2rem)]">
           <span className="block">Des lieux</span>
           d’exception<span className="text-[#FF4A3E]">,</span>
-          <span className="block">une signature</span>
-          <span className="block">GARY.</span>
+          <span className="block">signés GARY.</span>
         </h1>
         <p className="mt-5 text-[clamp(1.1rem,2.1vw,1.4rem)] text-neutral-900/90 max-w-[52ch] mx-auto">
           Sélection stricte, visites en 48h, data-pricing et accompagnement clé en main.
@@ -332,7 +333,7 @@ function CTAEnrollButton(){
                   {p.name}
                 </h2>
                 {p.tagline && (
-                  <p className="proj-sub-slow mt-3 text-base md:text-lg">
+                  <p className="proj-sub-slow mt-3 text-xl md:text-2xl font-medium tracking-wide">
                     {p.tagline}
                   </p>
                 )}
@@ -386,7 +387,7 @@ function CTAEnrollButton(){
             <div className="absolute -inset-y-6 -inset-x-6 bg-white/55 backdrop-blur-sm z-0 rounded-none" />
 
             <div className="relative z-10 text-center text-black">
-              <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-neutral-600 mb-3">
+              <p className="text-[11px] md:text-[13px] uppercase tracking-[0.2em] text-neutral-600 mb-1 md:mb-3">
                 Projets à venir
               </p>
 
@@ -394,12 +395,12 @@ function CTAEnrollButton(){
                 Coming<span className="text-[#FF4A3E]">&nbsp;</span>Soon
               </h2>
 
-              <p className="mt-4 text-[clamp(1rem,2vw,1.2rem)] text-neutral-900/80 max-w-[46ch] mx-auto">
+              <p className="mt-2 md:mt-4 text-[clamp(0.85rem,1.8vw,1.2rem)] text-neutral-900/80 max-w-[46ch] mx-auto">
                 Inscrivez-vous pour recevoir en avant-première les
                 informations sur nos futurs programmes neufs.
               </p>
 
-              <form className="cta-coming-form mt-7">
+              <form className="cta-coming-form mt-4 md:mt-7">
                 <div className="field">
                   <label>Prénom</label>
                   <input type="text" placeholder="Votre prénom" />

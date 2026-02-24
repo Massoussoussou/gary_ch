@@ -62,6 +62,10 @@ export default function useProperties({ perPage = 100, page = 1, lang = "fr" } =
         if (items.length === 0 && import.meta.env.DEV) {
           items = [MOCK_LISTING];
         }
+        // DEV : injecter des biens vendus fictifs pour visualiser le carousel
+        if (import.meta.env.DEV) {
+          items = [...items, ...normalizeData(FAKE_VENDUS)];
+        }
         propertiesCache = { data: items, page, perPage };
         cacheTimestamp = Date.now();
         setData(items);
@@ -72,7 +76,7 @@ export default function useProperties({ perPage = 100, page = 1, lang = "fr" } =
         console.error("useProperties error:", err);
         // En dev, fallback sur le mock en cas d'erreur API
         if (import.meta.env.DEV) {
-          setData([MOCK_LISTING]);
+          setData([MOCK_LISTING, ...normalizeData(FAKE_VENDUS)]);
           setLoading(false);
           return;
         }
@@ -88,6 +92,16 @@ export default function useProperties({ perPage = 100, page = 1, lang = "fr" } =
 
   return { data, loading, error, refetch: () => fetchData(true) };
 }
+
+/* ── Biens vendus fictifs (DEV uniquement, à supprimer avant prod) ── */
+const FAKE_VENDUS = [
+  { id: "fake-vendu-1", titre: "Villa contemporaine", ville: "Cologny", canton: "GE", type: "Villa", prix: 4850000, devise: "CHF", pieces: 8, chambres: 4, sdb: 3, surface_m2: 320, images: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80","https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80"], vendu: true, bandeau: "Vendu", tags: ["vendu"], createdAt: "2025-11-01" },
+  { id: "fake-vendu-2", titre: "Appartement vue lac", ville: "Genève", canton: "GE", type: "Appartement", prix: 2200000, devise: "CHF", pieces: 5, chambres: 3, sdb: 2, surface_m2: 145, images: ["https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80","https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&q=80"], vendu: true, bandeau: "Vendu", tags: ["vendu"], createdAt: "2025-10-15" },
+  { id: "fake-vendu-3", titre: "Maison de maître", ville: "Vandoeuvres", canton: "GE", type: "Maison", prix: 6500000, devise: "CHF", pieces: 10, chambres: 5, sdb: 4, surface_m2: 450, images: ["https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=80","https://images.unsplash.com/photo-1600573472592-401b489a3cdc?w=800&q=80"], vendu: true, bandeau: "Vendu", tags: ["vendu"], createdAt: "2025-09-20" },
+  { id: "fake-vendu-4", titre: "Penthouse panoramique", ville: "Carouge", canton: "GE", type: "Appartement", prix: 3100000, devise: "CHF", pieces: 6, chambres: 3, sdb: 2, surface_m2: 200, images: ["https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&q=80","https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=800&q=80"], vendu: true, bandeau: "Vendu", tags: ["vendu"], createdAt: "2025-08-10" },
+  { id: "fake-vendu-5", titre: "Duplex rénové", ville: "Chêne-Bougeries", canton: "GE", type: "Appartement", prix: 1750000, devise: "CHF", pieces: 4, chambres: 2, sdb: 1, surface_m2: 110, images: ["https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80","https://images.unsplash.com/photo-1600585153490-76fb20a32601?w=800&q=80"], vendu: true, bandeau: "Vendu", tags: ["vendu"], createdAt: "2025-07-05" },
+  { id: "fake-vendu-6", titre: "Loft industriel", ville: "Genève", canton: "GE", type: "Loft", prix: 1950000, devise: "CHF", pieces: 3, chambres: 1, sdb: 1, surface_m2: 160, images: ["https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?w=800&q=80","https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=800&q=80"], vendu: true, bandeau: "Vendu", tags: ["vendu"], createdAt: "2025-06-18" },
+];
 
 /**
  * Normalise les données API pour correspondre au format attendu par les composants.

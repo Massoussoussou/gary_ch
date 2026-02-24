@@ -66,6 +66,7 @@ export default function ListingDetail() {
   const [isSnapping, setIsSnapping] = useState(false);
   const [prevImage, setPrevImage] = useState(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [slideDir, setSlideDir] = useState("next");
   const [tileOffset, setTileOffset] = useState(0);
   const tileRef = useRef(null);
 
@@ -93,17 +94,34 @@ export default function ListingDetail() {
     : address;
 
   const agent = useMemo(() => {
-    if (item?.agentSlug) {
-      const found = (team || []).find((t) => t.slug === item.agentSlug);
-      if (found) return found;
+    const broker = item?.broker;
+    // 1. Matcher par email (fiable, pas de problème d'accents)
+    if (broker?.email) {
+      const byEmail = (team || []).find((t) => t.email?.toLowerCase() === broker.email.toLowerCase());
+      if (byEmail) return byEmail;
     }
+    // 2. Matcher par slug
+    if (item?.agentSlug) {
+      const bySlug = (team || []).find((t) => t.slug === item.agentSlug);
+      if (bySlug) return bySlug;
+    }
+    // 3. Fallback : données broker de l'API
+    if (broker?.name) {
+      return {
+        name: broker.name,
+        role: "Conseiller immobilier",
+        email: broker.email || "contact@gary.ch",
+        phone: broker.phone || "+41 22 557 07 00",
+        photo: broker.avatar || "/team/default.jpg",
+      };
+    }
+    // 4. Dernier recours
     return (team || [])[0] || {
       name: "Conseiller GARY",
       role: "Conseiller immobilier",
       email: "contact@gary.ch",
       phone: "+41 22 557 07 00",
-      photo:
-        "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=1000&auto=format&fit=crop",
+      photo: "/team/default.jpg",
     };
   }, [item]);
 
@@ -127,6 +145,7 @@ export default function ListingDetail() {
 
   const handlePrev = () => {
     if (totalImages < 2 || isTransitioning) return;
+    setSlideDir("prev");
     setPrevImage(heroImg);
     setIsTransitioning(true);
     setTrackIndex((t) => t - 1);
@@ -138,6 +157,7 @@ export default function ListingDetail() {
 
   const handleNext = useCallback(() => {
     if (totalImages < 2 || isTransitioning) return;
+    setSlideDir("next");
     setPrevImage(heroImg);
     setIsTransitioning(true);
     setTrackIndex((t) => t + 1);
@@ -323,47 +343,46 @@ export default function ListingDetail() {
           clip-path: inset(0 0 0 0);
         }
 
-        /* === Animation : l’ancienne image glisse/disparaît de droite vers gauche === */
-        .listing-hero__image--out.is-animating {
-          animation: cardSlideOut 0.7s cubic-bezier(.22,.61,.36,1) forwards;
+        /* === Animation NEXT : slide vers la gauche === */
+        .listing-hero__image--out.is-animating.slide-next {
+          animation: slideOutLeft 0.7s cubic-bezier(.22,.61,.36,1) forwards;
+        }
+        .listing-hero__image--in.is-animating.slide-next {
+          animation: slideInRight 0.7s cubic-bezier(.22,.61,.36,1) forwards;
         }
 
-        /* === La nouvelle image apparaît dans le même mouvement (de droite à gauche) === */
-        .listing-hero__image--in.is-animating {
-          animation: cardSlideIn 0.7s cubic-bezier(.22,.61,.36,1) forwards;
+        /* === Animation PREV : slide vers la droite === */
+        .listing-hero__image--out.is-animating.slide-prev {
+          animation: slideOutRight 0.7s cubic-bezier(.22,.61,.36,1) forwards;
+        }
+        .listing-hero__image--in.is-animating.slide-prev {
+          animation: slideInLeft 0.7s cubic-bezier(.22,.61,.36,1) forwards;
         }
 
-        @keyframes cardSlideOut {
-          0% {
-            opacity: 1;
-            transform: scale(1);
-            clip-path: inset(0 0 0 0);
-          }
-          40% {
-            transform: scale(1.02);
-          }
-          100% {
-            opacity: 0;
-            transform: scale(1.03);
-            clip-path: inset(0 100% 0 0); /* efface progressivement de droite à gauche */
-          }
+        /* Next : l’ancienne sort vers la gauche */
+        @keyframes slideOutLeft {
+          0%   { opacity: 1; transform: scale(1); clip-path: inset(0 0 0 0); }
+          40%  { transform: scale(1.02); }
+          100% { opacity: 0; transform: scale(1.03); clip-path: inset(0 100% 0 0); }
+        }
+        /* Next : la nouvelle entre depuis la droite */
+        @keyframes slideInRight {
+          0%   { opacity: 0; transform: scale(1.03); clip-path: inset(0 0 0 100%); }
+          60%  { opacity: 1; transform: scale(1.01); }
+          100% { opacity: 1; transform: scale(1); clip-path: inset(0 0 0 0); }
         }
 
-        @keyframes cardSlideIn {
-          0% {
-            opacity: 0;
-            transform: scale(1.03);
-            clip-path: inset(0 0 0 100%); /* apparait de droite à gauche */
-          }
-          60% {
-            opacity: 1;
-            transform: scale(1.01);
-          }
-          100% {
-            opacity: 1;
-            transform: scale(1);
-            clip-path: inset(0 0 0 0);
-          }
+        /* Prev : l’ancienne sort vers la droite */
+        @keyframes slideOutRight {
+          0%   { opacity: 1; transform: scale(1); clip-path: inset(0 0 0 0); }
+          40%  { transform: scale(1.02); }
+          100% { opacity: 0; transform: scale(1.03); clip-path: inset(0 0 0 100%); }
+        }
+        /* Prev : la nouvelle entre depuis la gauche */
+        @keyframes slideInLeft {
+          0%   { opacity: 0; transform: scale(1.03); clip-path: inset(0 100% 0 0); }
+          60%  { opacity: 1; transform: scale(1.01); }
+          100% { opacity: 1; transform: scale(1); clip-path: inset(0 0 0 0); }
         }
 
 
@@ -634,7 +653,7 @@ export default function ListingDetail() {
                 className={[
                   "listing-hero__image",
                   "listing-hero__image--in",
-                  isTransitioning ? "is-animating" : "",
+                  isTransitioning ? `is-animating slide-${slideDir}` : "",
                 ].join(" ")}
                 loading="eager"
               />
@@ -646,7 +665,7 @@ export default function ListingDetail() {
                 className={[
                   "listing-hero__image",
                   "listing-hero__image--out",
-                  isTransitioning ? "is-animating" : "",
+                  isTransitioning ? `is-animating slide-${slideDir}` : "",
                 ].join(" ")}
               />
             )}

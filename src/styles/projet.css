@@ -12,9 +12,9 @@
   height: 100svh;
   overflow-y: auto;
   scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
   overscroll-behavior: contain;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
   background: #000;
   color: #fff;
 }
@@ -261,19 +261,34 @@
   animation: reveal-left .9s cubic-bezier(.22, 1, .36, 1) both .12s;
 }
 
-/* Sous-titre ville (sous le h1 du projet) */
+/* Sous-titre ville (au-dessus du h1 du projet) */
 .proj-city {
-  margin-top: 0.4em;
-  font-size: clamp(1.3rem, 2.8vw, 2rem);
-  letter-spacing: 0.15em;
+  margin-bottom: 0.3em;
+  font-size: clamp(0.85rem, 1.6vw, 1.1rem);
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.7);
   text-shadow: 0 8px 28px rgba(0, 0, 0, .4);
   opacity: 0;
 }
 
 .hero-pane.is-visible .proj-city {
-  animation: reveal-left .9s cubic-bezier(.22, 1, .36, 1) both .3s;
+  animation: reveal-left .9s cubic-bezier(.22, 1, .36, 1) both .05s;
+}
+
+/* Prix (sous le h1 du projet) */
+.proj-price {
+  margin-top: 0.5em;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  color: #fff;
+  text-shadow: 0 8px 28px rgba(0, 0, 0, .4);
+  opacity: 0;
+}
+
+.hero-pane.is-visible .proj-price {
+  animation: reveal-left .9s cubic-bezier(.22, 1, .36, 1) both .35s;
 }
 
 .hero-pane .detail-hero__aside {
@@ -1139,6 +1154,47 @@
 
   .cta-coming-form {
     grid-template-columns: 1fr;
+  }
+
+  .cta-coming-wrap {
+    padding: 12px;
+    overflow-y: auto;
+  }
+
+  .cta-coming-wrap section {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  /* Tuile verre plus serrée */
+  .cta-coming-wrap .absolute.-inset-y-6 {
+    top: -12px;
+    bottom: -12px;
+    left: -12px;
+    right: -12px;
+  }
+
+  .cta-coming-form {
+    margin-top: 12px;
+    gap: 8px;
+  }
+
+  .cta-coming-form .field label {
+    font-size: 10px;
+    margin-bottom: 3px;
+  }
+
+  .cta-coming-form .field input,
+  .cta-coming-form .field select {
+    height: 38px;
+    padding: 8px 10px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+
+  .cta-enroll {
+    padding: 12px 24px !important;
+    font-size: 16px !important;
   }
 
 }

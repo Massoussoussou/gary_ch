@@ -174,16 +174,6 @@ export default function ActualiteDetail() {
           </div>
         )}
 
-        {/* Back to list */}
-        <div className="mt-16 text-center">
-          <Link
-            to="/actualites"
-            className="inline-flex items-center gap-2 text-neutral-600 hover:text-black transition-colors font-medium"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Voir toutes les actualités
-          </Link>
-        </div>
       </article>
     </div>
   );

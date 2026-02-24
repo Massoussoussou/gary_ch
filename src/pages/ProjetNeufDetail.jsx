@@ -49,6 +49,7 @@ function SpecIcon({ name }) {
     case "etat":        return (<svg {...p}><path d="M12 2v4m6.36-2.36-2.83 2.83M22 12h-4M18.36 18.36l-2.83-2.83M12 22v-4M7.64 18.36l2.83-2.83M2 12h4M7.64 5.64l2.83 2.83"/></svg>);
     case "terrasse":    return (<svg {...p}><circle cx="12" cy="12" r="4"/><path d="M12 2v3m0 14v3m10-10h-3M5 12H2m15.07-7.07-2.12 2.12M9.05 14.95l-2.12 2.12M19.07 19.07l-2.12-2.12M9.05 9.05 6.93 6.93"/></svg>);
     case "jardin":      return (<svg {...p}><path d="M12 22v-6"/><path d="M9 12c0 3 3 4 3 4s3-1 3-4-3-6-3-6-3 3-3 6Z"/><path d="M5 22h14"/></svg>);
+    case "prix":        return (<svg {...p}><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>);
     default:            return (<svg {...p}><circle cx="12" cy="12" r="9"/></svg>);
   }
 }
@@ -130,18 +131,43 @@ export default function ProjetNeufDetail() {
     return out;
   }, [images]);
 
-  /* --------- Agent depuis team.json (hook AVANT les early returns) --------- */
+  /* --------- Agent depuis contacts API → team.json (hook AVANT les early returns) --------- */
   const agent = useMemo(() => {
-    if (p?.agentSlug) {
-      const found = (team || []).find((t) => t.slug === p.agentSlug);
-      if (found) return found;
+    const contacts = p?.contacts || [];
+    const firstContact = contacts[0];
+    // 1. Matcher le contact API par email dans team.json
+    if (firstContact?.email) {
+      const byEmail = (team || []).find((t) => t.email?.toLowerCase() === firstContact.email.toLowerCase());
+      if (byEmail) return byEmail;
     }
+    // 2. Matcher par nom (prénom + nom)
+    if (firstContact?.firstname || firstContact?.lastname) {
+      const contactName = [firstContact.firstname, firstContact.lastname].filter(Boolean).join(" ").toLowerCase();
+      const byName = (team || []).find((t) => t.name?.toLowerCase() === contactName);
+      if (byName) return byName;
+    }
+    // 3. Fallback : données du contact API directement
+    if (firstContact?.firstname || firstContact?.lastname) {
+      return {
+        name: [firstContact.firstname, firstContact.lastname].filter(Boolean).join(" ") || "Conseiller GARY",
+        role: firstContact.role || "Conseiller immobilier",
+        email: firstContact.email || "contact@gary.ch",
+        phone: firstContact.phone || firstContact.mobile || "+41 22 557 07 00",
+        photo: firstContact.avatar || "/team/default.jpg",
+      };
+    }
+    // 4. Matcher par slug
+    if (p?.agentSlug) {
+      const bySlug = (team || []).find((t) => t.slug === p.agentSlug);
+      if (bySlug) return bySlug;
+    }
+    // 5. Dernier recours
     return (team || [])[0] || {
       name: "Conseiller GARY",
       role: "Conseiller immobilier",
       email: "contact@gary.ch",
       phone: "+41 22 557 07 00",
-      photo: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=1000&auto=format&fit=crop",
+      photo: "/team/default.jpg",
     };
   }, [p]);
 
@@ -198,9 +224,12 @@ export default function ProjetNeufDetail() {
 
         <section className={`hero-pane ${isReady ? "is-visible" : ""}`}>
           <header className="detail-hero__title">
-            <h1 className="proj-serif">{p.name || "Projet"}</h1>
             {p.city && (
               <p className="proj-city">{p.city}</p>
+            )}
+            <h1 className="proj-serif">{p.name || "Projet"}</h1>
+            {p.tagline && (
+              <p className="proj-price">{p.tagline}</p>
             )}
           </header>
 
@@ -284,6 +313,7 @@ export default function ProjetNeufDetail() {
     {(() => {
       const specs = p.specs || {};
       const rows = [
+        { k: "prix",         label: "Prix", v: p.tagline || null },
         { k: "reference",    label: "Référence", v: specs.reference },
         { k: "pieces",       label: "Pièces", v: specs.pieces },
         { k: "sdb",          label: "Nb de salles de bain", v: specs.sdb },

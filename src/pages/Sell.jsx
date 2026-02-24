@@ -481,13 +481,11 @@ export default function Sell() {
       {/* DÉJÀ VENDU */}
       {vendus.length > 0 && (
         <section className="relative py-24 bg-white" style={{ zIndex: 2 }}>
-          <div className="max-w-7xl mx-auto px-6 md:px-8">
-            <BandCarousel
-              title="Déjà vendu"
-              items={vendus}
-              renderItem={ListingCardSold}
-            />
-          </div>
+          <BandCarousel
+            title="Déjà vendu"
+            items={vendus}
+            renderItem={ListingCardSold}
+          />
         </section>
       )}
 

@@ -72,6 +72,62 @@ function useScrollProgress(ref) {
   return progress;
 }
 
+/* ========== Sponsors / Partenaires — bandeau blanc défilant ========== */
+const SPONSORS = [
+  { name: "divorce.ch", src: "/sponsors/divorce-ch.jpeg" },
+  { name: "Mise en Voix", src: "/sponsors/mise-en-voix.jpeg" },
+  { name: "Planifique", src: "/sponsors/planifique.jpeg" },
+  { name: "Plus+ Financement immobilier", src: "/sponsors/plus-financement.jpeg" },
+  { name: "Veyrier Grand Donzel", src: "/sponsors/veyrier-grand-donzel.jpeg" },
+];
+
+function SponsorsSection() {
+  const [ref, seen] = useInViewOnce({ threshold: 0.15 });
+
+  return (
+    <div ref={ref} className="relative z-10 w-full py-16 md:py-24">
+      {/* Titre */}
+      <h3
+        className="text-center font-serif text-2xl md:text-4xl tracking-wide mb-10 md:mb-14 text-white"
+        style={{
+          opacity: seen ? 1 : 0,
+          transform: seen ? "translateY(0)" : "translateY(15px)",
+          transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
+        }}
+      >
+        Nos <span className="text-[#FF4A3E]">partenaires</span>
+      </h3>
+
+      {/* Bandeau blanc statique */}
+      <div
+        className="w-full"
+        style={{
+          background: "white",
+          opacity: seen ? 1 : 0,
+          transition: "opacity 0.8s ease-out 0.2s",
+        }}
+      >
+        <div className="flex items-center justify-center gap-16 md:gap-24 lg:gap-36 px-10 md:px-20" style={{ height: "140px" }}>
+          {SPONSORS.map((s, i) => (
+            <img
+              key={s.name}
+              src={s.src}
+              alt={s.name}
+              className="h-14 md:h-20 lg:h-24 w-auto max-w-[160px] md:max-w-[220px] object-contain"
+              loading="lazy"
+              style={{
+                opacity: seen ? 1 : 0,
+                transform: seen ? "translateY(0)" : "translateY(10px)",
+                transition: `opacity 0.6s ease-out ${0.3 + i * 0.1}s, transform 0.6s ease-out ${0.3 + i * 0.1}s`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ========== Chiffres clés 2025 ========== */
 const KEY_FIGURES = [
   { value: 100, suffix: "+", label: "ventes en 2025", prefix: "" },
@@ -607,6 +663,9 @@ export default function About() {
 
           {/* Section 4 — Chiffres clés */}
           <KeyFigures />
+
+          {/* Section 5 — Partenaires / Sponsors */}
+          <SponsorsSection />
         </section>
       </div>
     </div>
