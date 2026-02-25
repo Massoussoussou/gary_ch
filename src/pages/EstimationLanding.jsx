@@ -9,7 +9,7 @@ import ComparisonSection from "../components/landing-estimation/ComparisonSectio
 import TrustSection from "../components/landing-estimation/TrustSection";
 import PortalsSection from "../components/landing-estimation/PortalsSection";
 import FinalCTA from "../components/landing-estimation/FinalCTA";
-import LandingFooter from "../components/landing-estimation/LandingFooter";
+
 import StickyMobileCTA from "../components/landing-estimation/StickyMobileCTA";
 import EbookModal from "../components/landing-estimation/EbookModal";
 
@@ -76,7 +76,7 @@ export default function EstimationLanding() {
         <TrustSection />
         <PortalsSection />
         <FinalCTA />
-        <LandingFooter />
+
       </div>
 
       <StickyMobileCTA hidden={submitted} />

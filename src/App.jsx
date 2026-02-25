@@ -20,6 +20,8 @@ const ProjetsNeufs = React.lazy(() => import('./pages/ProjetsNeufs.jsx'));
 const ProjetNeufDetail = React.lazy(() => import('./pages/ProjetNeufDetail.jsx'));
 const Actualite = React.lazy(() => import('./pages/Actualite.jsx'));
 const ActualiteDetail = React.lazy(() => import('./pages/ActualiteDetail.jsx'));
+const Presse = React.lazy(() => import('./pages/Presse.jsx'));
+const Ressources = React.lazy(() => import('./pages/Ressources.jsx'));
 const NotFound = React.lazy(() => import('./pages/NotFound.jsx'));
 
 export default function App() {
@@ -68,6 +70,8 @@ export default function App() {
             <Route path="/projets-neufs/:id" element={<ProjetNeufDetail />} />
             <Route path="/actualites" element={<Actualite />} />
             <Route path="/actualites/:id" element={<ActualiteDetail />} />
+            <Route path="/presse" element={<Presse />} />
+            <Route path="/ressources" element={<Ressources />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

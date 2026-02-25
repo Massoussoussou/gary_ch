@@ -28,7 +28,12 @@ export default function MethodSection() {
   const scrollToForm = (e) => {
     e.preventDefault();
     const el = document.getElementById("form");
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (!el) return;
+    if (window.__lenis) {
+      window.__lenis.scrollTo(0);
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   return (

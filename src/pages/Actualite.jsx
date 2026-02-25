@@ -6,8 +6,8 @@ import CTAFuturaGlow from "../components/cta/CTAFuturaGlow.jsx";
 import CTAWhiteSweep from "../components/cta/CTAWhiteSweep.jsx";
 import { pickVideoSrcSimple } from "../utils/video.js";
 
-/* ========== Données réelles depuis GARY.ch ========== */
-const articles = articlesData;
+/* ========== Données réelles depuis GARY.ch (exclut les articles Presse) ========== */
+const articles = articlesData.filter((a) => a.category !== "Presse");
 
 const categoryColors = {
   Article: "bg-neutral-900 text-white",

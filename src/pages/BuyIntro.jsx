@@ -1,10 +1,10 @@
 // src/pages/BuyIntro.jsx
 import { useMemo, useRef, useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 /* Données & composants */
 import useProperties from "../hooks/useProperties.js";
-import BandCarousel from "../components/BandCarousel.jsx";
+
 import FiltersBar from "../components/FiltersBar.jsx";
 import ListingGrid from "../components/ListingGrid.jsx";
 import SortMenu from "../components/SortMenu.jsx";
@@ -14,16 +14,14 @@ import ToolsBudgetCalc from "../components/ToolsBudgetCalc.jsx";
 import ToolsAlerts from "../components/ToolsAlerts.jsx";
 import AlreadyOwner from "../components/AlreadyOwner.jsx";
 import WeekCardV1 from "../components/cards/WeekCardV1.jsx";
-import ListingCardSold from "../components/cards/ListingCardSold.jsx";
+
 import CTAFuturaGlow from "../components/cta/CTAFuturaGlow.jsx";
 import CTAWhiteSweep from "../components/cta/CTAWhiteSweep.jsx";
-import BeigeOrnament from "../components/common/BeigeOrnament.jsx";
 
 /* Hooks et utils partagés */
 import { useRevealOnce } from "../hooks/useRevealOnce.js";
 import {
   hasTag,
-  isRecent,
   deriveFacets,
   normalizeListingData,
   coerceNum,
@@ -222,7 +220,6 @@ function HeroContent({ scrollToListings }) {
 
 /* ---------- composant principal ---------- */
 export default function BuyIntro() {
-  const navigate = useNavigate();
   const location = useLocation();
   const { data, loading } = useProperties();
   const available = useMemo(() => data.filter(d => !hasTag(d, /vendu/i) && !d.vendu), [data]);
@@ -246,6 +243,11 @@ export default function BuyIntro() {
   );
   const isFiltered = hasActiveFilters(filters);
 
+  // Split listings en deux moitiés pour intercaler la Maison de la semaine
+  const splitIdx = Math.ceil(filtered.length / 2);
+  const firstHalf = filtered.slice(0, splitIdx);
+  const secondHalf = filtered.slice(splitIdx);
+
   /* ---- Scroll vers la grille ---- */
   const listingsRef = useRef(null);
   const scrollToListings = () => {
@@ -267,24 +269,8 @@ export default function BuyIntro() {
     );
   }, [available]);
 
-  const nouveautes = useMemo(
-    () => available.filter((d) => hasTag(d, /nouveau/i) || isRecent(d)),
-    [available]
-  );
-  const exclusivites = useMemo(
-    () => available.filter((d) => hasTag(d, /exclu/i)),
-    [available]
-  );
-  const vendus = useMemo(
-    () => data.filter((d) => hasTag(d, /vendu/i) || d.vendu),
-    [data]
-  );
-
   /* reveals */
   const [weekRef, weekShown] = useRevealOnce({ threshold: 0.12 });
-  const [exRef, exShown] = useRevealOnce();
-  const [newRef, newShown] = useRevealOnce();
-  const [vendRef, vendShown] = useRevealOnce();
   const [procRef, procShown] = useRevealOnce();
   const [calcRef, calcShown] = useRevealOnce();
   const [alertsRef, alertsShown] = useRevealOnce();
@@ -376,10 +362,11 @@ export default function BuyIntro() {
 
         <SortMenu value={sort} onChange={setSort} />
 
-        <ListingGrid items={filtered} isFiltered={isFiltered} />
+        {/* Première moitié des annonces */}
+        <ListingGrid items={firstHalf} isFiltered={isFiltered} />
       </section>
 
-      {/* 3) Maison de la semaine */}
+      {/* 3) Maison de la semaine — au milieu des annonces */}
       <div
         className="relative bg-white"
         style={{ zIndex: 2 }}
@@ -402,97 +389,13 @@ export default function BuyIntro() {
         </div>
       </div>
 
-      {/* 4) Exclusivités */}
-      <section
-        className="relative pt-12 pb-8 md:pt-16 md:pb-10 bg-white"
-        style={{ zIndex: 2 }}
-      >
-        <div
-          ref={exRef}
-          className={`transition-all duration-[1200ms] ${
-            exShown ? "opacity-100 translate-x-0" : "opacity-0 translate-x-16"
-          }`}
-        >
-          <BeigeOrnament className="opacity-30" />
-          <div className="max-w-7xl mx-auto px-6 md:px-8">
-            <BandCarousel
-              title="Exclusivités"
-              items={exclusivites}
-              cta="Voir tout"
-              onCta={scrollToListings}
-            />
-          </div>
-        </div>
-      </section>
+      {/* Seconde moitié des annonces */}
+      {secondHalf.length > 0 && (
+        <section className="relative bg-white" style={{ zIndex: 2 }}>
+          <ListingGrid items={secondHalf} isFiltered={isFiltered} />
+        </section>
+      )}
 
-      {/* 5) Nouveautés */}
-      <section
-        className="relative pt-6 md:pt-8 pb-24 md:pb-28 bg-[#FAF6F0]"
-        style={{ zIndex: 2 }}
-      >
-        <div
-          ref={newRef}
-          className={`transition-all duration-[1200ms] ${
-            newShown ? "opacity-100 translate-x-0" : "opacity-0 translate-x-16"
-          }`}
-        >
-          <BeigeOrnament />
-          <div className="max-w-7xl mx-auto px-6 md:px-8">
-            <BandCarousel
-              title="Nouveautés"
-              items={nouveautes}
-              cta="Voir tout"
-              onCta={() => {
-                setSort("recent");
-                scrollToListings();
-              }}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* 6) Ventes réalisées */}
-      <section
-        className="relative py-24 bg-white"
-        style={{ zIndex: 2 }}
-      >
-        <div
-          ref={vendRef}
-          className={`transition-all duration-700 ${vendShown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
-        >
-        <div className="max-w-7xl mx-auto px-6 md:px-8">
-          <BandCarousel
-            title="Déjà vendu"
-            items={vendus}
-            cta="Voir nos ventes"
-            onCta={() => navigate("/ventes")}
-            renderItem={ListingCardSold}
-          />
-          {/*
-          <div className="mt-6 grid grid-cols-3 gap-3 md:gap-6 text-center">
-            <div>
-              <div className="text-3xl md:text-4xl font-medium tabular-nums">
-                +{vendus.length}
-              </div>
-              <div className="text-sm text-zinc-600">biens déjà vendus</div>
-            </div>
-            <div>
-              <div className="text-3xl md:text-4xl font-medium tabular-nums">
-                48h
-              </div>
-              <div className="text-sm text-zinc-600">délai moyen visite</div>
-            </div>
-            <div>
-              <div className="text-3xl md:text-4xl font-medium tabular-nums">
-                30%
-              </div>
-              <div className="text-sm text-zinc-600">off-market</div>
-            </div>
-          </div>
-          */}
-        </div>
-        </div>
-      </section>
 
 
       {/* 7) Process */}
@@ -571,7 +474,7 @@ export default function BuyIntro() {
       */}
 
       {/* 10) TrustStrip */}
-      <div id="chiffres-cle" className="relative bg-white" style={{ zIndex: 2 }}>
+      <div id="chiffres-cle" className="relative bg-white pt-16 md:pt-24" style={{ zIndex: 2 }}>
         <TrustStrip
           size="xl"
           reviewsLabel="RealAdvisor"

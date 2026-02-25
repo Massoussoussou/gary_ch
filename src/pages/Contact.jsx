@@ -248,87 +248,170 @@ function SquareTile({ base = 780, children }) {
 
 
 export default function Contact() {
-  const onSubmit = (e) => { e.preventDefault(); alert("Message envoyé (démo). Branche sur ton API/CRM.") }
   const [type, setType] = useState("Estimation")
+  const [submitting, setSubmitting] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState("")
+
+  // Honeypot field
+  const [honey, setHoney] = useState("")
+
+  const onSubmit = async (e) => {
+    e.preventDefault()
+    setSubmitting(true)
+    setError("")
+
+    const form = e.target
+    const prenom = form.prenom.value.trim()
+    const nom = form.nom.value.trim()
+    const email = form.email.value.trim()
+    const tel = form.tel.value.trim()
+    const message = form.message.value.trim()
+
+    const senderMessage = `[Contact – ${type}]\n${message}`
+
+    try {
+      const resp = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sender_firstname: prenom,
+          sender_lastname: nom,
+          sender_email: email,
+          sender_number: tel,
+          sender_message: senderMessage,
+          property_reference: "CONTACT-FORM",
+          website: honey, // honeypot
+        }),
+      })
+
+      if (!resp.ok) {
+        const data = await resp.json().catch(() => ({}))
+        throw new Error(data.error || "Erreur lors de l’envoi")
+      }
+
+      setSuccess(true)
+      form.reset()
+    } catch (err) {
+      setError(err.message || "Une erreur est survenue. Réessayez.")
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
     <div className="relative isolate min-h-screen">
       {/* FOND SLIDESHOW */}
       <BackgroundSlideshow images={[HERO_BG, ...ESTIMATE_BG]} duration={5.8} pan={88} scaleFrom={1.14} scaleTo={1.22} />
 
-      {/* CONTENU : la page entière scroll (pas de scroll interne à la tuile) */}
+      {/* CONTENU */}
       <main className="relative z-10 flex justify-center px-4 py-10 md:py-16">
 
         <section className="w-full max-w-[min(980px,94vw)]">
           <SquareTile base={780}>
             <div data-square-inner className="relative z-10 px-5 sm:px-8 md:px-14 py-7 sm:py-8 md:py-12">
 
-
-            
-
               {/* En-tête */}
-      <header className="text-center mt-6 md:mt-8">
-  <h1 className="font-serif tracking-[-0.03em] leading-tight text-[clamp(2.15rem,7vw,3.5rem)] text-black">
-    Parlez-nous de votre <span className="text-[#FF4A3E]">projet</span>
-  </h1>
+              <header className="text-center mt-6 md:mt-8">
+                <h1 className="font-serif tracking-[-0.03em] leading-tight text-[clamp(2.15rem,7vw,3.5rem)] text-black">
+                  Parlez-nous de votre <span className="text-[#FF4A3E]">projet</span>
+                </h1>
+                <p className="mt-3 text-[clamp(1rem,1.9vw,1.1rem)] text-black/70 max-w-md mx-auto">
+                  Nous vous recontactons rapidement pour vous conseiller.
+                </p>
+              </header>
 
-  <p className="mt-3 text-[clamp(1rem,1.9vw,1.1rem)] text-black/70 max-w-md mx-auto">
-    Nous vous recontactons rapidement pour vous conseiller.
-  </p>
-
-  {/* Plus d’espace entre le bloc titre+phrase et les onglets */}
-  <div className="mt-7 md:mt-9 flex justify-center">
-    <TabsDemandType type={type} onChange={setType} />
-  </div>
-</header>
-
-
-              {/* Formulaire (sans overflow interne) */}
-              <form onSubmit={onSubmit} className="mt-8 grid gap-5 md:gap-6">
-                <div className="grid sm:grid-cols-2 gap-5">
-                  <div>
-                    <label htmlFor="nom" className="text-sm text-black/70">Nom</label>
-                    <input id="nom" name="nom" required className="w-full rounded-lg border border-black/15 bg-white/95 px-3 py-2.5 focus:outline-none focus:ring-4 focus:ring-[rgba(255,74,62,0.25)]" />
-                  </div>
-                  <div>
-                    <label htmlFor="prenom" className="text-sm text-black/70">Prénom</label>
-                    <input id="prenom" name="prenom" required className="w-full rounded-lg border border-black/15 bg-white/95 px-3 py-2.5 focus:outline-none focus:ring-4 focus:ring-[rgba(255,74,62,0.25)]" />
-                  </div>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-5">
-                  <div>
-                    <label htmlFor="email" className="text-sm text-black/70">Email</label>
-                    <input id="email" name="email" type="email" required className="w-full rounded-lg border border-black/15 bg-white/95 px-3 py-2.5 focus:outline-none focus:ring-4 focus:ring-[rgba(255,74,62,0.25)]" placeholder="vous@exemple.com" />
-                  </div>
-                  <div>
-                    <label htmlFor="tel" className="text-sm text-black/70">Téléphone</label>
-                    <input id="tel" name="tel" type="tel" inputMode="tel" required className="w-full rounded-lg border border-black/15 bg-white/95 px-3 py-2.5 focus:outline-none focus:ring-4 focus:ring-[rgba(255,74,62,0.25)]" placeholder="+41 79 123 45 67" />
-                  </div>
-                </div>
-
-                {/* Sujet (le type est géré par les onglets) */}
-                <div>
-                  <label htmlFor="sujet" className="text-sm text-black/70">Sujet</label>
-                  <input id="sujet" name="sujet" className="w-full rounded-lg border border-black/15 bg-white/95 px-3 py-2.5 focus:outline-none focus:ring-4 focus:ring-[rgba(255,74,62,0.25)]" placeholder="Estimer mon bien / Vendre mon bien..." />
-                </div>
-                {/* Valeur issue des onglets */}
-                <input type="hidden" name="type" value={type} />
-
-                {/* Message (conservé comme demandé) */}
-                <div>
-                  <label htmlFor="message" className="text-sm text-black/70">Message</label>
-                  <textarea id="message" name="message" rows={6} className="w-full rounded-lg border border-black/15 bg-white/95 px-3 py-2.5 focus:outline-none focus:ring-4 focus:ring-[rgba(255,74,62,0.25)]" placeholder="Décrivez votre bien (type, surface, localisation), vos délais, vos questions…" />
-                </div>
-
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <p className="text-xs text-black/60 leading-relaxed">En envoyant ce formulaire, vous acceptez d’être recontacté(e) par GARY.</p>
-                  <button type="submit" className="group inline-flex items-center justify-center gap-2 px-7 md:px-9 py-3 rounded-xl text-white shadow-lg transition hover:shadow-xl" style={{ backgroundColor: "#FF4A3E" }}>
-                    Envoyer
-                    <span aria-hidden className="inline-block translate-x-0 transition-transform duration-200 ease-out group-hover:translate-x-1">→</span>
+              {success ? (
+                <div className="mt-10 text-center py-12">
+                  <div className="text-4xl mb-4">✓</div>
+                  <h2 className="text-2xl font-serif text-black mb-2">Message envoyé</h2>
+                  <p className="text-black/70">Nous vous recontactons dans les plus brefs délais.</p>
+                  <button
+                    type="button"
+                    onClick={() => setSuccess(false)}
+                    className="mt-6 text-[#FF4A3E] underline underline-offset-4 text-sm"
+                  >
+                    Envoyer un autre message
                   </button>
                 </div>
-              </form>
+              ) : (
+                <form onSubmit={onSubmit} className="mt-8 grid gap-5 md:gap-6">
+                  {/* Honeypot — invisible */}
+                  <input
+                    type="text"
+                    name="website"
+                    value={honey}
+                    onChange={(e) => setHoney(e.target.value)}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    className="absolute opacity-0 pointer-events-none h-0 w-0"
+                    aria-hidden="true"
+                  />
+
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    <div>
+                      <label htmlFor="nom" className="text-sm text-black/70">Nom</label>
+                      <input id="nom" name="nom" required className="w-full rounded-lg border border-black/15 bg-white/95 px-3 py-2.5 focus:outline-none focus:ring-4 focus:ring-[rgba(255,74,62,0.25)]" />
+                    </div>
+                    <div>
+                      <label htmlFor="prenom" className="text-sm text-black/70">Prénom</label>
+                      <input id="prenom" name="prenom" required className="w-full rounded-lg border border-black/15 bg-white/95 px-3 py-2.5 focus:outline-none focus:ring-4 focus:ring-[rgba(255,74,62,0.25)]" />
+                    </div>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    <div>
+                      <label htmlFor="email" className="text-sm text-black/70">Email</label>
+                      <input id="email" name="email" type="email" required className="w-full rounded-lg border border-black/15 bg-white/95 px-3 py-2.5 focus:outline-none focus:ring-4 focus:ring-[rgba(255,74,62,0.25)]" placeholder="vous@exemple.com" />
+                    </div>
+                    <div>
+                      <label htmlFor="tel" className="text-sm text-black/70">Téléphone</label>
+                      <input id="tel" name="tel" type="tel" inputMode="tel" required className="w-full rounded-lg border border-black/15 bg-white/95 px-3 py-2.5 focus:outline-none focus:ring-4 focus:ring-[rgba(255,74,62,0.25)]" placeholder="+41 79 123 45 67" />
+                    </div>
+                  </div>
+
+                  {/* Type de demande */}
+                  <div>
+                    <label htmlFor="type" className="text-sm text-black/70">Type de demande</label>
+                    <select
+                      id="type"
+                      value={type}
+                      onChange={(e) => setType(e.target.value)}
+                      className="w-full rounded-lg border border-black/15 bg-white/95 px-3 py-2.5 focus:outline-none focus:ring-4 focus:ring-[rgba(255,74,62,0.25)]"
+                    >
+                      <option value="Estimation">Estimation de mon bien</option>
+                      <option value="Achat">Recherche d’un bien à acheter</option>
+                      <option value="Vente">Vendre mon bien</option>
+                      <option value="Autre">Autre demande</option>
+                    </select>
+                  </div>
+
+                  {/* Message */}
+                  <div>
+                    <label htmlFor="message" className="text-sm text-black/70">Message</label>
+                    <textarea id="message" name="message" rows={6} required className="w-full rounded-lg border border-black/15 bg-white/95 px-3 py-2.5 focus:outline-none focus:ring-4 focus:ring-[rgba(255,74,62,0.25)]" placeholder="Décrivez votre bien (type, surface, localisation), vos délais, vos questions…" />
+                  </div>
+
+                  {error && (
+                    <p className="text-sm text-red-600">{error}</p>
+                  )}
+
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <p className="text-xs text-black/60 leading-relaxed">En envoyant ce formulaire, vous acceptez d’être recontacté(e) par GARY.</p>
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="group inline-flex items-center justify-center gap-2 px-7 md:px-9 py-3 rounded-xl text-white shadow-lg transition hover:shadow-xl disabled:opacity-60"
+                      style={{ backgroundColor: "#FF4A3E" }}
+                    >
+                      {submitting ? "Envoi…" : "Envoyer"}
+                      {!submitting && (
+                        <span aria-hidden className="inline-block translate-x-0 transition-transform duration-200 ease-out group-hover:translate-x-1">→</span>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           </SquareTile>
         </section>

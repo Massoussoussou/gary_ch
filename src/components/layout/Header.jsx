@@ -196,29 +196,72 @@ export default function Header(){
             { to: '/vendre',        label: 'Vendre' },
             { to: '/estimer',       label: 'Estimer' },
             { to: '/projets-neufs', label: 'Projets\u00A0neufs' },
-            { to: '/actualites',    label: 'Actualités' },
+            { to: '/actualites',    label: 'Actualités', dropdown: [
+              { to: '/presse',     label: 'Presse' },
+              { to: '/ressources', label: 'Ressources' },
+            ]},
             { to: '/a-propos',      label: 'Qui\u00A0est\u00A0GARY\u00A0?' },
-          ].map(({ to, label }) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) =>
-                (isActive ? 'text-[#FF4A3E]' : 'text-text hover:text-[#FF4A3E]') +
-                ' nav-link transition-colors duration-150'
-              }
-            >
-              <span
-                className="nav-item"
-                style={{
-                  ['--ul-thickness']: `${UNDERLINE_THICKNESS}px`,
-                  ['--ul-offset']: `${UNDERLINE_OFFSET}px`,
-                  ['--ul-duration']: `${UNDERLINE_DURATION}ms`,
-                }}
+          ].map(({ to, label, dropdown }) =>
+            dropdown ? (
+              <div key={to} className="relative group/dd">
+                <NavLink
+                  to={to}
+                  className={({ isActive }) =>
+                    (isActive ? 'text-[#FF4A3E]' : 'text-text hover:text-[#FF4A3E]') +
+                    ' nav-link transition-colors duration-150'
+                  }
+                >
+                  <span
+                    className="nav-item"
+                    style={{
+                      ['--ul-thickness']: `${UNDERLINE_THICKNESS}px`,
+                      ['--ul-offset']: `${UNDERLINE_OFFSET}px`,
+                      ['--ul-duration']: `${UNDERLINE_DURATION}ms`,
+                    }}
+                  >
+                    {label}
+                  </span>
+                </NavLink>
+                {/* Dropdown */}
+                <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 opacity-0 invisible group-hover/dd:opacity-100 group-hover/dd:visible transition-all duration-200 z-50">
+                  <div className="bg-white rounded-lg shadow-lg border border-black/5 py-2 min-w-[160px]">
+                    {dropdown.map((sub) => (
+                      <NavLink
+                        key={sub.to}
+                        to={sub.to}
+                        className={({ isActive }) =>
+                          'block px-5 py-2.5 text-[13px] tracking-[0.05em] transition-colors duration-150 ' +
+                          (isActive ? 'text-[#FF4A3E]' : 'text-neutral-700 hover:text-[#FF4A3E] hover:bg-neutral-50')
+                        }
+                      >
+                        {sub.label}
+                      </NavLink>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <NavLink
+                key={to}
+                to={to}
+                className={({ isActive }) =>
+                  (isActive ? 'text-[#FF4A3E]' : 'text-text hover:text-[#FF4A3E]') +
+                  ' nav-link transition-colors duration-150'
+                }
               >
-                {label}
-              </span>
-            </NavLink>
-          ))}
+                <span
+                  className="nav-item"
+                  style={{
+                    ['--ul-thickness']: `${UNDERLINE_THICKNESS}px`,
+                    ['--ul-offset']: `${UNDERLINE_OFFSET}px`,
+                    ['--ul-duration']: `${UNDERLINE_DURATION}ms`,
+                  }}
+                >
+                  {label}
+                </span>
+              </NavLink>
+            )
+          )}
         </nav>
 
         <div
