@@ -48,10 +48,6 @@ function useThumbVisible() {
   return count;
 }
 
-// Carrousel miniatures — constantes mobile
-const M_THUMB_W = 80;
-const M_THUMB_GAP = 6;
-const M_THUMB_STEP = M_THUMB_W + M_THUMB_GAP;
 
 export default function ListingDetail() {
   const { id } = useParams();
@@ -63,7 +59,6 @@ export default function ListingDetail() {
   const [isReady, setIsReady] = useState(false);
   const [isTileVisible, setIsTileVisible] = useState(true);
   const [trackIndex, setTrackIndex] = useState(0);
-  const [isSnapping, setIsSnapping] = useState(false);
   const [prevImage, setPrevImage] = useState(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [slideDir, setSlideDir] = useState("next");
@@ -81,7 +76,8 @@ export default function ListingDetail() {
       : 0;
 
   const totalImages = images.length;
-  const currentImageIndex = totalImages > 0 ? ((trackIndex % totalImages) + totalImages) % totalImages : 0;
+  const singleImage = totalImages === 1;
+  const currentImageIndex = totalImages > 0 ? Math.min(Math.max(trackIndex, 0), totalImages - 1) : 0;
   const heroImg = totalImages > 0 ? images[currentImageIndex] : "";
 
   // adresse et agent (safe même si item est null)
@@ -130,10 +126,9 @@ export default function ListingDetail() {
   }, []);
 
   useEffect(() => {
-    setTrackIndex(totalImages > 0 ? totalImages + initialIdx : 0);
+    setTrackIndex(initialIdx);
     setPrevImage(null);
     setIsTransitioning(false);
-    setIsSnapping(false);
   }, [id, initialIdx, totalImages]);
 
   // Parallax tuile : monte à 40% de la vitesse du scroll
@@ -144,7 +139,7 @@ export default function ListingDetail() {
   }, []);
 
   const handlePrev = () => {
-    if (totalImages < 2 || isTransitioning) return;
+    if (totalImages < 2 || isTransitioning || trackIndex <= 0) return;
     setSlideDir("prev");
     setPrevImage(heroImg);
     setIsTransitioning(true);
@@ -156,7 +151,7 @@ export default function ListingDetail() {
   };
 
   const handleNext = useCallback(() => {
-    if (totalImages < 2 || isTransitioning) return;
+    if (totalImages < 2 || isTransitioning || trackIndex >= totalImages - 1) return;
     setSlideDir("next");
     setPrevImage(heroImg);
     setIsTransitioning(true);
@@ -165,35 +160,19 @@ export default function ListingDetail() {
       setIsTransitioning(false);
       setPrevImage(null);
     }, TRANSITION_MS);
-  }, [totalImages, isTransitioning, heroImg]);
+  }, [totalImages, isTransitioning, heroImg, trackIndex]);
 
-  // Aller à une image précise (clic miniature via extIdx)
-  const goToTrack = useCallback((extIdx) => {
-    if (extIdx === trackIndex) return;
+  // Aller à une image précise (clic miniature)
+  const goToImage = useCallback((idx) => {
+    if (idx === trackIndex) return;
     setPrevImage(null);
     setIsTransitioning(false);
-    setTrackIndex(extIdx);
+    setTrackIndex(idx);
   }, [trackIndex]);
-
-  // Snap-back infini : si on sort du range central, reset instantané sans transition
-  useEffect(() => {
-    if (totalImages <= THUMB_VISIBLE || totalImages === 0) return;
-    const realIdx = ((trackIndex % totalImages) + totalImages) % totalImages;
-    const middleEquiv = totalImages + realIdx;
-    if (trackIndex < totalImages || trackIndex >= 2 * totalImages) {
-      const timer = setTimeout(() => {
-        setIsSnapping(true);
-        setTrackIndex(middleEquiv);
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => setIsSnapping(false));
-        });
-      }, 420); // juste après la transition de 400ms
-      return () => clearTimeout(timer);
-    }
-  }, [trackIndex, totalImages]);
 
   // === Mobile : galerie swipeable ===
   const galleryRef = useRef(null);
+  const mobileThumbsRef = useRef(null);
   const isScrollingSelf = useRef(false);
 
   // Swipe galerie → met à jour trackIndex
@@ -203,7 +182,7 @@ export default function ListingDetail() {
     if (!el || !el.clientWidth) return;
     const idx = Math.round(el.scrollLeft / el.clientWidth);
     if (idx >= 0 && idx < totalImages) {
-      setTrackIndex(totalImages + idx);
+      setTrackIndex(idx);
     }
   }, [totalImages]);
 
@@ -219,49 +198,29 @@ export default function ListingDetail() {
     }
   }, [currentImageIndex]);
 
-  // Carrousel mobile : même logique infinie que desktop mais avec tailles mobile
-  const mobileThumbCarousel = useMemo(() => {
-    if (totalImages === 0) return { items: [], offset: 0, simple: true };
-    if (totalImages <= THUMB_VISIBLE) {
-      return {
-        items: images.map((src, i) => ({ src, realIdx: i, extIdx: i, key: `ms-${i}` })),
-        offset: 0,
-        simple: true,
-      };
+  // Sync miniatures mobiles : auto-scroll vers la miniature active
+  useEffect(() => {
+    const container = mobileThumbsRef.current;
+    if (!container) return;
+    const activeThumb = container.querySelector(".listing-mobile-thumb--active");
+    if (activeThumb) {
+      const left = activeThumb.offsetLeft - container.offsetWidth / 2 + activeThumb.offsetWidth / 2;
+      container.scrollTo({ left, behavior: "smooth" });
     }
-    const items = [];
-    for (let copy = 0; copy < 3; copy++) {
-      images.forEach((src, idx) => {
-        const extIdx = copy * totalImages + idx;
-        items.push({ src, realIdx: idx, extIdx, key: `m${copy}-${idx}` });
-      });
-    }
-    const offset = (trackIndex - 1) * M_THUMB_STEP;
-    return { items, offset, simple: false };
-  }, [images, trackIndex, totalImages]);
+  }, [currentImageIndex]);
 
-  // Carrousel miniatures : items triplés + offset calculé depuis trackIndex
+  // Carrousel miniatures desktop : fini, une seule copie
   const thumbCarousel = useMemo(() => {
     if (totalImages === 0) return { items: [], offset: 0, simple: true };
+    const items = images.map((src, i) => ({ src, idx: i, key: `s-${i}` }));
     if (totalImages <= THUMB_VISIBLE) {
-      return {
-        items: images.map((src, i) => ({ src, realIdx: i, extIdx: i, key: `s-${i}` })),
-        offset: 0,
-        simple: true,
-      };
+      return { items, offset: 0, simple: true };
     }
-    // Triple l'array pour le défilement infini
-    const items = [];
-    for (let copy = 0; copy < 3; copy++) {
-      images.forEach((src, idx) => {
-        const extIdx = copy * totalImages + idx;
-        items.push({ src, realIdx: idx, extIdx, key: `${copy}-${idx}` });
-      });
-    }
-    // Active en position 1 (deuxième slot visible)
-    const offset = (trackIndex - 1) * THUMB_STEP;
+    // Centrer la miniature active dans la fenêtre visible
+    const maxOffset = (totalImages - THUMB_VISIBLE) * THUMB_STEP;
+    const offset = Math.min(Math.max(trackIndex * THUMB_STEP, 0), maxOffset);
     return { items, offset, simple: false };
-  }, [images, trackIndex, totalImages]);
+  }, [images, trackIndex, totalImages, THUMB_VISIBLE]);
 
 
   // Early returns APRÈS tous les hooks
@@ -325,6 +284,18 @@ export default function ListingDetail() {
           transform-origin: center center;
           will-change: transform, opacity, clip-path;
           transition: none;
+        }
+        .listing-hero__image--blurred-bg {
+          object-fit: cover;
+          transform: scale(1.15);
+          filter: blur(25px) brightness(0.7);
+          z-index: 0;
+        }
+        .listing-hero__image--framed {
+          object-fit: contain;
+          padding: 1.5rem;
+          background: transparent;
+          z-index: 1;
         }
 
         .listing-hero__image--in {
@@ -411,11 +382,11 @@ export default function ListingDetail() {
           pointer-events: auto;
         }
 
-        /* Tuile infos */
+        /* Tuile infos — apparaît en premier, disparaît en dernier */
         .listing-tile > .listing-tile-info {
           opacity: 0;
           transform: translateY(10px);
-          transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+          transition: opacity 0.35s ease-out, transform 0.35s ease-out;
         }
         .listing-tile--visible > .listing-tile-info {
           opacity: 1;
@@ -600,23 +571,20 @@ export default function ListingDetail() {
         }
 
         .listing-mobile-thumbs-carousel {
-          overflow: hidden;
-          width: calc(80px * 4 + 6px * 3); /* 4 thumbs mobile + 3 gaps */
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          -ms-overflow-style: none;
+          scrollbar-width: none;
           padding: 8px;
           margin: -8px;
-          margin-left: auto;
-          margin-right: auto;
         }
-        .listing-mobile-thumbs-carousel--simple {
-          overflow: visible;
-          width: auto;
-        }
+        .listing-mobile-thumbs-carousel::-webkit-scrollbar { display: none; }
 
         .listing-mobile-thumbs-track {
           display: flex;
           gap: 6px;
           align-items: center;
-          transition: transform 0.4s cubic-bezier(.22, 1, .36, 1);
+          width: max-content;
         }
 
         .listing-mobile-thumb {
@@ -645,6 +613,15 @@ export default function ListingDetail() {
         <div className={["listing-hero", isReady ? "is-visible" : ""].join(" ")} style={{ position: "absolute", inset: 0 }}>
           {/* Images empilées + wipe */}
           <div className="absolute inset-0 overflow-hidden">
+            {heroImg && singleImage && (
+              <img
+                src={heroImg}
+                alt=""
+                aria-hidden="true"
+                className="listing-hero__image listing-hero__image--blurred-bg"
+                loading="eager"
+              />
+            )}
             {heroImg && (
               <img
                 key={heroImg}
@@ -654,6 +631,7 @@ export default function ListingDetail() {
                   "listing-hero__image",
                   "listing-hero__image--in",
                   isTransitioning ? `is-animating slide-${slideDir}` : "",
+                  singleImage ? "listing-hero__image--framed" : "",
                 ].join(" ")}
                 loading="eager"
               />
@@ -678,6 +656,7 @@ export default function ListingDetail() {
               <button
                 type="button"
                 onClick={handlePrev}
+                disabled={trackIndex <= 0}
                 className="listing-hero__nav-btn absolute z-20 left-4 md:left-6 top-1/2 -translate-y-1/2"
                 aria-label="Image précédente"
               >
@@ -686,6 +665,7 @@ export default function ListingDetail() {
               <button
                 type="button"
                 onClick={handleNext}
+                disabled={trackIndex >= totalImages - 1}
                 className="listing-hero__nav-btn absolute z-20 right-4 md:right-6 top-1/2 -translate-y-1/2"
                 aria-label="Image suivante"
               >
@@ -753,7 +733,7 @@ export default function ListingDetail() {
               </h1>
             </div>
 
-            {/* Carrousel miniatures infini — 3 ou 4 visibles selon écran, active en position 2 */}
+            {/* Carrousel miniatures — fini, 3 ou 4 visibles selon écran */}
             {totalImages > 1 && (
               <div
                 className={`listing-thumbs-carousel hidden md:block ${thumbCarousel.simple ? "listing-thumbs-carousel--simple" : ""}`}
@@ -763,21 +743,20 @@ export default function ListingDetail() {
                   className="listing-thumbs-track"
                   style={thumbCarousel.simple ? {} : {
                     transform: `translateX(-${thumbCarousel.offset}px)`,
-                    ...(isSnapping ? { transition: "none" } : {}),
                   }}
                 >
                   {thumbCarousel.items.map((thumb, i) => (
                     <button
                       key={thumb.key}
                       type="button"
-                      onClick={() => goToTrack(thumb.extIdx)}
-                      className={`listing-thumb ${thumb.realIdx === currentImageIndex ? "listing-thumb--active" : ""}`}
-                      aria-label={`Photo ${thumb.realIdx + 1}`}
-                      style={{ transitionDelay: `${(thumb.extIdx - trackIndex + 1) * 50}ms` }}
+                      onClick={() => goToImage(thumb.idx)}
+                      className={`listing-thumb ${thumb.idx === currentImageIndex ? "listing-thumb--active" : ""}`}
+                      style={{ transitionDelay: isTileVisible ? `${i * 0.07}s` : `${(thumbCarousel.items.length - 1 - i) * 0.05}s` }}
+                      aria-label={`Photo ${thumb.idx + 1}`}
                     >
                       <img
                         src={thumb.src}
-                        alt={`Miniature ${thumb.realIdx + 1}`}
+                        alt={`Miniature ${thumb.idx + 1}`}
                         className="listing-thumb__img"
                         loading="lazy"
                       />
@@ -823,26 +802,22 @@ export default function ListingDetail() {
           )}
         </div>
 
-        {/* Carrousel miniatures mobile — même logique infinie que desktop */}
+        {/* Carrousel miniatures mobile — scroll natif swipeable */}
         {totalImages > 1 && (
           <div className="flex justify-center py-3">
-            <div className={`listing-mobile-thumbs-carousel ${mobileThumbCarousel.simple ? "listing-mobile-thumbs-carousel--simple" : ""}`}>
-              <div
-                className="listing-mobile-thumbs-track"
-                style={mobileThumbCarousel.simple ? {} : {
-                  transform: `translateX(-${mobileThumbCarousel.offset}px)`,
-                  ...(isSnapping ? { transition: "none" } : {}),
-                }}
-              >
-                {mobileThumbCarousel.items.map((thumb) => (
+            <div ref={mobileThumbsRef} className="listing-mobile-thumbs-carousel">
+              <div className="listing-mobile-thumbs-track">
+                {images.map((src, idx) => (
                   <button
-                    key={thumb.key}
+                    key={idx}
                     type="button"
-                    onClick={() => goToTrack(thumb.extIdx)}
-                    className={`listing-mobile-thumb ${thumb.realIdx === currentImageIndex ? "listing-mobile-thumb--active" : ""}`}
-                    aria-label={`Photo ${thumb.realIdx + 1}`}
+                    onClick={() => {
+                      setTrackIndex(idx);
+                    }}
+                    className={`listing-mobile-thumb ${idx === currentImageIndex ? "listing-mobile-thumb--active" : ""}`}
+                    aria-label={`Photo ${idx + 1}`}
                   >
-                    <img src={thumb.src} alt={`Miniature ${thumb.realIdx + 1}`} loading="lazy" />
+                    <img src={src} alt={`Miniature ${idx + 1}`} loading="lazy" />
                   </button>
                 ))}
               </div>
@@ -863,7 +838,7 @@ export default function ListingDetail() {
       </div>
 
       {/* === CONTENU PRINCIPAL — passe par-dessus le hero === */}
-      <section className="relative bg-white w-full px-[clamp(20px,6vw,140px)] py-[clamp(60px,12vh,160px)] grid grid-cols-1 lg:grid-cols-2 gap-[clamp(40px,6vw,80px)]" style={{ zIndex: 2 }}>
+      <section className="relative bg-white w-full px-[clamp(20px,6vw,140px)] pt-[clamp(8px,4vh,160px)] pb-[clamp(60px,12vh,160px)] grid grid-cols-1 lg:grid-cols-2 gap-[clamp(40px,6vw,80px)]" style={{ zIndex: 2 }}>
         {/* DESCRIPTION (à gauche) — rendue en HTML */}
         <div
           className="

@@ -45,8 +45,8 @@ export default function DrawerNav({ open, onClose }) {
   const aboutSubs = [
     { to: "/a-propos", label: "Qui est GARY" },
     { to: "/actualites", label: "Actualités" },
-    { to: "/actualites", label: "Presse" },
-    { to: "/actualites", label: "Ressources" },
+    { to: "/presse", label: "Presse" },
+    { to: "/ressources", label: "Ressources" },
   ];
 
   const aboutActive = aboutSubs.some((s) => isPathActive(s.to));
@@ -298,13 +298,25 @@ export default function DrawerNav({ open, onClose }) {
                 w-full inline-flex items-center justify-center
                 rounded-full bg-[#FF4A3E] text-white
                 px-6 py-4
-                tracking-[0.18em] uppercase text-[12px]
+                tracking-[0.18em] uppercase text-lg
                 shadow-sm transition-transform duration-200
                 hover:scale-[1.01]
                 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/35
+                relative overflow-hidden
               "
             >
-              Contacter GARY
+              {/* Logo GARY en fond — toujours visible */}
+              <span
+                aria-hidden="true"
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  backgroundColor: '#fff',
+                  opacity: 0.16,
+                  WebkitMask: "url('/Logo/logo-gary-orange.png') center / cover no-repeat",
+                  mask: "url('/Logo/logo-gary-orange.png') center / cover no-repeat",
+                }}
+              />
+              <span className="relative z-[1]">Contacter GARY</span>
             </NavLink>
 
             <p className="mt-3 text-[12px] text-black/55 text-center">

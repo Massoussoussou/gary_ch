@@ -153,7 +153,7 @@ useEffect(() => {
     <Link to={`/annonce/${item.id}`} className={cardCls} aria-label={item.titre}>
       {/* CLIPPER */}
       <div
-        className={`relative aspect-[4/3] ${radiusCls} overflow-hidden`}
+        className={`relative aspect-[4/3] md:aspect-[16/10] ${radiusCls} overflow-hidden`}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >

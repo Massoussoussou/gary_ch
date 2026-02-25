@@ -81,8 +81,8 @@ function Stepper({ value = 0, onChange, min = 0, max = 10, className = "", size 
   const set = (v2) => onChange?.(Math.max(min, Math.min(max, v2)));
 
   return (
-    <div className={`space-y-1 ${className}`}>
-      {label && <label className="text-xs text-text/70">{label}</label>}
+    <div className={`space-y-3 ${className}`}>
+      {label && <label className="text-sm font-medium text-text/80 block">{label}</label>}
       <div className={`inline-flex items-center border border-line/70 bg-white ${h}`}>
         <button
           type="button"
@@ -206,9 +206,21 @@ function CityAutosuggest({ options = [], value, onChange, placeholder = "Ville" 
 
 /* ---------------------- Modal pour les filtres avancés --------------------- */
 
-function AdvancedModal({ open, onClose, children, activeCount = 0 }) {
+function AdvancedModal({ open, onClose, children, activeCount = 0, onReset }) {
   const panelRef = useRef(null);
   useClickOutside(panelRef, onClose);
+
+  // Lock body scroll + pause Lenis when modal is open
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    if (window.__lenis) window.__lenis.stop();
+    return () => {
+      document.body.style.overflow = prev;
+      if (window.__lenis) window.__lenis.start();
+    };
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -222,48 +234,80 @@ function AdvancedModal({ open, onClose, children, activeCount = 0 }) {
   if (!open) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/20 backdrop-blur-[1px] px-4">
+    <div className="fixed inset-0 z-[120]" data-lenis-prevent style={{ overscrollBehavior: "contain" }}>
+      {/* Overlay — click to close */}
       <div
-        ref={panelRef}
-        className="w-full max-w-5xl border border-line/60 bg-white shadow-2xl"
-      >
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4 px-5 md:px-6 py-4 border-b border-line/60">
-          <div>
-            <h2 className="text-base md:text-lg font-medium tracking-tight">Filtres avancés</h2>
-            <p className="mt-1 text-xs md:text-sm text-text/70">
-              Affinez votre recherche. Les résultats se mettent à jour automatiquement.
-            </p>
+        className="absolute inset-0 bg-black/35 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className="absolute inset-0 flex items-center justify-center px-4 pointer-events-none">
+        <div
+          ref={panelRef}
+          className="w-full max-w-3xl max-h-[85vh] rounded-2xl bg-white shadow-2xl ring-1 ring-black/[0.06] flex flex-col pointer-events-auto"
+          style={{
+            animation: "modalIn 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header — fixe */}
+          <div className="flex-shrink-0 flex items-center justify-between px-6 py-5 border-b border-neutral-100 rounded-t-2xl">
+            <div>
+              <h2 className="text-xl font-bold tracking-tight text-neutral-900">Filtres <span className="text-[#FF4A3E]">avancés</span></h2>
+              <p className="mt-1 text-sm text-neutral-400">
+                Affinez votre recherche parmi les biens disponibles
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="h-9 w-9 rounded-full border border-neutral-200 inline-flex items-center justify-center text-neutral-500 hover:bg-neutral-50 hover:text-neutral-700 transition-colors"
+              aria-label="Fermer les filtres avancés"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-line/70 hover:bg-bgAlt"
-            aria-label="Fermer les filtres avancés"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
 
-        {/* Contenu */}
-        <div className="px-5 md:px-6 py-4">{children}</div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between gap-3 px-5 md:px-6 py-3 border-t border-line/60">
-          <span className="text-[11px] md:text-xs text-text/70">
-            {activeCount > 0
-              ? `${activeCount} filtre${activeCount > 1 ? "s" : ""} actif${
-                  activeCount > 1 ? "s" : ""
-                }`
-              : "Aucun filtre avancé actif"}
-          </span>
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex items-center justify-center border border-line/70 bg-bgAlt px-4 py-2 text-xs md:text-sm hover:bg-white"
+          {/* Contenu — scrollable */}
+          <div
+            className="flex-1 min-h-0 px-6 py-5"
+            style={{ overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}
           >
-            Fermer
-          </button>
+            {children}
+          </div>
+
+          {/* Footer — fixe */}
+          <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-t border-neutral-100 bg-neutral-50/60 rounded-b-2xl">
+            <span className="text-sm text-neutral-500">
+              {activeCount > 0
+                ? `${activeCount} filtre${activeCount > 1 ? "s" : ""} actif${
+                    activeCount > 1 ? "s" : ""
+                  }`
+                : "Aucun filtre avancé actif"}
+            </span>
+            <div className="flex items-center gap-2">
+              {onReset && activeCount > 0 && (
+                <button
+                  type="button"
+                  onClick={onReset}
+                  className="h-11 px-5 rounded-lg border border-neutral-200 bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <RotateCcw className="h-3.5 w-3.5" />
+                    Réinitialiser
+                  </span>
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={onClose}
+                className="h-11 px-6 rounded-lg bg-neutral-900 text-white text-sm font-semibold hover:bg-[#FF4A3E] transition-colors"
+              >
+                Appliquer
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>,
@@ -286,9 +330,20 @@ export default function FiltersBar({
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [barRevealed, setBarRevealed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileVisible, setMobileVisible] = useState(false);
   const [showStickyBtn, setShowStickyBtn] = useState(false);
   const [reachedBottom, setReachedBottom] = useState(false);
   const sectionAnchorRef = useRef(null);
+
+  // Animate mobile panel open/close
+  const openMobile = () => {
+    setMobileOpen(true);
+    requestAnimationFrame(() => requestAnimationFrame(() => setMobileVisible(true)));
+  };
+  const closeMobile = () => {
+    setMobileVisible(false);
+    setTimeout(() => setMobileOpen(false), 350);
+  };
 
   // Lock body scroll when mobile panel is open
   useEffect(() => {
@@ -476,7 +531,7 @@ export default function FiltersBar({
     <div className="grid gap-5">
       {/* Ville */}
       <div>
-        <label className="text-[11px] uppercase tracking-[0.2em] text-neutral-500 mb-2 block">Ville</label>
+        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-2 block">Ville</label>
         <CityAutosuggest
           options={cities}
           value={city}
@@ -487,7 +542,7 @@ export default function FiltersBar({
 
       {/* Type de bien */}
       <div>
-        <label className="text-[11px] uppercase tracking-[0.2em] text-neutral-500 mb-2 block">Type de bien</label>
+        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-2 block">Type de bien</label>
         <div className="grid grid-cols-2 gap-2">
           {types.map((t) => (
             <button
@@ -508,7 +563,7 @@ export default function FiltersBar({
 
       {/* Budget */}
       <div>
-        <label className="text-[11px] uppercase tracking-[0.2em] text-neutral-500 mb-2 block">Budget</label>
+        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-2 block">Budget</label>
         <div className="grid grid-cols-2 gap-2">
           <input
             inputMode="numeric"
@@ -529,8 +584,8 @@ export default function FiltersBar({
 
       {/* Chambres & SDB */}
       <div>
-        <label className="text-[11px] uppercase tracking-[0.2em] text-neutral-500 mb-2 block">Chambres & SDB</label>
-        <div className="grid gap-2">
+        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-4 block">Chambres & SDB</label>
+        <div className="grid gap-6">
           <Stepper label="Chambres min" value={Number(chambresMin || 0)} onChange={(v) => setChambresMin(String(v))} min={0} max={10} />
           <Stepper label="Salles de bain min" value={Number(sdbMin || 0)} onChange={(v) => setSdbMin(String(v))} min={0} max={10} />
         </div>
@@ -538,7 +593,7 @@ export default function FiltersBar({
 
       {/* Surface */}
       <div>
-        <label className="text-[11px] uppercase tracking-[0.2em] text-neutral-500 mb-2 block">Surface</label>
+        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-2 block">Surface</label>
         <div className="grid grid-cols-2 gap-2">
           <input
             inputMode="numeric"
@@ -559,7 +614,7 @@ export default function FiltersBar({
 
       {/* Canton */}
       <div>
-        <label className="text-[11px] uppercase tracking-[0.2em] text-neutral-500 mb-2 block">Canton</label>
+        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-2 block">Canton</label>
         <select
           value={canton}
           onChange={(e) => setCanton(e.target.value)}
@@ -572,7 +627,7 @@ export default function FiltersBar({
 
       {/* Atouts */}
       <div>
-        <label className="text-[11px] uppercase tracking-[0.2em] text-neutral-500 mb-2 block">Atouts</label>
+        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-2 block">Atouts</label>
         <div className="flex flex-wrap gap-2">
           {ATOUTS_LIST.map((a) => {
             const active = !!atouts[a.key];
@@ -632,7 +687,7 @@ export default function FiltersBar({
         >
           <button
             type="button"
-            onClick={() => setMobileOpen(true)}
+            onClick={openMobile}
             className="
               inline-flex items-center gap-3
               bg-neutral-900 text-white
@@ -656,48 +711,63 @@ export default function FiltersBar({
         document.body
       )}
 
-      {/* Panneau full-screen mobile/tablette */}
+      {/* Panneau full-screen mobile/tablette — animé slide-up */}
       {mobileOpen && createPortal(
-        <div className="fixed inset-0 z-[200] lg:hidden flex flex-col bg-white">
-          {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-200">
-            <div>
-              <h2 className="text-base font-semibold tracking-tight">Filtres</h2>
-              <p className="text-[12px] text-neutral-500 mt-0.5">
-                {resultCount} annonce{resultCount > 1 ? "s" : ""} disponible{resultCount > 1 ? "s" : ""}
-              </p>
+        <div className="fixed inset-0 z-[200] lg:hidden">
+          {/* Overlay */}
+          <div
+            className="absolute inset-0 bg-black/30 transition-opacity duration-300"
+            style={{ opacity: mobileVisible ? 1 : 0 }}
+            onClick={closeMobile}
+          />
+          {/* Panel */}
+          <div
+            className="absolute inset-0 flex flex-col bg-white transition-transform duration-350 ease-[cubic-bezier(0.16,1,0.3,1)]"
+            style={{
+              transform: mobileVisible ? "translateY(0)" : "translateY(100%)",
+              transition: "transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
+            }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-200">
+              <div>
+                <h2 className="text-base font-semibold tracking-tight">Filtres</h2>
+                <p className="text-[12px] text-neutral-500 mt-0.5">
+                  {resultCount} annonce{resultCount > 1 ? "s" : ""} disponible{resultCount > 1 ? "s" : ""}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closeMobile}
+                className="h-10 w-10 rounded-full border border-neutral-200 inline-flex items-center justify-center hover:bg-neutral-50"
+                aria-label="Fermer les filtres"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => setMobileOpen(false)}
-              className="h-10 w-10 rounded-full border border-neutral-200 inline-flex items-center justify-center hover:bg-neutral-50"
-              aria-label="Fermer les filtres"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
 
-          {/* Contenu scrollable */}
-          <div className="flex-1 overflow-y-auto px-5 py-5">
-            {filtersContent}
-          </div>
+            {/* Contenu scrollable */}
+            <div className="flex-1 overflow-y-auto px-5 py-5">
+              {filtersContent}
+            </div>
 
-          {/* Footer sticky */}
-          <div className="border-t border-neutral-200 px-5 py-4 flex gap-3" style={{ paddingBottom: "max(16px, env(safe-area-inset-bottom))" }}>
-            <button
-              type="button"
-              onClick={resetAll}
-              className="flex-1 h-14 border border-neutral-200 text-neutral-900 text-[13px] uppercase tracking-[0.12em] font-medium hover:bg-neutral-50 transition-colors"
-            >
-              Réinitialiser
-            </button>
-            <button
-              type="button"
-              onClick={() => setMobileOpen(false)}
-              className="flex-[2] h-14 bg-neutral-900 text-white text-[13px] uppercase tracking-[0.12em] font-semibold hover:bg-[#FF4A3E] transition-colors"
-            >
-              Voir {resultCount} annonce{resultCount > 1 ? "s" : ""}
-            </button>
+            {/* Footer sticky */}
+            <div className="border-t border-neutral-200 px-5 py-4 flex gap-3" style={{ paddingBottom: "max(16px, env(safe-area-inset-bottom))" }}>
+              <button
+                type="button"
+                onClick={resetAll}
+                className="flex-1 h-14 border border-neutral-200 text-neutral-900 text-[13px] uppercase tracking-[0.12em] font-medium hover:bg-neutral-50 transition-colors"
+              >
+                Réinitialiser
+              </button>
+              <button
+                type="button"
+                onClick={closeMobile}
+                className="flex-[2] h-14 bg-neutral-900 text-white text-[13px] uppercase tracking-[0.12em] font-semibold hover:bg-[#FF4A3E] transition-colors"
+              >
+                Voir {resultCount} annonce{resultCount > 1 ? "s" : ""}
+              </button>
+            </div>
           </div>
         </div>,
         document.body
@@ -923,69 +993,135 @@ export default function FiltersBar({
         open={advancedOpen}
         onClose={() => setAdvancedOpen(false)}
         activeCount={advancedCount}
+        onReset={resetAll}
       >
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* Ligne 1 */}
-          <div className="space-y-2">
-            <label className="text-xs text-text/70">Canton</label>
-            <select
-              value={canton}
-              onChange={(e) => setCanton(e.target.value)}
-              className="h-10 w-full border border-line/70 bg-white px-3 text-sm"
-            >
-              <option value="">Tous</option>
-              {cantons.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-xs text-text/70">Dispo avant le</label>
-            <input
-              type="date"
-              value={dispoBefore}
-              onChange={(e) => setDispoBefore(e.target.value)}
-              className="h-10 w-full border border-line/70 bg-white px-3 text-sm"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-xs text-text/70">Terrain min (m²)</label>
-            <input
-              inputMode="numeric"
-              value={terrainMin}
-              onChange={(e) => setTerrainMin(e.target.value)}
-              className="h-10 w-full border border-line/70 bg-white px-3 text-sm"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-xs text-text/70">Meublé</label>
-            <button
-              type="button"
-              onClick={() => setMeuble((m) => !m)}
-              className={`w-full h-10 border px-3 text-sm ${
-                meuble
-                  ? "border-primary/60 bg-primary/5 text-primary"
-                  : "border-line/70 bg-white"
-              }`}
-            >
-              {meuble ? "Uniquement meublé" : "Inclure non meublé"}
-            </button>
-          </div>
-
-          {/* Atouts */}
-          <div className="md:col-span-2 space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-xs text-text/70">Atouts</label>
-              <span className="text-[11px] text-text/60">
-                {Object.values(atouts).filter(Boolean).length} sélectionné(s)
-              </span>
+        <div className="space-y-6">
+          {/* ── Section 1 : Localisation & Disponibilité ── */}
+          <div>
+            <h3 className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-4">
+              Localisation & Disponibilité
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-neutral-700">Canton</label>
+                <select
+                  value={canton}
+                  onChange={(e) => setCanton(e.target.value)}
+                  className="h-12 w-full rounded-lg border border-neutral-200 bg-white px-3 text-[15px] text-neutral-800 focus:outline-none focus:ring-2 focus:ring-[#FF4A3E]/20 focus:border-[#FF4A3E]/40 transition-shadow"
+                >
+                  <option value="">Tous les cantons</option>
+                  {cantons.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-neutral-700">Disponible avant le</label>
+                <input
+                  type="date"
+                  value={dispoBefore}
+                  onChange={(e) => setDispoBefore(e.target.value)}
+                  className="h-12 w-full rounded-lg border border-neutral-200 bg-white px-3 text-[15px] text-neutral-800 focus:outline-none focus:ring-2 focus:ring-[#FF4A3E]/20 focus:border-[#FF4A3E]/40 transition-shadow"
+                />
+              </div>
             </div>
-            <div className="border border-line/60 bg-white p-3">
+          </div>
+
+          <div className="border-t border-[#FF4A3E]/15" />
+
+          {/* ── Section 2 : Caractéristiques ── */}
+          <div>
+            <h3 className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-4">
+              Caractéristiques
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div>
+                <Stepper
+                  size="sm"
+                  label="Chambres min"
+                  value={Number(chambresMin || 0)}
+                  onChange={(v) => setChambresMin(String(v))}
+                  min={0}
+                  max={10}
+                />
+              </div>
+              <div>
+                <Stepper
+                  size="sm"
+                  label="Salles de bain min"
+                  value={Number(sdbMin || 0)}
+                  onChange={(v) => setSdbMin(String(v))}
+                  min={0}
+                  max={10}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-neutral-700">Surface min (m²)</label>
+                <input
+                  inputMode="numeric"
+                  value={surfaceMin}
+                  onChange={(e) => setSurfaceMin(e.target.value)}
+                  placeholder="—"
+                  className="h-12 w-full rounded-lg border border-neutral-200 bg-white px-3 text-[15px] text-neutral-800 focus:outline-none focus:ring-2 focus:ring-[#FF4A3E]/20 focus:border-[#FF4A3E]/40 transition-shadow"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-neutral-700">Surface max (m²)</label>
+                <input
+                  inputMode="numeric"
+                  value={surfaceMax}
+                  onChange={(e) => setSurfaceMax(e.target.value)}
+                  placeholder="—"
+                  className="h-12 w-full rounded-lg border border-neutral-200 bg-white px-3 text-[15px] text-neutral-800 focus:outline-none focus:ring-2 focus:ring-[#FF4A3E]/20 focus:border-[#FF4A3E]/40 transition-shadow"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3 mt-3">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-neutral-700">Terrain min (m²)</label>
+                <input
+                  inputMode="numeric"
+                  value={terrainMin}
+                  onChange={(e) => setTerrainMin(e.target.value)}
+                  placeholder="—"
+                  className="h-12 w-full rounded-lg border border-neutral-200 bg-white px-3 text-[15px] text-neutral-800 focus:outline-none focus:ring-2 focus:ring-[#FF4A3E]/20 focus:border-[#FF4A3E]/40 transition-shadow"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-neutral-700">Meublé</label>
+                <button
+                  type="button"
+                  onClick={() => setMeuble((m) => !m)}
+                  className={`w-full h-12 rounded-lg border px-3 text-[15px] transition-all ${
+                    meuble
+                      ? "border-[#FF4A3E]/40 bg-[#FF4A3E]/5 text-[#FF4A3E] font-medium"
+                      : "border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50"
+                  }`}
+                >
+                  {meuble ? "Oui, meublé uniquement" : "Indifférent"}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-[#FF4A3E]/15" />
+
+          {/* ── Section 3 : Atouts & Équipements ── */}
+          <div>
+            <h3 className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-4">
+              Atouts & Équipements
+            </h3>
+
+            {/* Atouts */}
+            <div className="mb-5">
+              <div className="flex items-center justify-between mb-2.5">
+                <span className="text-sm font-medium text-neutral-700">Atouts</span>
+                {Object.values(atouts).filter(Boolean).length > 0 && (
+                  <span className="text-[13px] text-neutral-400">
+                    {Object.values(atouts).filter(Boolean).length} sélectionné{Object.values(atouts).filter(Boolean).length > 1 ? "s" : ""}
+                  </span>
+                )}
+              </div>
               <div className="flex flex-wrap gap-2">
                 {ATOUTS_LIST.map((a) => {
                   const active = !!atouts[a.key];
@@ -996,10 +1132,10 @@ export default function FiltersBar({
                       onClick={() =>
                         setAtouts((prev) => ({ ...prev, [a.key]: !prev[a.key] }))
                       }
-                      className={`rounded-full px-3 py-1 text-sm border ${
+                      className={`rounded-full px-4 py-2.5 text-sm border transition-all duration-150 ${
                         active
-                          ? "border-primary/60 bg-primary/10 text-primary"
-                          : "border-line/60 bg-white hover:bg-bgAlt"
+                          ? "border-[#FF4A3E] bg-[#FF4A3E]/8 text-[#FF4A3E] font-medium shadow-[0_0_0_1px_rgba(255,74,62,0.15)]"
+                          : "border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 hover:border-neutral-300"
                       }`}
                     >
                       {a.label}
@@ -1008,81 +1144,43 @@ export default function FiltersBar({
                 })}
               </div>
             </div>
-          </div>
 
-          {/* Équipements */}
-          <div className="md:col-span-2 space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-xs text-text/70">Équipements</label>
-              <span className="text-[11px] text-text/60">
-                {extraFeatures.length} sélectionné(s)
-              </span>
-            </div>
-            <div className="border border-line/60 bg-white p-3">
-              <div className="flex flex-wrap gap-2">
-                {features.map((f) => {
-                  const active = extraFeatures.includes(f);
-                  return (
-                    <button
-                      type="button"
-                      key={f}
-                      onClick={() =>
-                        setExtraFeatures((prev) =>
-                          active ? prev.filter((x) => x !== f) : [...prev, f]
-                        )
-                      }
-                      className={`rounded-full border px-3 py-1 text-sm ${
-                        active
-                          ? "border-primary/60 bg-primary/10 text-primary"
-                          : "border-line/60 bg-white hover:bg-bgAlt"
-                      }`}
-                    >
-                      {f}
-                    </button>
-                  );
-                })}
+            {/* Équipements */}
+            {features.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-2.5">
+                  <span className="text-sm font-medium text-neutral-700">Équipements</span>
+                  {extraFeatures.length > 0 && (
+                    <span className="text-[13px] text-neutral-400">
+                      {extraFeatures.length} sélectionné{extraFeatures.length > 1 ? "s" : ""}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {features.map((f) => {
+                    const active = extraFeatures.includes(f);
+                    return (
+                      <button
+                        type="button"
+                        key={f}
+                        onClick={() =>
+                          setExtraFeatures((prev) =>
+                            active ? prev.filter((x) => x !== f) : [...prev, f]
+                          )
+                        }
+                        className={`rounded-full border px-4 py-2 text-[13px] transition-all duration-150 ${
+                          active
+                            ? "border-[#FF4A3E] bg-[#FF4A3E]/8 text-[#FF4A3E] font-medium shadow-[0_0_0_1px_rgba(255,74,62,0.15)]"
+                            : "border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 hover:border-neutral-300"
+                        }`}
+                      >
+                        {f}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          </div>
-
-          {/* Ligne bas : chambres / sdb / surfaces */}
-          <div className="space-y-2">
-            <Stepper
-              size="sm"
-              label="Chambres min"
-              value={Number(chambresMin || 0)}
-              onChange={(v) => setChambresMin(String(v))}
-              min={0}
-              max={10}
-            />
-          </div>
-          <div className="space-y-2">
-            <Stepper
-              size="sm"
-              label="Salles de bain min"
-              value={Number(sdbMin || 0)}
-              onChange={(v) => setSdbMin(String(v))}
-              min={0}
-              max={10}
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-xs text-text/70">Surface min (m²)</label>
-            <input
-              inputMode="numeric"
-              value={surfaceMin}
-              onChange={(e) => setSurfaceMin(e.target.value)}
-              className="h-10 w-full border border-line/70 bg-white px-3 text-sm"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-xs text-text/70">Surface max (m²)</label>
-            <input
-              inputMode="numeric"
-              value={surfaceMax}
-              onChange={(e) => setSurfaceMax(e.target.value)}
-              className="h-10 w-full border border-line/70 bg-white px-3 text-sm"
-            />
+            )}
           </div>
         </div>
       </AdvancedModal>
