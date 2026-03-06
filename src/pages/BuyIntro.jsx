@@ -8,12 +8,13 @@ import useProperties from "../hooks/useProperties.js";
 import FiltersBar from "../components/FiltersBar.jsx";
 import ListingGrid from "../components/ListingGrid.jsx";
 import SortMenu from "../components/SortMenu.jsx";
-import TrustStrip from "../components/TrustStrip.jsx";
 import ProcessSteps from "../components/ProcessSteps.jsx";
 import ToolsBudgetCalc from "../components/ToolsBudgetCalc.jsx";
 import ToolsAlerts from "../components/ToolsAlerts.jsx";
 import AlreadyOwner from "../components/AlreadyOwner.jsx";
 import WeekCardV1 from "../components/cards/WeekCardV1.jsx";
+import BandCarousel from "../components/BandCarousel.jsx";
+import ListingCardSold from "../components/cards/ListingCardSold.jsx";
 
 import CTAFuturaGlow from "../components/cta/CTAFuturaGlow.jsx";
 import CTAWhiteSweep from "../components/cta/CTAWhiteSweep.jsx";
@@ -182,8 +183,8 @@ function HeroContent({ scrollToListings }) {
       className="relative mx-auto w-full max-w-7xl px-5 sm:px-6 md:px-8 py-14 sm:py-16 md:py-28"
       style={{ transform: `translateY(${offset}px)` }}
     >
-      <div className="relative flex justify-center md:justify-start">
-        <div className="relative w-full max-w-[92vw] sm:max-w-[min(900px,84vw)] mx-auto md:mx-0">
+      <div className="relative flex justify-center">
+        <div className="relative w-full max-w-[92vw] sm:max-w-[min(900px,84vw)] mx-auto">
           <div className="absolute -inset-y-5 -inset-x-4 sm:-inset-y-6 sm:-inset-x-6 md:-inset-y-6 md:-left-6 md:-right-6 bg-white/55 backdrop-blur-sm rounded-none shadow-[0_22px_70px_-45px_rgba(0,0,0,0.45)] md:shadow-none" />
 
           <div className="relative text-center px-3 sm:px-0 py-5 sm:py-0">
@@ -218,11 +219,114 @@ function HeroContent({ scrollToListings }) {
   );
 }
 
+/* ---------- Chiffres clés (mêmes que page Qui est GARY) ---------- */
+const BUY_KEY_FIGURES = [
+  { value: 100, suffix: "+", label: "ventes en 2025", icon: "sales" },
+  { value: 90, suffix: "+", label: "avis 5 étoiles sur Google", icon: "star", link: "https://www.google.com/maps/place/GARY+Real+Estate", linkText: "voir ici" },
+  { value: 6.6, suffix: "M", label: "de vues sur nos publications", icon: "eye", decimals: 1 },
+  { value: 40, suffix: "k+", label: "followers sur nos réseaux", icon: "followers" },
+];
+
+function BuyFigureIcon({ type }) {
+  const cls = "w-8 h-8 md:w-10 md:h-10 text-[#FF4A3E]/70";
+  switch (type) {
+    case "sales":
+      return (<svg className={cls} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>);
+    case "star":
+      return (<svg className={cls} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>);
+    case "eye":
+      return (<svg className={cls} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>);
+    case "followers":
+      return (<svg className={cls} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>);
+    default: return null;
+  }
+}
+
+function useCountUp(target, duration = 2000, start = false) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (!start) { setValue(0); return; }
+    const t0 = performance.now();
+    let raf;
+    const tick = (now) => {
+      const p = Math.min((now - t0) / duration, 1);
+      const eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+      setValue(eased * target);
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [start, target, duration]);
+  return value;
+}
+
+function BuyFigureItem({ fig, index, active }) {
+  const delay = index * 0.15;
+  const count = useCountUp(fig.value, 2200, active);
+  const display = fig.decimals
+    ? count.toFixed(count >= fig.value * 0.99 ? fig.decimals : 1)
+    : Math.round(count);
+
+  return (
+    <div className="flex flex-col items-center text-center" style={{ opacity: active ? 1 : 0, transform: active ? "translateY(0)" : "translateY(30px)", transition: `opacity 0.7s ease-out ${delay}s, transform 0.7s ease-out ${delay}s` }}>
+      <div className="mb-4 md:mb-5" style={{ opacity: active ? 1 : 0, transition: `opacity 0.6s ease-out ${delay + 0.1}s` }}>
+        <BuyFigureIcon type={fig.icon} />
+      </div>
+      <span className="font-sans font-bold text-[52px] md:text-[72px] lg:text-[88px] leading-none tracking-tight text-[#FF4A3E]" style={{ fontVariantNumeric: "tabular-nums" }}>
+        {display}{fig.suffix}
+      </span>
+      <p className="mt-3 text-[14px] md:text-[17px] uppercase tracking-[0.12em] text-gray-600 leading-relaxed max-w-[260px]" style={{ opacity: active ? 1 : 0, transition: `opacity 0.6s ease-out ${delay + 0.4}s` }}>
+        {fig.label}
+      </p>
+      {fig.link && (
+        <a href={fig.link} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-[12px] uppercase tracking-[0.12em] text-[#FF4A3E]/80 hover:text-[#FF4A3E] transition-colors duration-300" style={{ opacity: active ? 1 : 0, transition: `opacity 0.6s ease-out ${delay + 0.6}s` }}>
+          {fig.linkText}
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+        </a>
+      )}
+    </div>
+  );
+}
+
+function KeyFiguresSection() {
+  const sectionRef = useRef(null);
+  const [seen, setSeen] = useState(false);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || seen) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setSeen(true);
+    }, { threshold: 0.2 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [seen]);
+
+  return (
+    <section ref={sectionRef} className="w-full bg-[#FAF6F0] py-20 md:py-28">
+      <div className="max-w-[1200px] mx-auto px-6 md:px-12 lg:px-16">
+        <div className="flex justify-center mb-6">
+          <div className="h-[2px] bg-[#FF4A3E]" style={{ width: seen ? "60px" : "0px", transition: "width 0.8s cubic-bezier(0.22, 1, 0.36, 1)" }} />
+        </div>
+        <h3 className="text-center font-serif text-3xl md:text-5xl tracking-wide mb-16 md:mb-20 text-gray-900" style={{ opacity: seen ? 1 : 0, transform: seen ? "translateY(0)" : "translateY(20px)", transition: "opacity 0.8s ease-out, transform 0.8s ease-out" }}>
+          Quelques chiffres de <span className="text-[#FF4A3E]">2025</span>
+        </h3>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-14 md:gap-y-16 gap-x-8 md:gap-x-12 lg:gap-x-16">
+          {BUY_KEY_FIGURES.map((fig, i) => (
+            <BuyFigureItem key={i} fig={fig} index={i} active={seen} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- composant principal ---------- */
 export default function BuyIntro() {
   const location = useLocation();
   const { data, loading } = useProperties();
   const available = useMemo(() => data.filter(d => !hasTag(d, /vendu/i) && !d.vendu), [data]);
+  const vendus = useMemo(() => data.filter(d => hasTag(d, /vendu/i) || d.vendu), [data]);
   const facets = useMemo(() => deriveFacets(available), [available]);
 
   /* ---- Filtres & tri (système complet issu de Listings) ---- */
@@ -473,18 +577,23 @@ export default function BuyIntro() {
       </section>
       */}
 
-      {/* 10) TrustStrip */}
-      <div id="chiffres-cle" className="relative bg-white pt-16 md:pt-24" style={{ zIndex: 2 }}>
-        <TrustStrip
-          size="xl"
-          reviewsLabel="RealAdvisor"
-          reviewsUrl="https://realadvisor.ch/fr/agences-immobilieres/agence-gary"
-          rating={5}
-          reviewsCount={75}
-        />
+      {/* 10) Carousel biens vendus */}
+      {vendus.length > 0 && (
+        <section className="relative bg-white pt-16 md:pt-24" style={{ zIndex: 2 }}>
+          <BandCarousel
+            title="Déjà vendu"
+            items={vendus}
+            renderItem={ListingCardSold}
+          />
+        </section>
+      )}
+
+      {/* 11) Chiffres clés (mêmes que page Qui est GARY) */}
+      <div id="chiffres-cle" className="relative bg-white" style={{ zIndex: 2 }}>
+        <KeyFiguresSection />
       </div>
 
-      {/* 11) Pont vers VENTE */}
+      {/* 12) Pont vers VENTE */}
       <div className="relative" style={{ zIndex: 2 }}>
         <AlreadyOwner toEstimate="/estimer" toSell="/vendre" />
       </div>

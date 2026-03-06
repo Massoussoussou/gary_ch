@@ -22,8 +22,8 @@ function SellHeroContent() {
       className="relative mx-auto w-full max-w-7xl px-5 sm:px-6 md:px-8 py-14 sm:py-16 md:py-28"
       style={{ transform: `translateY(${offset}px)` }}
     >
-      <div className="relative flex justify-center md:justify-start">
-        <div className="relative w-full max-w-[92vw] sm:max-w-[min(900px,84vw)] mx-auto md:mx-0">
+      <div className="relative flex justify-center">
+        <div className="relative w-full max-w-[92vw] sm:max-w-[min(900px,84vw)] mx-auto">
           <div
             className="
               absolute

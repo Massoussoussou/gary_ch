@@ -197,6 +197,7 @@ export default function Header(){
             { to: '/estimer',       label: 'Estimer' },
             { to: '/projets-neufs', label: 'Projets\u00A0neufs' },
             { to: '/actualites',    label: 'Actualités', dropdown: [
+              { to: '/actualites', label: 'Articles' },
               { to: '/presse',     label: 'Presse' },
               { to: '/ressources', label: 'Ressources' },
             ]},

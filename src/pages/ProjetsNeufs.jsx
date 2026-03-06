@@ -274,9 +274,9 @@ function CTAEnrollButton(){
     {/* === HERO intro : tuile qui s’adapte au contenu + texte étalé === */}
 {/* === HERO intro — version alignée sur le style #2 === */}
 <section className="relative mx-auto w-full max-w-7xl px-6 md:px-8 py-20 md:pt-40 md:pb-28">
-  <div className="relative flex justify-start">
+  <div className="relative flex justify-center">
     {/* Tuile verre/blanc derrière le texte */}
-    <div className="relative w-full max-w-[min(900px,84vw)]">
+    <div className="relative w-full max-w-[min(900px,84vw)] mx-auto">
       <div className="absolute -inset-y-6 -left-6 -right-6 bg-white/55 backdrop-blur-sm z-0 rounded-none" />
       
       {/* Contenu */}

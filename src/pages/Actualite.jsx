@@ -214,8 +214,8 @@ function ActuHeroContent({ scrollToArticles }) {
       className="relative mx-auto w-full max-w-7xl px-5 sm:px-6 md:px-8 py-14 sm:py-16 md:py-28"
       style={{ transform: `translateY(${offset}px)` }}
     >
-      <div className="relative flex justify-center md:justify-start">
-        <div className="relative w-full max-w-[92vw] sm:max-w-[min(900px,84vw)] mx-auto md:mx-0">
+      <div className="relative flex justify-center">
+        <div className="relative w-full max-w-[92vw] sm:max-w-[min(900px,84vw)] mx-auto">
           <div className="absolute -inset-y-5 -inset-x-4 sm:-inset-y-6 sm:-inset-x-6 md:-inset-y-6 md:-left-6 md:-right-6 bg-white/55 backdrop-blur-sm rounded-none shadow-[0_22px_70px_-45px_rgba(0,0,0,0.45)] md:shadow-none" />
 
           <div className="relative text-center px-3 sm:px-0 py-5 sm:py-0">

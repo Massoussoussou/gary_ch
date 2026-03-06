@@ -55,7 +55,7 @@ export default function ThreeHeroTiles() {
   }, []);
 
   return (
-    <section className="relative h-[calc(100vh-80px)] w-full overflow-hidden bg-black">
+    <section className="relative w-full overflow-hidden bg-black" style={{ height: 'calc(100svh - var(--header-h, 80px))' }}>
       {/* IMAGE HERO DE FOND */}
       <div className="absolute inset-0">
         <img
@@ -71,8 +71,8 @@ export default function ThreeHeroTiles() {
       </div>
 
       {/* CONTENU */}
-      <div className="relative z-10 h-full w-full">
-        <div className="grid h-full w-full grid-rows-3 border-y-[1.5px] border-white/60 divide-y-[1.5px] divide-white/45">
+      <div className="relative z-10 h-full w-full flex flex-col justify-center sm:block">
+        <div className="grid w-full grid-rows-3 border-y-[1.5px] border-white/60 divide-y-[1.5px] divide-white/45 h-[78%] sm:h-full">
           {bands.map((band) => {
             const isLeft = band.direction === "left";
             const hiddenTransform = isLeft ? "-translate-x-full" : "translate-x-full";
@@ -102,19 +102,19 @@ export default function ThreeHeroTiles() {
                   className={`
                     relative z-10
                     leading-none select-none
-                    text-white font-light
+                    text-white font-serif
                     transform transition-all duration-700
                     ease-[cubic-bezier(0.175,0.885,0.32,1.275)]
                     ${textEntered ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}
 
                     /* ✅ MOBILE (<640px) : taille fluide + tracking réduit + centrage */
-                    text-[clamp(44px,14vw,86px)]
-                    tracking-[0.18em]
+                    text-[clamp(28px,9vw,56px)]
+                    tracking-[0.12em]
                     text-center
 
-                    /* ✅ DESKTOP (>=640px) : tu récupères ton style actuel */
-                    sm:text-8xl sm:tracking-[0.25em]
-                    md:text-9xl lg:text-10xl
+                    /* ✅ DESKTOP (>=640px) : tailles réduites selon demande client */
+                    sm:text-6xl sm:tracking-[0.18em]
+                    md:text-7xl lg:text-8xl
                     ${band.offsetClass}
                   `}
                 >

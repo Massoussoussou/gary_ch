@@ -35,6 +35,20 @@ export default function DrawerNav({ open, onClose }) {
     if (!open) setAboutOpen(false);
   }, [open]);
 
+  // Scroll en bas quand l'accordéon s'ouvre
+  useEffect(() => {
+    if (!aboutOpen) return;
+    const t = setTimeout(() => {
+      const el = aboutSubsRef.current;
+      if (!el) return;
+      const scrollParent = el.closest("[class*='overflow-y']") || el.closest("nav");
+      if (scrollParent) {
+        scrollParent.scrollTo({ top: scrollParent.scrollHeight, behavior: "smooth" });
+      }
+    }, 160);
+    return () => clearTimeout(t);
+  }, [aboutOpen]);
+
   const navItems = [
     { to: "/acheter", label: "ACHETER", sub: "Découvrir nos biens" },
     { to: "/vendre", label: "VENDRE", sub: "Vendre avec GARY" },
@@ -44,7 +58,7 @@ export default function DrawerNav({ open, onClose }) {
 
   const aboutSubs = [
     { to: "/a-propos", label: "Qui est GARY" },
-    { to: "/actualites", label: "Actualités" },
+    { to: "/actualites", label: "Articles" },
     { to: "/presse", label: "Presse" },
     { to: "/ressources", label: "Ressources" },
   ];
@@ -126,7 +140,7 @@ export default function DrawerNav({ open, onClose }) {
           <nav className="flex-1 overflow-y-auto px-6 py-6">
             <ul className="space-y-3">
               {navItems.map((item, idx) => {
-                const active = isPathActive(item.to);
+                const active = !aboutOpen && isPathActive(item.to);
                 return (
                   <li key={item.to}>
                     <NavLink
@@ -176,23 +190,7 @@ export default function DrawerNav({ open, onClose }) {
               <li>
                 <button
                   type="button"
-                  onClick={() => {
-                    setAboutOpen((v) => {
-                      if (!v) {
-                        // Scroll le conteneur nav pour mettre les sous-options bien en vue
-                        setTimeout(() => {
-                          const el = aboutSubsRef.current;
-                          if (!el) return;
-                          const scrollParent = el.closest("[class*='overflow-y']") || el.closest("nav");
-                          if (scrollParent) {
-                            const target = el.offsetTop - 20;
-                            scrollParent.scrollTo({ top: target, behavior: "smooth" });
-                          }
-                        }, 100);
-                      }
-                      return !v;
-                    });
-                  }}
+                  onClick={() => setAboutOpen((v) => !v)}
                   className={`
                     group relative w-full text-left block rounded-2xl px-5 py-3.5 overflow-hidden
                     border border-black/12
@@ -241,7 +239,7 @@ export default function DrawerNav({ open, onClose }) {
                 {/* Sous-menu dépliable */}
                 <div
                   ref={aboutSubsRef}
-                  className="overflow-hidden transition-all duration-300 ease-out"
+                  className="overflow-hidden transition-all duration-150 ease-out"
                   style={{
                     maxHeight: aboutOpen ? `${aboutSubs.length * 56}px` : "0px",
                     opacity: aboutOpen ? 1 : 0,
