@@ -411,17 +411,20 @@ function HeroCirclesSection() {
               }}
             >
               <h3 className="font-serif text-4xl md:text-6xl text-white tracking-wide" style={{ lineHeight: "1.4" }}>
-                Jeunes
+                Puissance
               </h3>
               <div className="flex justify-center my-3 md:my-4">
                 <div className={`h-px bg-white/60 ${showText ? "hero-underline" : ""}`} style={{ width: 0 }} />
               </div>
               <h3 className="font-serif text-4xl md:text-6xl text-white tracking-wide" style={{ lineHeight: "1.4" }}>
-                courtiers
+                Marketing
               </h3>
               <div className="flex justify-center mt-3 md:mt-4">
                 <div className={`h-px bg-white/60 ${showText ? "hero-underline hero-underline--delay" : ""}`} style={{ width: 0 }} />
               </div>
+              <p className="mt-3 text-white/70 text-sm md:text-base max-w-[240px] mx-auto leading-relaxed tracking-wide">
+                Une mise en valeur stratégique &amp; une diffusion digitale maximale et maîtrisée
+              </p>
             </div>
           </div>
 
@@ -450,19 +453,44 @@ function HeroCirclesSection() {
               }}
             >
               <h3 className="font-serif text-4xl md:text-6xl text-white tracking-wide" style={{ lineHeight: "1.4" }}>
-                Grande
+                Expertise
               </h3>
               <div className="flex justify-center my-3 md:my-4">
                 <div className={`h-px bg-white/60 ${showText ? "hero-underline" : ""}`} style={{ width: 0 }} />
               </div>
               <h3 className="font-serif text-4xl md:text-6xl text-white tracking-wide" style={{ lineHeight: "1.4" }}>
-                expertise
+                Locale
               </h3>
               <div className="flex justify-center mt-3 md:mt-4">
                 <div className={`h-px bg-white/60 ${showText ? "hero-underline hero-underline--delay" : ""}`} style={{ width: 0 }} />
               </div>
+              <p className="mt-3 text-white/70 text-sm md:text-base max-w-[240px] mx-auto leading-relaxed tracking-wide">
+                Plus de 60 ans d'expérience cumulée sur le marché immobilier romand
+              </p>
             </div>
           </div>
+        </div>
+
+        {/* "Découvrir nos résultats" — invitation au scroll */}
+        <div
+          className="absolute bottom-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer"
+          style={{
+            zIndex: 20,
+            opacity: showText ? 1 : 0,
+            transition: "opacity 0.8s ease-out 0.6s",
+          }}
+          onClick={() => window.scrollTo({ top: window.innerHeight * 2, behavior: "smooth" })}
+        >
+          <span className="text-white/70 text-[12px] md:text-[13px] uppercase tracking-[0.2em]">
+            Découvrir nos résultats
+          </span>
+          <svg
+            className="w-5 h-5 text-white/60"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"
+            style={{ animation: "heroScrollBounce 2s ease-in-out infinite" }}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
         </div>
 
         {/* Gradient transition bas */}
@@ -566,16 +594,125 @@ function IdentitySection() {
 
         {/* Texte */}
         <p
-          className="text-lg md:text-xl leading-relaxed text-gray-700 font-light"
+          className="text-xl md:text-2xl leading-relaxed text-gray-700 font-light"
           style={{
             opacity: seen ? 1 : 0,
             transform: seen ? "translateY(0)" : "translateY(15px)",
             transition: "opacity 0.8s ease-out 0.2s, transform 0.8s ease-out 0.2s",
           }}
         >
-          Véritables stratèges de la vente immobilière, <strong className="font-semibold text-gray-900">GARY</strong> combine
-          une connaissance fine du marché immobilier local, forgée par plus de <strong className="font-semibold text-gray-900">60 ans
-          d'expérience cumulée</strong>, à une expertise marketing nouvelle génération, innovante et performante.
+          <strong className="font-semibold text-gray-900">GARY</strong> est une agence immobilière spécialisée dans la vente d'appartements,
+          de maisons et de projets neufs en suisse romande.
+        </p>
+        <p
+          className="mt-4 text-xl md:text-2xl leading-relaxed text-gray-700 font-light"
+          style={{
+            opacity: seen ? 1 : 0,
+            transform: seen ? "translateY(0)" : "translateY(15px)",
+            transition: "opacity 0.8s ease-out 0.35s, transform 0.8s ease-out 0.35s",
+          }}
+        >
+          Véritables stratèges de la vente immobilière, notre équipe combine une connaissance fine du marché immobilier local,
+          forgée par plus de <strong className="font-semibold text-gray-900">60 ans d'expérience cumulée</strong>, à une expertise
+          marketing nouvelle génération, innovante et performante.
+        </p>
+      </div>
+
+      {/* Ce qui nous distingue — style Philosophie */}
+      <div className="max-w-[1100px] mx-auto px-6 md:px-12 mt-20 md:mt-28">
+        <h3
+          className="font-serif text-3xl md:text-5xl tracking-wide text-gray-900 text-center mb-14 md:mb-20"
+          style={{
+            opacity: seen ? 1 : 0,
+            transform: seen ? "translateY(0)" : "translateY(15px)",
+            transition: "opacity 0.8s ease-out 0.4s, transform 0.8s ease-out 0.4s",
+          }}
+        >
+          Ce qui nous distingue<span className="text-[#FF4A3E]">,</span> concrètement.
+        </h3>
+
+        <div className="border-t border-neutral-300/60">
+          {[
+            {
+              main: "Chaque courtier possède plus de 10 ans d'expérience sur le marché immobilier local",
+              detail: "Expertise confirmée, conseils stratégiques avisés",
+              img: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=600",
+            },
+            {
+              main: "Une approche marketing moderne et performante",
+              detail: "Mise en valeur sur mesure, photos et vidéos professionnelles, diffusion stratégique sur les différents canaux d'acquisition",
+              img: "https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=600",
+            },
+            {
+              main: "Une communauté active et fidèle de plus de 40k followers sur les réseaux sociaux",
+              detail: null,
+              img: "https://images.pexels.com/photos/607812/pexels-photo-607812.jpeg?auto=compress&cs=tinysrgb&w=600",
+            },
+            {
+              main: "Un réseau d'acheteurs qualifiés",
+              detail: "Base de données de plus de 5000 clients acheteurs",
+              img: "https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg?auto=compress&cs=tinysrgb&w=600",
+            },
+            {
+              main: "Un réseau de partenaires de confiance",
+              detail: "Financements, notaires, avocats, architectes, …",
+              img: "https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=600",
+            },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="group relative border-b border-neutral-300/60 cursor-default transition-all duration-500 overflow-hidden"
+              style={{
+                opacity: seen ? 1 : 0,
+                transform: seen ? "translateY(0)" : "translateY(24px)",
+                transition: `opacity 0.6s ease-out ${0.5 + i * 0.12}s, transform 0.6s ease-out ${0.5 + i * 0.12}s`,
+              }}
+            >
+              <div className="flex items-center gap-5 py-7 md:py-9 transition-all duration-500 lg:group-hover:py-11">
+                <span className="w-[10px] h-[10px] rounded-full bg-[#FF4A3E] shrink-0 transition-transform duration-300 lg:group-hover:scale-125" />
+                <div className="flex-1 min-w-0">
+                  <span className="font-serif text-[clamp(1.15rem,2.2vw,1.6rem)] tracking-[-0.01em] leading-[1.3] text-gray-900 block">
+                    {item.main}
+                  </span>
+                  {item.detail && (
+                    <span className="block mt-1.5 text-[14px] md:text-[15px] text-[#FF4A3E]/70 leading-relaxed">
+                      {item.detail}
+                    </span>
+                  )}
+                </div>
+                {/* Image au hover — desktop uniquement */}
+                <div className="hidden lg:block w-0 group-hover:w-[200px] h-[115px] shrink-0 overflow-hidden rounded-sm transition-all duration-500 opacity-0 group-hover:opacity-100">
+                  <img
+                    src={item.img}
+                    alt=""
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+              {/* Image visible — mobile/tablette */}
+              <div className="lg:hidden overflow-hidden rounded-sm mb-6 -mt-1 max-h-0 group-hover:max-h-[200px] transition-all duration-500 opacity-0 group-hover:opacity-100">
+                <img
+                  src={item.img}
+                  alt=""
+                  className="w-full aspect-[16/9] object-cover"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <p
+          className="mt-14 md:mt-20 text-center text-xl md:text-2xl leading-relaxed text-gray-700 font-light"
+          style={{
+            opacity: seen ? 1 : 0,
+            transform: seen ? "translateY(0)" : "translateY(12px)",
+            transition: "opacity 0.8s ease-out 1.2s, transform 0.8s ease-out 1.2s",
+          }}
+        >
+          L'ensemble réuni pour vous offrir un accompagnement fluide, efficace,
+          et centré sur la réussite de votre projet immobilier.
         </p>
       </div>
     </section>
@@ -616,7 +753,7 @@ function InfluencersSection() {
             </p>
           </div>
 
-          {/* Placeholder Elfsight Instagram feed */}
+          {/* Instagram feed */}
           <div
             style={{
               opacity: seen ? 1 : 0,
@@ -624,18 +761,55 @@ function InfluencersSection() {
               transition: "opacity 0.8s ease-out 0.2s, transform 0.8s ease-out 0.2s",
             }}
           >
-            <div
-              id="elfsight-instagram-feed"
-              className="bg-white rounded-lg border border-gray-200 flex flex-col items-center justify-center text-center p-10 md:p-14"
-              style={{ minHeight: "320px" }}
+            <a
+              href="https://www.instagram.com/gary_realestate/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group block bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300"
             >
-              {/* Instagram icon */}
-              <svg className="w-12 h-12 text-[#FF4A3E]/40 mb-4" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
-              </svg>
-              <p className="text-gray-400 text-sm uppercase tracking-[0.15em] mb-2">Feed Instagram</p>
-              <p className="text-gray-300 text-xs">Widget Elfsight — en attente d'intégration</p>
-            </div>
+              {/* Profil header */}
+              <div className="flex items-center gap-4 p-5 border-b border-gray-100">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] p-[2px] shrink-0">
+                  <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
+                    <img src="/Logo/logo-gary-orange.png" alt="GARY" className="w-9 h-auto" />
+                  </div>
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-semibold text-gray-900 text-sm">gary_realestate</span>
+                    <svg className="w-4 h-4 text-[#3897f0]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.4 14.6l-4.2-4.2 1.4-1.4 2.8 2.8 5.6-5.6 1.4 1.4-7 7z"/></svg>
+                  </div>
+                  <p className="text-gray-500 text-xs mt-0.5">GARY Real Estate</p>
+                </div>
+              </div>
+
+              {/* Stats */}
+              <div className="flex justify-around py-4 text-center border-b border-gray-100">
+                <div>
+                  <span className="block font-bold text-gray-900 text-base">105</span>
+                  <span className="text-gray-500 text-[11px]">publications</span>
+                </div>
+                <div>
+                  <span className="block font-bold text-gray-900 text-base">36K</span>
+                  <span className="text-gray-500 text-[11px]">followers</span>
+                </div>
+                <div>
+                  <span className="block font-bold text-gray-900 text-base">535</span>
+                  <span className="text-gray-500 text-[11px]">suivi(e)s</span>
+                </div>
+              </div>
+
+              {/* CTA */}
+              <div className="p-5 flex items-center justify-center gap-2 text-[#FF4A3E] group-hover:text-[#E43E33] transition-colors">
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                </svg>
+                <span className="text-sm font-semibold uppercase tracking-[0.1em]">Suivre sur Instagram</span>
+                <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </div>
+            </a>
           </div>
         </div>
       </div>
@@ -695,20 +869,38 @@ function GoogleReviewsSection() {
           Ce que nos clients <span className="text-[#FF4A3E]">pensent</span> de nous
         </h3>
 
-        {/* Placeholder Elfsight */}
+        {/* Google Reviews embed + lien */}
         <div
-          id="elfsight-google-reviews"
-          className="mb-14 md:mb-20 bg-[#FAF6F0] rounded-lg border border-gray-200 flex items-center justify-center text-center p-8"
+          className="mb-14 md:mb-20 flex flex-col items-center gap-4"
           style={{
-            minHeight: "80px",
             opacity: seen ? 1 : 0,
             transition: "opacity 0.6s ease-out 0.1s",
           }}
         >
-          <p className="text-gray-400 text-sm">Widget Elfsight Google Reviews — en attente d'intégration</p>
+          <div className="w-full rounded-lg overflow-hidden border border-gray-200" style={{ minHeight: "320px" }}>
+            <iframe
+              title="Avis Google — GARY Real Estate"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2761.5!2d6.1467!3d46.2044!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x478c652fa0560c43%3A0x2e2e2e2e2e2e2e2e!2sGARY%20Real%20Estate!5e0!3m2!1sfr!2sch!4v1"
+              className="w-full h-[320px] md:h-[400px] border-0"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          </div>
+          <a
+            href="https://www.google.com/maps/place/GARY+Real+Estate"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-[13px] uppercase tracking-[0.12em] text-[#FF4A3E] hover:text-[#E43E33] font-medium transition-colors"
+          >
+            Voir tous nos avis sur Google
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
         </div>
 
-        {/* Fallback — avis hardcodés */}
+        {/* Avis clients */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {GOOGLE_REVIEWS.map((review, i) => (
             <div
@@ -976,6 +1168,20 @@ export default function About() {
 
         {/* ====== SECTION 2 — Notre identité (fond blanc) ====== */}
         <IdentitySection />
+
+        {/* ====== Photo d'équipe (pleine largeur) ====== */}
+        <section className="relative z-10 bg-white">
+          <div className="max-w-[1400px] mx-auto px-6 md:px-12 pb-16 md:pb-24">
+            <div className="overflow-hidden rounded-lg">
+              <img
+                src="/team-photo.jpg"
+                alt="L'équipe GARY Real Estate"
+                className="w-full h-auto object-cover"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </section>
 
         {/* ====== SECTION 3 — Chiffres clés 2025 (fond beige) ====== */}
         <KeyFigures />

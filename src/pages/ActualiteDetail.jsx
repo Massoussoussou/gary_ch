@@ -120,10 +120,10 @@ export default function ActualiteDetail() {
         </svg>
       </Link>
 
-      {/* Hero image */}
-      <div className="w-full aspect-[21/9] md:aspect-[21/7] overflow-hidden bg-neutral-100">
+      {/* Hero banner (1400x467 si disponible, sinon image par défaut) */}
+      <div className="w-full overflow-hidden bg-neutral-100" style={{ aspectRatio: "1400 / 467" }}>
         <img
-          src={article.image}
+          src={article.banner || article.image}
           alt={article.title}
           className="w-full h-full object-cover"
         />

@@ -77,7 +77,7 @@ function FeaturedCard({ article }) {
           className="relative overflow-hidden aspect-[3/2] md:aspect-[16/10] md:col-span-7"
           initial={{ clipPath: "inset(0 0 100% 0)" }}
           whileInView={{ clipPath: "inset(0 0 0% 0)" }}
-          viewport={{ once: true, margin: "-5%" }}
+          viewport={{ once: true, margin: "20%" }}
           transition={{ duration: 1, ease: EASE_SMOOTH, delay: 0.15 }}
         >
           <motion.img
@@ -85,7 +85,6 @@ function FeaturedCard({ article }) {
             alt={article.title}
             className="w-full h-full object-cover transition-[transform] duration-[1.2s] ease-out group-hover:scale-[1.04] will-change-transform"
             style={{ y: imgY, scale: 1.08 }}
-            loading="lazy"
           />
 
           {/* Overlay hover */}
@@ -231,7 +230,7 @@ function ActuHeroContent({ scrollToArticles }) {
 
             <p className="mt-5 text-[clamp(1.05rem,2.1vw,1.4rem)] text-neutral-900/90 max-w-[52ch] mx-auto">
               Tendances du marché, conseils d'experts et coulisses de
-              l'immobilier à Genève.
+              l'immobilier en suisse romande.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
