@@ -68,7 +68,7 @@ const SPONSORS = [
   {
     name: "Mise en Voix",
     src: "/sponsors/mise-en-voix.jpeg",
-    url: "https://www.miseenvoix.ch",
+    url: "https://www.mise-en-voix.ch",
     subtitle: "Association locale",
     short: null,
     long: "Mise en Voix est une association culturelle basée à Cologny qui met à l'honneur l'art de la voix et l'univers de l'opéra à travers différents projets artistiques et rencontres. En réunissant artistes, passionnés et partenaires, l'association contribue à faire vivre la scène culturelle de la région genevoise.",
@@ -76,7 +76,7 @@ const SPONSORS = [
   {
     name: "Planifique",
     src: "/sponsors/planifique.jpeg",
-    url: "https://www.planifique.ch",
+    url: "https://www.planifique.fr",
     subtitle: "Planification financière et prévoyance",
     short: "Planifique accompagne particuliers et entrepreneurs dans la planification financière et la gestion de leur patrimoine. Un partenariat fondé sur une vision commune de l'investissement à long terme.",
     long: "Planifique est une société spécialisée dans la planification financière et la structuration patrimoniale. Elle accompagne particuliers et entrepreneurs dans la gestion de leurs finances, la prévoyance et la mise en place de stratégies d'investissement durables.\n\nL'immobilier occupant souvent une place centrale dans une stratégie patrimoniale, ce partenariat s'inscrit dans une logique complémentaire. Tandis que Gary accompagne ses clients dans la vente et la valorisation de biens immobiliers, Planifique apporte une expertise en planification financière afin d'aider les clients à structurer et à optimiser leur vision patrimoniale sur le long terme.",
@@ -84,7 +84,7 @@ const SPONSORS = [
   {
     name: "Plus Groupe",
     src: "/sponsors/plus-financement.jpeg",
-    url: "https://www.plusgroupe.ch",
+    url: "https://plus-group.ch",
     subtitle: "Financement immobilier",
     short: "Plus Groupe accompagne les clients dans la recherche du financement le plus adapté lors de l'achat d'un bien immobilier. Un partenaire clé dans la structuration d'un projet immobilier.",
     long: "Plus Groupe accompagne les particuliers dans la recherche des meilleures solutions de financement lors de l'acquisition d'un bien immobilier. Grâce à leur réseau et à leur expertise, ils analysent les différentes offres du marché afin d'orienter les clients vers la banque et les conditions de financement les plus adaptées à leur situation.\n\nDans le cadre d'un projet immobilier, le financement représente une étape essentielle. Notre partenariat repose donc sur une approche complémentaire : Gary accompagne les clients dans la recherche, la vente et la valorisation de biens immobiliers, tandis que Plus Groupe les guide dans le choix de la solution bancaire et du financement le plus avantageux pour concrétiser leur achat.",
@@ -100,7 +100,7 @@ const SPONSORS = [
   {
     name: "TC Veyrier Grand-Donzel",
     src: "/sponsors/veyrier-grand-donzel.jpeg",
-    url: "https://www.tcveyrier.ch",
+    url: "https://www.tcvgd.ch",
     subtitle: "Partenaire sportif",
     short: "Le TC Veyrier Grand-Donzel est un club de tennis actif dans la région genevoise. Nous sommes fiers de soutenir le club à travers notre sponsoring et de promouvoir les valeurs du sport.",
     long: "Le TC Veyrier Grand-Donzel est un club de tennis situé dans la région genevoise qui rassemble passionnés et sportifs de tous âges autour de la pratique du tennis. Le club contribue activement à la vie sportive locale et au développement du sport dans la région.\n\nÀ travers notre sponsoring, Gary est fier de soutenir cette initiative sportive. Nous attachons une grande importance aux valeurs que transmet le sport, telles que la discipline, le respect et le dépassement de soi, des principes qui résonnent également dans notre approche professionnelle.",
@@ -108,7 +108,7 @@ const SPONSORS = [
   {
     name: "On the Water",
     src: "/sponsors/on-the-water.jpeg",
-    url: "https://www.onthewater.ch",
+    url: "https://on-the-water.ch",
     subtitle: "Événementiel, festival",
     short: "On the Water est un événement musical unique organisé sur le lac Léman. Nous sommes fiers de soutenir cette initiative locale à travers notre sponsoring.",
     long: "On the Water est un événement genevois unique organisé sur le lac Léman, où une scène flottante accueille des DJs sur un catamaran au cœur de la rade de Genève. Le public profite de la musique directement depuis l'eau, à bord de bateaux ou d'embarcations, pour une expérience estivale originale au plus près du lac.\n\nGARY soutient cet événement à travers son sponsoring, notamment avec la présence de notre logo sur les gilets de sauvetage utilisés lors de l'événement. Au-delà de la visibilité, ce soutien participe également à promouvoir la sécurité sur l'eau, un élément essentiel lors de ce type de rassemblement nautique. Par ce partenariat, nous sommes heureux de contribuer à une initiative locale qui valorise la vie autour du lac Léman.",

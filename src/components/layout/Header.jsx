@@ -171,13 +171,13 @@ export default function Header(){
               bottom: var(--ul-offset, 6px);
               height: var(--ul-thickness, 2px);
               background: #FF4A3E;
-              transform-origin: left;
+              transform-origin: right;
               transform: scaleX(0);
               transition: transform var(--ul-duration, 250ms) ease;
             }
             .nav-link:hover .nav-item::after,
-            .nav-link:focus-visible .nav-item::after { transform: scaleX(1); }
-            .nav-link[aria-current="page"] .nav-item::after { transform: scaleX(1); }
+            .nav-link:focus-visible .nav-item::after { transform-origin: left; transform: scaleX(1); }
+            .nav-link[aria-current="page"] .nav-item::after { transform-origin: left; transform: scaleX(1); }
 
             .nav-desktop {
               white-space: nowrap;

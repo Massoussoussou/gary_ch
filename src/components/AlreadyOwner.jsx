@@ -41,7 +41,7 @@ function Tile({ title, subtitle, Icon, onClick, to }) {
       className={commonClass}
     >
       <span
-        className="pointer-events-none absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 bg-[#FF4A3E] transition-transform duration-300 group-hover:scale-x-100"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[2px] origin-right scale-x-0 bg-[#FF4A3E] transition-transform duration-300 group-hover:origin-left group-hover:scale-x-100"
         aria-hidden="true"
       />
       <div className="flex items-start gap-5">

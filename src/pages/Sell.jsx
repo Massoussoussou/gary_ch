@@ -337,15 +337,24 @@ function MethodeSection() {
 
         {/* Timeline desktop */}
         <div className="hidden md:block relative">
-          {/* Ligne de fond (grise) */}
-          <div className="absolute top-[8px] left-0 right-0 h-[2px] bg-neutral-200" />
-          {/* Ligne active (orange, se trace) */}
+          {/* Ligne de fond (grise) avec pointe de flèche */}
+          <div className="absolute top-[8px] left-0 h-[2px] bg-neutral-200" style={{ right: "6px" }} />
+          <div
+            className="absolute border-t-[6px] border-b-[6px] border-l-[10px] border-t-transparent border-b-transparent border-l-neutral-200"
+            style={{ top: "3px", right: 0 }}
+          />
+          {/* Ligne active (orange) */}
           <div
             className="absolute top-[8px] left-0 h-[2px] bg-[#FF4A3E] origin-left"
             style={{
               width: `${Math.min(progress * 100, 100)}%`,
               transition: "width 0.1s linear",
             }}
+          />
+          {/* Pointe de flèche orange */}
+          <div
+            className="absolute border-t-[6px] border-b-[6px] border-l-[10px] border-t-transparent border-b-transparent border-l-[#FF4A3E] transition-opacity duration-500"
+            style={{ top: "3px", right: 0, opacity: progress >= 0.97 ? 1 : 0 }}
           />
 
           {/* Points + textes */}
