@@ -329,9 +329,7 @@ export default async function handler(req, res) {
         id: p.id,
         reference: p.reference || null,
         titre: title,
-        prix: p.price != null ? Number(p.price)
-              : p.hidden_price != null ? Number(p.hidden_price)
-              : null,
+        prix: p.price != null ? Number(p.price) : null,
         devise: "CHF",
         ville: resolveCity(p.city_id, p.zip, p.city),
         zip: p.zip || null,
