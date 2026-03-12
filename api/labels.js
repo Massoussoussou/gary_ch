@@ -88,13 +88,13 @@ export default async function handler(req, res) {
       }
     }
 
-    // --- Param spécifique à choices ---
+    // --- Param spécifique à choices (optionnel: si category fourni, filtre) ---
     if (type === "choices") {
       const category = String(req.query.category || "").trim();
-      if (!category || !/^\d+$/.test(category)) {
-        return res.status(400).json({ error: "choices requires a numeric category param" });
+      if (category && /^\d+$/.test(category)) {
+        url.searchParams.set("category", category);
       }
-      url.searchParams.set("category", category);
+      // Sans category → renvoie TOUS les choix (statuts, etc.)
     }
 
     // --- Appel Realforce ---

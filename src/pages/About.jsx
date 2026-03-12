@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import team from "../data/team.json";
 import CTAFuturaGlow, { PhoneIcon } from "../components/cta/CTAFuturaGlow.jsx";
 
@@ -268,49 +268,57 @@ function FigureItem({ fig, index, active }) {
   );
 }
 
-/* ========== Section 1 — Hero + Cercles : visibles, rotation 360° au scroll ========== */
+/* ========== Contenu partagé ========== */
+const VL = { label: "Puissance", sub: "Marketing", desc: "Une mise en valeur stratégique & une diffusion digitale maximale et maîtrisée", kw: ["stratégique", "maximale"] };
+const VR = { label: "Expertise", sub: "Locale", desc: "Plus de 60 ans d'expérience cumulée sur le marché immobilier romand", kw: ["60 ans", "romand"] };
+function hl(t, kw) { let r = t; kw.forEach(k => { r = r.replace(k, `<span class="text-[#FF4A3E] font-medium">${k}</span>`); }); return r; }
+
+const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
+
+/* ========== Section 1 — Hero : Ligne Expansion ========== */
+/* Logo GARY → trait orange se dessine → s'élargit en tuile glassmorphique → contenu */
 function HeroCirclesSection() {
   const [loaded, setLoaded] = useState(false);
-  const [spinning, setSpinning] = useState(false);
-  const [showText, setShowText] = useState(false);
-  const isMobile = useIsMobile();
+  const [phase, setPhase] = useState(0);
   const wrapperRef = useRef(null);
 
   useEffect(() => { setLoaded(true); }, []);
 
-  // Premier scroll → lance la rotation
+  /* Scroll trigger */
   useEffect(() => {
-    if (spinning) return;
-    const trigger = () => { setSpinning(true); };
-    window.addEventListener("wheel", trigger, { once: true, passive: true });
-    window.addEventListener("touchmove", trigger, { once: true, passive: true });
+    if (phase > 0) return;
+    const fire = () => {
+      setPhase(1);
+      setTimeout(() => setPhase(2), 500);
+      setTimeout(() => setPhase(3), 750);
+      setTimeout(() => setPhase(4), 850);
+    };
+    window.addEventListener("wheel", fire, { once: true, passive: true });
+    window.addEventListener("touchmove", fire, { once: true, passive: true });
     window.addEventListener("keydown", (e) => {
-      if (["ArrowDown", "ArrowUp", "Space", "PageDown"].includes(e.code)) trigger();
+      if (["ArrowDown", "ArrowUp", "Space", "PageDown"].includes(e.code)) fire();
     }, { once: true });
     return () => {
-      window.removeEventListener("wheel", trigger);
-      window.removeEventListener("touchmove", trigger);
+      window.removeEventListener("wheel", fire);
+      window.removeEventListener("touchmove", fire);
     };
-  }, [spinning]);
+  }, [phase]);
 
-  // Après la rotation → affiche les textes
+  const [winW, setWinW] = useState(() => typeof window !== "undefined" ? window.innerWidth : 1200);
   useEffect(() => {
-    if (!spinning) return;
-    const t = setTimeout(() => setShowText(true), 1600);
-    return () => clearTimeout(t);
-  }, [spinning]);
+    const h = () => setWinW(window.innerWidth);
+    window.addEventListener("resize", h);
+    return () => window.removeEventListener("resize", h);
+  }, []);
 
-  const circleSize = isMobile ? 340 : 600;
-  const overlap = isMobile ? 60 : 100;
-  const offsetX = (circleSize - overlap) / 2;
+  const tileW = Math.min(1100, winW - (winW < 768 ? 32 : 64));
+  const tileH = winW < 768 ? 580 : winW < 1024 ? 510 : 490;
 
   return (
     <div ref={wrapperRef} className="relative" style={{ height: "200vh" }}>
-      <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center bg-black">
+      <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center bg-neutral-200">
         {/* Vidéo de fond */}
-        <video
-          autoPlay muted loop playsInline
-          disablePictureInPicture
+        <video autoPlay muted loop playsInline disablePictureInPicture
           controlsList="nodownload noplaybackrate noremoteplayback nofullscreen"
           className="absolute inset-0 w-full h-full object-cover pointer-events-none"
           style={{ zIndex: 0 }}
@@ -318,162 +326,88 @@ function HeroCirclesSection() {
           <source src="/media/buy/hero24.mp4" type="video/mp4" />
         </video>
 
-        {/* Voile sombre */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ zIndex: 1, background: "rgba(0,0,0,0.55)" }}
-        />
-
-        {/* Logo GARY — disparaît après la rotation */}
-        <div
-          className="absolute left-1/2 top-1/2 pointer-events-none flex flex-col items-center"
-          style={{
-            zIndex: 20,
-            transform: "translate(-50%, -40%)",
-            opacity: showText ? 0 : (loaded ? 1 : 0),
-            transition: showText ? "opacity 0.5s ease-out" : "opacity 1s ease-out 0.3s",
-          }}
-        >
-          <img
-            src="/Logo/logo-gary-orange.png"
-            alt="GARY"
-            className="w-[120px] md:w-[200px] h-auto"
-            style={{
-              filter: "brightness(0) invert(1) drop-shadow(0 0 30px rgba(255,255,255,0.3))",
-            }}
-          />
-          <p
-            className="mt-6 text-white/60 text-sm md:text-base uppercase tracking-[0.3em] font-light"
-            style={{
-              opacity: spinning ? 0 : 1,
-              transition: "opacity 0.4s ease-out",
-            }}
-          >
-            Qui sommes-nous
-          </p>
+        {/* Voile lumineux */}
+        <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
+          <div className="absolute inset-0 bg-black/10" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/45 via-white/20 to-transparent md:from-white/55 md:via-white/25 md:to-transparent" />
+          <div className="absolute inset-0 md:bg-gradient-to-r md:from-white/55 md:via-white/25 md:to-transparent" />
         </div>
 
-        {/* Indicateur scroll */}
-        <div
-          className="absolute bottom-36 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-          style={{
-            zIndex: 20,
-            opacity: loaded && !spinning ? 1 : 0,
-            transition: "opacity 0.3s ease-out",
-          }}
-        >
-          <span className="text-white/40 text-[11px] uppercase tracking-[0.2em]">Scroll</span>
-          <svg
-            className="w-5 h-5 text-white/40"
-            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"
-            style={{ animation: "heroScrollBounce 2s ease-in-out infinite" }}
-          >
+        {/* Scroll indicator */}
+        <div className="absolute bottom-36 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+          style={{ zIndex: 20, opacity: loaded && phase === 0 ? 1 : 0, transition: "opacity 0.3s ease-out" }}>
+          <span className="text-white text-[11px] uppercase tracking-[0.2em]">Scroll</span>
+          <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"
+            style={{ animation: "heroScrollBounce 2s ease-in-out infinite" }}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
           </svg>
         </div>
 
-        {/*
-          Container qui tient les deux cercles.
-          Au scroll il tourne de 360° clockwise autour du centre.
-        */}
-        <div
-          className={`absolute pointer-events-none ${spinning ? "hero-orbit--spin" : ""}`}
+        {/* Logo GARY initial */}
+        <img src="/Logo/logo-gary-orange.png" alt="GARY"
+          className="absolute left-1/2 pointer-events-none"
           style={{
-            left: "50%",
-            top: "50%",
-            width: 0,
-            height: 0,
-            zIndex: 5,
+            top: "45%",
+            transform: "translate(-50%, -50%)",
+            width: winW < 768 ? "280px" : winW < 1024 ? "380px" : "480px",
+            opacity: loaded ? (phase >= 1 ? 0 : 1) : 0,
+            transition: "opacity 0.5s ease-out",
+            zIndex: 8,
           }}
-        >
-          {/* Cercle A (corail) — à gauche */}
-          <div
-            className="absolute rounded-full flex items-center justify-center"
-            style={{
-              width: `${circleSize}px`,
-              height: `${circleSize}px`,
-              background: "linear-gradient(135deg, rgba(255,74,62,0.35) 0%, rgba(255,120,90,0.25) 100%)",
-              backdropFilter: "blur(16px) saturate(1.4) brightness(1.2)",
-              WebkitBackdropFilter: "blur(16px) saturate(1.4) brightness(1.2)",
-              border: "1px solid rgba(255,255,255,0.28)",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.2)",
-              top: `${-circleSize / 2}px`,
-              left: `${-circleSize / 2 - offsetX}px`,
-              opacity: loaded ? 1 : 0,
-              transition: "opacity 1s ease-out 0.4s",
-            }}
-          >
-            <div
-              className={`text-center pointer-events-none ${spinning ? "hero-counter-spin" : ""}`}
-              style={{
-                opacity: showText ? 1 : 0,
-                transition: "opacity 0.6s ease-out",
-              }}
-            >
-              <h3 className="font-serif text-4xl md:text-6xl text-white tracking-wide" style={{ lineHeight: "1.4" }}>
-                Jeunes
-              </h3>
-              <div className="flex justify-center my-3 md:my-4">
-                <div className={`h-px bg-white/60 ${showText ? "hero-underline" : ""}`} style={{ width: 0 }} />
-              </div>
-              <h3 className="font-serif text-4xl md:text-6xl text-white tracking-wide" style={{ lineHeight: "1.4" }}>
-                courtiers
-              </h3>
-              <div className="flex justify-center mt-3 md:mt-4">
-                <div className={`h-px bg-white/60 ${showText ? "hero-underline hero-underline--delay" : ""}`} style={{ width: 0 }} />
+        />
+
+        {/* La ligne / rectangle qui grandit */}
+        <div className="absolute left-1/2" style={{
+          top: "45%",
+          transform: "translate(-50%, -50%)", zIndex: 7,
+          width: phase >= 2 ? tileW : phase >= 1 ? tileW : 0,
+          height: phase >= 2 ? tileH : phase >= 1 ? 2 : 0,
+          background: phase >= 2 ? "rgba(255,255,255,0.6)" : "#FF4A3E",
+          backdropFilter: phase >= 2 ? "blur(16px)" : "none",
+          WebkitBackdropFilter: phase >= 2 ? "blur(16px)" : "none",
+          border: phase >= 2 ? "1px solid rgba(255,255,255,0.2)" : "none",
+          transition: phase >= 2
+            ? `width 0.8s ${EASE}, height 0.8s ${EASE}, background 0.6s ease-out, backdrop-filter 0.6s ease-out, -webkit-backdrop-filter 0.6s ease-out, border 0.6s ease-out`
+            : `width 0.7s ${EASE}, height 0.1s ease-out`,
+          overflow: "hidden",
+        }}>
+          <div className="w-full h-full flex flex-col justify-between" style={{
+            opacity: phase >= 3 ? 1 : 0, transition: "opacity 0.6s ease-out",
+          }}>
+            <div className="text-center pt-8 md:pt-12 px-6 md:px-10 w-full flex-1 flex flex-col justify-center">
+              <p className="text-[11px] uppercase tracking-[0.3em] text-neutral-500 mb-6" style={{ opacity: phase >= 4 ? 1 : 0, transform: phase >= 4 ? "translateY(0)" : "translateY(8px)", transition: "all 0.5s ease-out" }}>Qui sommes-nous</p>
+              <div className="flex flex-col md:flex-row items-center md:items-stretch">
+                <div className="flex-1 text-center px-4 md:px-8" style={{ opacity: phase >= 4 ? 1 : 0, transform: phase >= 4 ? "translateX(0)" : "translateX(-20px)", transition: "all 0.7s ease-out 0.1s" }}>
+                  <h3 className="font-serif text-[clamp(1.8rem,5.5vw,3.8rem)] text-neutral-900 leading-[1.08]"><span className="text-[#FF4A3E]">{VL.label}</span><br />{VL.sub}</h3>
+                  <p className="mt-4 text-neutral-600 text-[clamp(0.95rem,1.8vw,1.15rem)] leading-relaxed max-w-[360px] mx-auto" dangerouslySetInnerHTML={{ __html: hl(VL.desc, VL.kw) }} />
+                </div>
+                <div className="hidden md:flex items-center justify-center w-px relative my-2"><div className="w-px bg-neutral-900 origin-bottom" style={{ height: "80%", transform: phase >= 4 ? "scaleY(1)" : "scaleY(0)", transition: `transform 1.2s ${EASE} 0.3s` }} /></div>
+                <div className="md:hidden flex justify-center my-4"><div className="h-px bg-neutral-900 origin-left" style={{ width: "40%", transform: phase >= 4 ? "scaleX(1)" : "scaleX(0)", transition: `transform 1.2s ${EASE} 0.3s` }} /></div>
+                <div className="flex-1 text-center px-4 md:px-8" style={{ opacity: phase >= 4 ? 1 : 0, transform: phase >= 4 ? "translateX(0)" : "translateX(20px)", transition: "all 0.7s ease-out 0.2s" }}>
+                  <h3 className="font-serif text-[clamp(1.8rem,5.5vw,3.8rem)] text-neutral-900 leading-[1.08]"><span className="text-[#FF4A3E]">{VR.label}</span><br />{VR.sub}</h3>
+                  <p className="mt-4 text-neutral-600 text-[clamp(0.95rem,1.8vw,1.15rem)] leading-relaxed max-w-[360px] mx-auto" dangerouslySetInnerHTML={{ __html: hl(VR.desc, VR.kw) }} />
+                </div>
               </div>
             </div>
-          </div>
-
-          {/* Cercle B (saumon) — à droite */}
-          <div
-            className="absolute rounded-full flex items-center justify-center"
-            style={{
-              width: `${circleSize}px`,
-              height: `${circleSize}px`,
-              background: "linear-gradient(225deg, rgba(255,130,100,0.35) 0%, rgba(255,180,150,0.22) 100%)",
-              backdropFilter: "blur(16px) saturate(1.4) brightness(1.2)",
-              WebkitBackdropFilter: "blur(16px) saturate(1.4) brightness(1.2)",
-              border: "1px solid rgba(255,255,255,0.25)",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.18)",
-              top: `${-circleSize / 2}px`,
-              left: `${-circleSize / 2 + offsetX}px`,
-              opacity: loaded ? 1 : 0,
-              transition: "opacity 1s ease-out 0.4s",
-            }}
-          >
-            <div
-              className={`text-center pointer-events-none ${spinning ? "hero-counter-spin" : ""}`}
-              style={{
-                opacity: showText ? 1 : 0,
-                transition: "opacity 0.6s ease-out",
-              }}
-            >
-              <h3 className="font-serif text-4xl md:text-6xl text-white tracking-wide" style={{ lineHeight: "1.4" }}>
-                Grande
-              </h3>
-              <div className="flex justify-center my-3 md:my-4">
-                <div className={`h-px bg-white/60 ${showText ? "hero-underline" : ""}`} style={{ width: 0 }} />
-              </div>
-              <h3 className="font-serif text-4xl md:text-6xl text-white tracking-wide" style={{ lineHeight: "1.4" }}>
-                expertise
-              </h3>
-              <div className="flex justify-center mt-3 md:mt-4">
-                <div className={`h-px bg-white/60 ${showText ? "hero-underline hero-underline--delay" : ""}`} style={{ width: 0 }} />
-              </div>
+            {/* CTA — Découvrir nos résultats */}
+            <div className="pb-6 md:pb-8 flex justify-center" style={{ opacity: phase >= 4 ? 1 : 0, transform: phase >= 4 ? "translateY(0)" : "translateY(10px)", transition: "all 0.6s ease-out 0.4s" }}>
+                <span
+                  className="cursor-pointer inline-flex flex-col items-center gap-1.5 text-[12px] md:text-[13px] uppercase tracking-[0.15em] text-neutral-600 hover:text-[#FF4A3E] transition-colors duration-300"
+                  onClick={() => window.scrollTo({ top: window.innerHeight * 2, behavior: "smooth" })}
+                >
+                  Découvrir nos résultats
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"
+                    style={{ animation: "heroScrollBounce 2s ease-in-out infinite" }}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </span>
             </div>
           </div>
         </div>
 
-        {/* Gradient transition bas */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-40 pointer-events-none"
-          style={{
-            zIndex: 15,
-            background: "linear-gradient(to bottom, transparent, #ffffff)",
-            opacity: showText ? 1 : 0,
-            transition: "opacity 0.8s ease-out 0.3s",
-          }}
+        {/* Gradient bas */}
+        <div className="absolute bottom-0 left-0 right-0 h-40 pointer-events-none"
+          style={{ zIndex: 15, background: "linear-gradient(to bottom, transparent, #ffffff)", opacity: phase >= 1 ? 1 : 0, transition: "opacity 0.8s ease-out 0.3s" }}
         />
       </div>
 
@@ -482,54 +416,230 @@ function HeroCirclesSection() {
           0%, 100% { transform: translateY(0); opacity: 0.4; }
           50% { transform: translateY(6px); opacity: 1; }
         }
-
-        /* Rotation 360° clockwise du container (les 2 cercles ensemble) */
-        .hero-orbit--spin {
-          animation: orbitSpin 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        @keyframes orbitSpin {
-          0%   { transform: rotate(0deg); }
-          100% { transform: rotate(180deg); }
-        }
-        @keyframes orbitSpinMobile {
-          0%   { transform: rotate(0deg); }
-          100% { transform: rotate(225deg); }
-        }
-
-        /* Contre-rotation pour que le texte ne tourne pas */
-        .hero-counter-spin {
-          animation: counterSpin 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        @keyframes counterSpin {
-          0%   { transform: rotate(0deg); }
-          100% { transform: rotate(-180deg); }
-        }
-        @keyframes counterSpinMobile {
-          0%   { transform: rotate(0deg); }
-          100% { transform: rotate(-225deg); }
-        }
-
-        @media (max-width: 767px) {
-          .hero-orbit--spin {
-            animation-name: orbitSpinMobile;
-          }
-          .hero-counter-spin {
-            animation-name: counterSpinMobile;
-          }
-        }
-
-        /* Trait blanc animé sous chaque mot */
-        .hero-underline {
-          animation: drawLine 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
-        }
-        .hero-underline--delay {
-          animation-delay: 0.6s;
-        }
-        @keyframes drawLine {
-          0%   { width: 0; }
-          100% { width: 80px; }
-        }
       `}</style>
+    </div>
+  );
+}
+
+
+/* ========== Données "Ce qui nous distingue" ========== */
+const DISTINGUISH_POINTS = [
+  { main: "Chaque courtier possède plus de 10 ans d'expérience sur le marché immobilier local", detail: "Expertise confirmée, conseils stratégiques avisés" },
+  { main: "Une approche marketing moderne et performante", detail: "Mise en valeur sur mesure, photos et vidéos professionnelles, diffusion stratégique" },
+  { main: "Une communauté active et fidèle de plus de 40k followers", detail: null },
+  { main: "Un réseau d'acheteurs qualifiés", detail: "Base de données de plus de 5000 clients acheteurs" },
+  { main: "Un réseau de partenaires de confiance", detail: "Financements, notaires, avocats, architectes, …" },
+];
+
+/* ========== Ce qui nous distingue — Zigzag avec ligne SVG animée ========== */
+function DistinguishZigzag({ seen }) {
+  const sectionRef = useRef(null);
+  const [progress, setProgress] = useState(0);
+
+  /* Scroll-driven progress : 0 → 1 en fonction de la position dans le viewport */
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      const rect = el.getBoundingClientRect();
+      const winH = window.innerHeight;
+      // Start animating when section enters viewport, finish when it's about to leave
+      const start = winH * 0.85;
+      const end = -rect.height * 0.3;
+      const raw = (start - rect.top) / (start - end);
+      setProgress(Math.max(0, Math.min(1, raw)));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const count = DISTINGUISH_POINTS.length;
+
+  /* Layout positions for each point — alternating left/right */
+  /* Each point is positioned at a fixed vertical step */
+  const stepY = 160; // vertical spacing between points in px
+  const totalH = stepY * (count - 1) + 80; // extra padding at bottom
+  const dotRadius = 8;
+
+  /* Build SVG path connecting all dots with smooth curves */
+  const getPositions = (containerW) => {
+    const leftX = containerW * 0.18;
+    const rightX = containerW * 0.82;
+    const positions = DISTINGUISH_POINTS.map((_, i) => ({
+      x: i % 2 === 0 ? leftX : rightX,
+      y: 40 + i * stepY,
+    }));
+    return positions;
+  };
+
+  /* Build a smooth SVG cubic bezier path through all points */
+  const buildPath = (positions) => {
+    if (positions.length < 2) return "";
+    let d = `M ${positions[0].x} ${positions[0].y}`;
+    for (let i = 0; i < positions.length - 1; i++) {
+      const curr = positions[i];
+      const next = positions[i + 1];
+      const midY = (curr.y + next.y) / 2;
+      // Smooth S-curve between points
+      d += ` C ${curr.x} ${midY}, ${next.x} ${midY}, ${next.x} ${next.y}`;
+    }
+    return d;
+  };
+
+  const [containerW, setContainerW] = useState(800);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const measure = () => setContainerW(el.offsetWidth);
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  const positions = getPositions(containerW);
+  const pathD = buildPath(positions);
+
+  return (
+    <div ref={sectionRef} className="mt-20 md:mt-28">
+      {/* Trait orange décoratif */}
+      <div className="flex justify-center mb-6">
+        <div
+          className="h-[2px] bg-[#FF4A3E]"
+          style={{
+            width: seen ? "60px" : "0px",
+            transition: "width 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
+          }}
+        />
+      </div>
+
+      <h3
+        className="text-center font-serif text-3xl md:text-5xl tracking-wide mb-16 md:mb-20 text-gray-900"
+        style={{
+          opacity: seen ? 1 : 0,
+          transform: seen ? "translateY(0)" : "translateY(15px)",
+          transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
+        }}
+      >
+        Ce qui nous <span className="text-[#FF4A3E]">distingue</span>, concrètement.
+      </h3>
+
+      <div
+        ref={containerRef}
+        className="relative max-w-[900px] mx-auto px-6 md:px-12"
+        style={{ height: totalH }}
+      >
+        {/* SVG ligne courbe connectant les points */}
+        <svg
+          className="absolute inset-0 w-full pointer-events-none"
+          style={{ height: totalH }}
+          viewBox={`0 0 ${containerW} ${totalH}`}
+          preserveAspectRatio="none"
+          fill="none"
+        >
+          <path
+            d={pathD}
+            stroke="#FF4A3E"
+            strokeWidth="2"
+            strokeLinecap="round"
+            fill="none"
+            strokeDasharray="2000"
+            strokeDashoffset={2000 - 2000 * progress}
+            style={{ transition: "stroke-dashoffset 0.05s linear" }}
+          />
+        </svg>
+
+        {/* Points et textes */}
+        {DISTINGUISH_POINTS.map((point, i) => {
+          const isLeft = i % 2 === 0;
+          const pos = positions[i];
+          /* Each point becomes visible when progress reaches its threshold */
+          const pointThreshold = i / (count - 1) * 0.85;
+          const pointVisible = progress > pointThreshold;
+
+          return (
+            <div
+              key={i}
+              className="absolute"
+              style={{
+                top: pos.y,
+                left: isLeft ? 0 : "auto",
+                right: isLeft ? "auto" : 0,
+                transform: "translateY(-50%)",
+                width: "50%",
+                display: "flex",
+                flexDirection: isLeft ? "row" : "row-reverse",
+                alignItems: "center",
+                gap: "16px",
+              }}
+            >
+              {/* Le point orange */}
+              <div
+                className="shrink-0 relative"
+                style={{
+                  width: dotRadius * 2,
+                  height: dotRadius * 2,
+                }}
+              >
+                {/* Halo animé */}
+                <span
+                  className="absolute rounded-full bg-[#FF4A3E]/20"
+                  style={{
+                    inset: "-8px",
+                    transform: pointVisible ? "scale(1)" : "scale(0)",
+                    opacity: pointVisible ? 1 : 0,
+                    transition: `transform 0.6s ${EASE} 0.1s, opacity 0.4s ease-out`,
+                  }}
+                />
+                {/* Point solide */}
+                <span
+                  className="absolute inset-0 rounded-full bg-[#FF4A3E]"
+                  style={{
+                    transform: pointVisible ? "scale(1)" : "scale(0)",
+                    transition: `transform 0.5s ${EASE}`,
+                  }}
+                />
+              </div>
+
+              {/* Texte */}
+              <div
+                className={isLeft ? "text-left" : "text-right"}
+                style={{
+                  opacity: pointVisible ? 1 : 0,
+                  transform: pointVisible
+                    ? "translateX(0)"
+                    : isLeft ? "translateX(-20px)" : "translateX(20px)",
+                  transition: `opacity 0.6s ease-out 0.15s, transform 0.6s ${EASE} 0.15s`,
+                }}
+              >
+                <p className="text-[15px] md:text-[17px] leading-snug text-gray-900 font-medium">
+                  {point.main}
+                </p>
+                {point.detail && (
+                  <p className="mt-1.5 text-[13px] md:text-[14px] text-gray-500 leading-relaxed">
+                    {point.detail}
+                  </p>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Paragraphe de conclusion */}
+      <p
+        className="mt-16 text-center text-xl md:text-2xl leading-relaxed text-gray-700 font-light max-w-[800px] mx-auto px-6"
+        style={{
+          opacity: progress > 0.8 ? 1 : 0,
+          transform: progress > 0.8 ? "translateY(0)" : "translateY(15px)",
+          transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
+        }}
+      >
+        L'ensemble réuni pour vous offrir un service <strong className="font-semibold text-[#FF4A3E]">sur mesure</strong>,
+        à la hauteur de vos ambitions.
+      </p>
     </div>
   );
 }
@@ -540,9 +650,24 @@ function IdentitySection() {
 
   return (
     <section ref={ref} className="relative z-10 bg-white py-24 md:py-32">
-      <div className="max-w-[800px] mx-auto px-6 md:px-12 text-center">
+      <div className="relative max-w-[1000px] mx-auto px-6 md:px-12 text-center">
+        {/* Logo GARY orange — watermark derrière le texte, descend depuis le haut */}
+        <img
+          src="/Logo/logo-gary-orange.png"
+          alt=""
+          className="absolute left-0 right-0 mx-auto pointer-events-none"
+          style={{
+            top: "68%",
+            transform: seen ? "translateY(-50%)" : "translateY(calc(-50% - 120px))",
+            width: "clamp(400px, 65vw, 900px)",
+            opacity: seen ? 0.08 : 0,
+            transition: "opacity 1.2s ease-out 0.3s, transform 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.3s",
+            zIndex: 0,
+          }}
+        />
+
         {/* Trait orange décoratif */}
-        <div className="flex justify-center mb-6">
+        <div className="relative z-10 flex justify-center mb-6">
           <div
             className="h-[2px] bg-[#FF4A3E]"
             style={{
@@ -554,7 +679,7 @@ function IdentitySection() {
 
         {/* Titre */}
         <h2
-          className="font-serif text-4xl md:text-6xl tracking-wide text-gray-900 mb-10 md:mb-12"
+          className="relative z-10 font-serif text-4xl md:text-6xl tracking-wide text-gray-900 mb-10 md:mb-12"
           style={{
             opacity: seen ? 1 : 0,
             transform: seen ? "translateY(0)" : "translateY(20px)",
@@ -566,18 +691,32 @@ function IdentitySection() {
 
         {/* Texte */}
         <p
-          className="text-lg md:text-xl leading-relaxed text-gray-700 font-light"
+          className="relative z-10 text-xl md:text-2xl leading-relaxed text-gray-700 font-light"
           style={{
             opacity: seen ? 1 : 0,
             transform: seen ? "translateY(0)" : "translateY(15px)",
             transition: "opacity 0.8s ease-out 0.2s, transform 0.8s ease-out 0.2s",
           }}
         >
-          Véritables stratèges de la vente immobilière, <strong className="font-semibold text-gray-900">GARY</strong> combine
-          une connaissance fine du marché immobilier local, forgée par plus de <strong className="font-semibold text-gray-900">60 ans
-          d'expérience cumulée</strong>, à une expertise marketing nouvelle génération, innovante et performante.
+          <strong className="font-semibold text-[#FF4A3E]">GARY</strong> est une agence immobilière spécialisée dans la vente d'appartements,
+          de maisons et de projets neufs en suisse romande.
+        </p>
+        <p
+          className="relative z-10 mt-4 text-xl md:text-2xl leading-relaxed text-gray-700 font-light"
+          style={{
+            opacity: seen ? 1 : 0,
+            transform: seen ? "translateY(0)" : "translateY(15px)",
+            transition: "opacity 0.8s ease-out 0.35s, transform 0.8s ease-out 0.35s",
+          }}
+        >
+          Véritables stratèges de la vente immobilière, notre équipe combine une connaissance fine du marché immobilier local,
+          forgée par plus de <strong className="font-semibold text-[#FF4A3E]">60 ans d'expérience cumulée</strong>, à une expertise
+          marketing nouvelle génération, innovante et performante.
         </p>
       </div>
+
+      {/* Ce qui nous distingue — zigzag avec ligne SVG animée au scroll */}
+      <DistinguishZigzag seen={seen} />
     </section>
   );
 }
@@ -616,7 +755,7 @@ function InfluencersSection() {
             </p>
           </div>
 
-          {/* Placeholder Elfsight Instagram feed */}
+          {/* Instagram — profil + grille de posts */}
           <div
             style={{
               opacity: seen ? 1 : 0,
@@ -624,18 +763,67 @@ function InfluencersSection() {
               transition: "opacity 0.8s ease-out 0.2s, transform 0.8s ease-out 0.2s",
             }}
           >
-            <div
-              id="elfsight-instagram-feed"
-              className="bg-white rounded-lg border border-gray-200 flex flex-col items-center justify-center text-center p-10 md:p-14"
-              style={{ minHeight: "320px" }}
+            {/* Header profil */}
+            <a
+              href="https://www.instagram.com/gary_realestate/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-4 mb-6 hover:opacity-80 transition-opacity"
             >
-              {/* Instagram icon */}
-              <svg className="w-12 h-12 text-[#FF4A3E]/40 mb-4" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-[#FF4A3E] flex items-center justify-center shrink-0 overflow-hidden">
+                <img src="/Logo/logo-gary-orange.png" alt="GARY" className="w-full h-full object-cover" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-semibold text-gray-900 text-base md:text-lg">gary_realestate</span>
+                  <svg className="w-5 h-5 text-[#3897f0]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.4 14.6l-4.2-4.2 1.4-1.4 2.8 2.8 5.6-5.6 1.4 1.4-7 7z"/></svg>
+                </div>
+                <p className="text-gray-500 text-sm mt-0.5">36K followers</p>
+              </div>
+              <svg className="w-5 h-5 ml-auto text-gray-400 group-hover:text-[#FF4A3E] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
-              <p className="text-gray-400 text-sm uppercase tracking-[0.15em] mb-2">Feed Instagram</p>
-              <p className="text-gray-300 text-xs">Widget Elfsight — en attente d'intégration</p>
+            </a>
+
+            {/* Grille de posts (images immobilier) */}
+            <div className="grid grid-cols-3 gap-1.5 rounded-lg overflow-hidden">
+              {[
+                "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=400&fit=crop&q=80",
+                "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=400&fit=crop&q=80",
+                "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=400&fit=crop&q=80",
+                "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&h=400&fit=crop&q=80",
+                "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400&h=400&fit=crop&q=80",
+                "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=400&fit=crop&q=80",
+              ].map((src, i) => (
+                <a
+                  key={i}
+                  href="https://www.instagram.com/gary_realestate/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group/post relative aspect-square overflow-hidden"
+                >
+                  <img src={src} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover/post:scale-110" loading="lazy" />
+                  <div className="absolute inset-0 bg-black/0 group-hover/post:bg-black/30 transition-colors duration-300 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white opacity-0 group-hover/post:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                    </svg>
+                  </div>
+                </a>
+              ))}
             </div>
+
+            {/* Bouton */}
+            <a
+              href="https://www.instagram.com/gary_realestate/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 inline-flex items-center gap-2 text-[13px] uppercase tracking-[0.12em] text-[#FF4A3E] hover:text-[#E43E33] font-medium transition-colors"
+            >
+              Voir tout sur Instagram
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </a>
           </div>
         </div>
       </div>
@@ -695,20 +883,7 @@ function GoogleReviewsSection() {
           Ce que nos clients <span className="text-[#FF4A3E]">pensent</span> de nous
         </h3>
 
-        {/* Placeholder Elfsight */}
-        <div
-          id="elfsight-google-reviews"
-          className="mb-14 md:mb-20 bg-[#FAF6F0] rounded-lg border border-gray-200 flex items-center justify-center text-center p-8"
-          style={{
-            minHeight: "80px",
-            opacity: seen ? 1 : 0,
-            transition: "opacity 0.6s ease-out 0.1s",
-          }}
-        >
-          <p className="text-gray-400 text-sm">Widget Elfsight Google Reviews — en attente d'intégration</p>
-        </div>
-
-        {/* Fallback — avis hardcodés */}
+        {/* Avis clients */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {GOOGLE_REVIEWS.map((review, i) => (
             <div
@@ -849,6 +1024,210 @@ function TeamCard({ name, role, photo, quote, slug }) {
   );
 }
 
+/* ========== Points interactifs sur la photo d'équipe ========== */
+/* Chaque membre : position du point (%) + zone cliquable couvrant le corps */
+const TEAM_DOTS = [
+  { slug: "jared-camaddo",    dotX: 12.5, dotY: 38, zoneX: 3,  zoneY: 8,  zoneW: 16, zoneH: 85 },
+  { slug: "frederic-batista",  dotX: 27,   dotY: 52, zoneX: 19, zoneY: 20, zoneW: 14, zoneH: 75 },
+  { slug: "guive-emami",       dotX: 42,   dotY: 32, zoneX: 33, zoneY: 5,  zoneW: 14, zoneH: 75 },
+  { slug: "gregory-autieri",   dotX: 52.5, dotY: 55, zoneX: 45, zoneY: 18, zoneW: 14, zoneH: 78 },
+  { slug: "steven-bourg",      dotX: 69,   dotY: 56, zoneX: 60, zoneY: 18, zoneW: 15, zoneH: 78 },
+  { slug: "florie-autieri",    dotX: 83.5, dotY: 38, zoneX: 76, zoneY: 10, zoneW: 17, zoneH: 82 },
+];
+
+function TeamMemberZone({ member, dotX, dotY, zoneX, zoneY, zoneW, zoneH, index }) {
+  const navigate = useNavigate();
+  const [hovered, setHovered] = useState(false);
+  /* Position fluide du label qui suit la souris avec un léger délai */
+  const labelRef = useRef(null);
+  const mousePos = useRef({ x: 0, y: 0 });
+  const labelPos = useRef({ x: 0, y: 0 });
+  const rafId = useRef(null);
+  const containerRef = useRef(null);
+
+  /* Lerp loop — le label rattrape la souris avec un facteur d'inertie */
+  useEffect(() => {
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const tick = () => {
+      labelPos.current.x = lerp(labelPos.current.x, mousePos.current.x, 0.12);
+      labelPos.current.y = lerp(labelPos.current.y, mousePos.current.y, 0.12);
+      if (labelRef.current) {
+        labelRef.current.style.left = `${labelPos.current.x}px`;
+        labelRef.current.style.top = `${labelPos.current.y}px`;
+      }
+      rafId.current = requestAnimationFrame(tick);
+    };
+    rafId.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId.current);
+  }, []);
+
+  /* Pair = au-dessus, impair = en-dessous */
+  const labelBelow = index % 2 === 1;
+  const yOffset = labelBelow ? 40 : -50;
+
+  const handleMouseMove = useCallback((e) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    mousePos.current.x = e.clientX - rect.left;
+    mousePos.current.y = e.clientY - rect.top + yOffset;
+  }, [yOffset]);
+
+  const handleMouseEnter = useCallback((e) => {
+    setHovered(true);
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top + yOffset;
+      mousePos.current = { x, y };
+      labelPos.current = { x, y };
+    }
+  }, [yOffset]);
+
+  if (!member) return null;
+
+  const relDotX = ((dotX - zoneX) / zoneW) * 100;
+  const relDotY = ((dotY - zoneY) / zoneH) * 100;
+
+  return (
+    <div
+      ref={containerRef}
+      className="absolute cursor-pointer"
+      style={{
+        left: `${zoneX}%`,
+        top: `${zoneY}%`,
+        width: `${zoneW}%`,
+        height: `${zoneH}%`,
+        zIndex: hovered ? 30 : 20,
+      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={() => setHovered(false)}
+      onMouseMove={handleMouseMove}
+      onClick={() => navigate(`/equipe/${member.slug}`)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === "Enter") navigate(`/equipe/${member.slug}`); }}
+      aria-label={`Voir le profil de ${member.name}`}
+    >
+      {/* Point orange — positionné sur le torse */}
+      <div
+        className="absolute"
+        style={{
+          left: `${relDotX}%`,
+          top: `${relDotY}%`,
+          transform: "translate(-50%, -50%)",
+        }}
+      >
+        {/* Pulse qui respire en continu */}
+        <span
+          className="absolute rounded-full"
+          style={{
+            width: "40px",
+            height: "40px",
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%)",
+            background: "rgba(255,74,62,0.25)",
+            animation: hovered ? "none" : "teamDotPulse 2.5s ease-in-out infinite",
+            opacity: hovered ? 0 : 1,
+            transition: "opacity 0.3s ease",
+          }}
+        />
+
+        {/* Le point lui-même — s'étend en pill au hover */}
+        <span
+          className="flex items-center justify-center rounded-full"
+          style={{
+            width: hovered ? "90px" : "18px",
+            height: hovered ? "30px" : "18px",
+            background: "#FF4A3E",
+            boxShadow: hovered
+              ? "0 0 20px rgba(255,74,62,0.6), 0 2px 8px rgba(0,0,0,0.2)"
+              : "0 0 10px rgba(255,74,62,0.5), 0 2px 6px rgba(0,0,0,0.15)",
+            borderRadius: hovered ? "20px" : "50%",
+            transition: "width 0.4s cubic-bezier(0.22, 1, 0.36, 1), height 0.4s cubic-bezier(0.22, 1, 0.36, 1), border-radius 0.4s ease, box-shadow 0.3s ease",
+            transform: "translate(-50%, -50%)",
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+          }}
+        >
+          <span
+            className="text-white font-medium tracking-wide whitespace-nowrap"
+            style={{
+              fontSize: "12px",
+              opacity: hovered ? 1 : 0,
+              transform: hovered ? "scale(1)" : "scale(0.7)",
+              transition: "opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s",
+            }}
+          >
+            voir →
+          </span>
+        </span>
+      </div>
+
+      {/* Label qui suit la souris avec inertie — reveal de gauche à droite */}
+      <div
+        ref={labelRef}
+        className="absolute pointer-events-none"
+        style={{
+          transform: labelBelow ? "translate(-50%, 0%)" : "translate(-50%, -100%)",
+          willChange: "left, top",
+        }}
+      >
+        <span
+          className="inline-block whitespace-nowrap font-semibold tracking-wide overflow-hidden"
+          style={{
+            fontSize: "clamp(14px, 1.3vw, 18px)",
+            color: "#1a1a1a",
+            background: "rgba(255,255,255,0.95)",
+            backdropFilter: "blur(6px)",
+            outline: "0.5px solid rgba(255,74,62,0.4)",
+            outlineOffset: "-3px",
+            padding: hovered ? "10px 20px" : "10px 0px",
+            maxWidth: hovered ? "300px" : "0px",
+            opacity: hovered ? 1 : 0,
+            transition: "max-width 1.2s cubic-bezier(0.22, 1, 0.36, 1), padding 1.2s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease",
+          }}
+        >
+          {member.name}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function TeamPhotoSection() {
+  return (
+    <section className="relative z-10 overflow-hidden">
+      <style>{`
+        @keyframes teamDotPulse {
+          0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+          50% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+        }
+      `}</style>
+      <div className="relative w-full">
+        <img
+          src="/team-photo.jpg"
+          alt="L'équipe GARY Real Estate"
+          className="w-full h-auto block"
+          loading="lazy"
+        />
+
+        {/* Zones cliquables + points interactifs */}
+        {TEAM_DOTS.map((dot, i) => {
+          const member = team.find((m) => m.slug === dot.slug);
+          return (
+            <TeamMemberZone key={dot.slug} member={member} index={i} {...dot} />
+          );
+        })}
+
+        {/* Overlay dégradé bas léger */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
+      </div>
+    </section>
+  );
+}
+
 /* ========== PAGE ABOUT ========== */
 export default function About() {
   const containerRef = useRef(null);
@@ -976,6 +1355,9 @@ export default function About() {
 
         {/* ====== SECTION 2 — Notre identité (fond blanc) ====== */}
         <IdentitySection />
+
+        {/* ====== Photo d'équipe — bandeau pleine largeur avec points interactifs ====== */}
+        <TeamPhotoSection />
 
         {/* ====== SECTION 3 — Chiffres clés 2025 (fond beige) ====== */}
         <KeyFigures />

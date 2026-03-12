@@ -291,7 +291,7 @@ function CTAEnrollButton(){
           <span className="block">signés GARY.</span>
         </h1>
         <p className="mt-5 text-[clamp(1.1rem,2.1vw,1.4rem)] text-neutral-900/90 max-w-[52ch] mx-auto">
-          Sélection stricte, visites en 48h, data-pricing et accompagnement clé en main.
+          Projets résidentiels développés et commercialisés par notre équipe.
         </p>
 
     {/* Boutons */}

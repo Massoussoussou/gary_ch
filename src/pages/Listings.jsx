@@ -140,7 +140,7 @@ export default function Listings(){
   const location = useLocation()
   const { data, loading, error } = useProperties()
 
-  const available  = useMemo(() => data.filter(d => !hasTag(d, /vendu/i) && !d.vendu), [data])
+  const available  = useMemo(() => data.filter(d => !d.vendu && !hasTag(d, /vendu|suspendu|archiv/i)), [data])
   const facets = useMemo(() => deriveFacets(available), [available])
 
   // init depuis l’URL, et re-sync si l’URL change (back/forward ou navigation depuis BuyIntro)
