@@ -280,7 +280,6 @@ export default function Contact() {
           sender_email: email,
           sender_number: tel,
           sender_message: senderMessage,
-          property_reference: "CONTACT-FORM",
           website: honey, // honeypot
         }),
       })

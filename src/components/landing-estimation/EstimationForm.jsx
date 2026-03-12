@@ -90,7 +90,6 @@ export default function EstimationForm({ onSubmitSuccess, utmParams }) {
       sender_email: step3.email.trim() || undefined,
       sender_number: step3.phone.trim(),
       sender_message: parts.join("\n"),
-      property_reference: "ESTIMATION-LANDING",
       website: "", // honeypot
     };
 

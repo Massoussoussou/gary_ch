@@ -25,10 +25,11 @@ export default async function handler(req, res) {
     const property_reference = body.property_reference ? String(body.property_reference) : null;
     const promotion_id = body.promotion_id ? String(body.promotion_id) : null;
 
+    // 0 cible = lead général (contact, estimation…), 1 cible = lead lié à un bien
     const countTargets = [property_id, property_reference, promotion_id].filter(Boolean).length;
-    if (countTargets !== 1) {
+    if (countTargets > 1) {
       return res.status(400).json({
-        error: "Provide exactly ONE of property_id, property_reference, promotion_id",
+        error: "Provide at most ONE of property_id, property_reference, promotion_id",
       });
     }
 

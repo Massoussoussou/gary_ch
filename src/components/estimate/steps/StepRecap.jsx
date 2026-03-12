@@ -54,7 +54,6 @@ export default function StepRecap({ form, setForm }) {
       sender_email: form.email || "",
       sender_number: form.telephone || "",
       sender_message: lines.join("\n"),
-      property_reference: "ESTIMATION",
     });
   };
 

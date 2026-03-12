@@ -43,7 +43,6 @@ function EbookModal({ onClose }) {
           sender_email: form.email,
           sender_number: form.phone,
           sender_message: "Demande de téléchargement du e-book : Les 5 erreurs qui font perdre des milliers aux vendeurs",
-          property_reference: "EBOOK-GUIDE",
           website: honeypot,
         }),
       });
