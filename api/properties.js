@@ -105,6 +105,33 @@ const ZIP_TO_CITY = {
   "1870": "Monthey", "1890": "St-Maurice", "1920": "Martigny",
 };
 
+// Fallback pour les statuts de biens (status_id → label FR)
+// Ces IDs seront confirmés/complétés par l'API get-choices-labels
+const STATUS_FALLBACK = {
+  "1":  "Actif",
+  "2":  "Réservé",
+  "3":  "Vendu",
+  "4":  "Suspendu",
+  "5":  "Coming soon",
+  "6":  "En attente",
+  "7":  "Loué",
+  "8":  "Option",
+  "9":  "Actif",
+  "10": "Archivé",
+};
+
+// Détermine le type de bandeau à partir du label de statut
+function statusToBandeau(statusLabel) {
+  if (!statusLabel) return null;
+  const s = statusLabel.toLowerCase();
+  if (/vendu|sold/.test(s))                     return "Vendu";
+  if (/réserv|reserv|option/.test(s))           return "Réservé";
+  if (/coming|bientôt|prochainement/.test(s))   return "Coming soon";
+  if (/suspendu|suspend|inactif|archiv/.test(s)) return "Suspendu";
+  // "Actif", "En attente", etc. → pas de bandeau
+  return null;
+}
+
 // Fallback pour les équipements/amenities courants
 const AMENITY_FALLBACK = {
   "2": "Ascenseur", "3": "Balcon", "4": "Terrasse", "5": "Jardin",
@@ -208,7 +235,17 @@ export default async function handler(req, res) {
     console.log("[properties] Payload count:", payload.count, "data length:", (payload.data || []).length);
 
     // Helpers de résolution
-    const { cities, categories, amenities } = labels;
+    const { cities, categories, amenities, choices } = labels;
+
+    // Log des choices pour debug (à retirer plus tard)
+    if (choices && Object.keys(choices).length > 0) {
+      console.log("[properties] Choices labels keys:", Object.keys(choices).slice(0, 20));
+      // Log un échantillon pour comprendre la structure
+      const sampleKey = Object.keys(choices)[0];
+      if (sampleKey) console.log("[properties] Choices sample:", sampleKey, "→", JSON.stringify(choices[sampleKey]).slice(0, 200));
+    } else {
+      console.log("[properties] No choices labels received");
+    }
 
     const resolveCity = (cityId, zip, cityName) => {
       // Priorité: nom de ville direct > labels API > ZIP mapping > ZIP brut
@@ -241,6 +278,23 @@ export default async function handler(req, res) {
 
     const resolveCanton = (cantonId) => {
       return CANTON_FALLBACK[String(cantonId)] || String(cantonId);
+    };
+
+    // Résolution du statut (status_id → label localisé)
+    const resolveStatus = (statusId) => {
+      if (statusId == null) return null;
+      const key = String(statusId);
+      // D'abord essayer les labels API (choices)
+      const entry = choices[key];
+      if (entry) {
+        // Structure possible: { "fr": "Vendu" } ou { "labels": { "fr": "Vendu" } } ou string
+        if (typeof entry === "string") return entry;
+        const lbl = entry.labels || entry;
+        const resolved = lbl[primaryLang] || lbl.fr || lbl.en;
+        if (resolved) return resolved;
+      }
+      // Fallback sur notre mapping statique
+      return STATUS_FALLBACK[key] || null;
     };
 
     const resolveAmenity = (amenityId) => {
@@ -314,8 +368,13 @@ export default async function handler(req, res) {
         description: stripHtml(descriptionHtml),      // Texte brut pour les cards/previews
         descriptionHtml: descriptionHtml,             // HTML pour la page détail
         equipements,
-        bandeau: /sold|vendu/i.test(p.status || "") ? "Vendu" : null,
-        vendu: /sold|vendu/i.test(p.status || ""),
+        // Statut du bien basé sur status_id (API RealForce)
+        statusId: p.status_id || null,
+        status: resolveStatus(p.status_id),
+        bandeau: statusToBandeau(resolveStatus(p.status_id)),
+        vendu: /vendu|sold/i.test(resolveStatus(p.status_id) || ""),
+        reserve: /réserv|reserv|option/i.test(resolveStatus(p.status_id) || ""),
+        comingSoon: /coming|bientôt|prochainement/i.test(resolveStatus(p.status_id) || ""),
         tags: [],
         createdAt: p.lastupdate || p.publication_date || p.creation || null,
         coords: {

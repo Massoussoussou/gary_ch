@@ -5,6 +5,7 @@ export function hasTag(item, regex) {
     item?.bandeau,
     item?.status,
     item?.ribbon,
+    item?.statusId ? `statusId:${item.statusId}` : null,
     ...(item?.tags || []),
     ...(item?.badges || []),
   ]

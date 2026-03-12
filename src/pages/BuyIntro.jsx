@@ -323,8 +323,11 @@ function KeyFiguresSection() {
 export default function BuyIntro() {
   const location = useLocation();
   const { data, loading } = useProperties();
-  const available = useMemo(() => data.filter(d => !hasTag(d, /vendu/i) && !d.vendu), [data]);
-  const vendus = useMemo(() => data.filter(d => hasTag(d, /vendu/i) || d.vendu), [data]);
+  // Filtrage par statut : on exclut les vendus et suspendus de la grille principale
+  const available = useMemo(() => data.filter(d =>
+    !d.vendu && !hasTag(d, /vendu|suspendu|archiv/i)
+  ), [data]);
+  const vendus = useMemo(() => data.filter(d => d.vendu || hasTag(d, /vendu/i)), [data]);
   const facets = useMemo(() => deriveFacets(available), [available]);
 
   /* ---- Filtres & tri (système complet issu de Listings) ---- */

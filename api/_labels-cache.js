@@ -61,15 +61,16 @@ export async function fetchLabels(type, params = {}) {
 }
 
 /**
- * Fetch les 3 jeux de labels nécessaires aux properties en parallèle.
+ * Fetch les 4 jeux de labels nécessaires aux properties en parallèle.
  * @param {string} lang
- * @returns {Promise<{ cities: object, categories: object, amenities: object }>}
+ * @returns {Promise<{ cities: object, categories: object, amenities: object, choices: object }>}
  */
 export async function fetchPropertyLabels(lang = "fr") {
-  const [cities, categories, amenities] = await Promise.all([
+  const [cities, categories, amenities, choices] = await Promise.all([
     fetchLabels("locations", { is_city: "1", lang }).catch(() => ({})),
     fetchLabels("categories", { lang }).catch(() => ({})),
     fetchLabels("amenities", { lang }).catch(() => ({})),
+    fetchLabels("choices", { lang }).catch(() => ({})),
   ]);
-  return { cities, categories, amenities };
+  return { cities, categories, amenities, choices };
 }

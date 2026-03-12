@@ -36,10 +36,11 @@ function composeMeta(item) {
 function normalizeBanner(b) {
   if (!b) return "";
   const s = String(b).toLowerCase().replace(/\s+/g, "-");
-  if (s.includes("vendu")) return "vendu";
-  if (s.includes("réserv") || s.includes("reserve")) return "reserve";
-  if (s.includes("coming")) return "coming-soon";
-  if (s.includes("exclu")) return "exclu";
+  if (s.includes("vendu") || s.includes("sold"))       return "vendu";
+  if (s.includes("réserv") || s.includes("reserve") || s.includes("option")) return "reserve";
+  if (s.includes("coming") || s.includes("bientôt") || s.includes("prochainement")) return "coming-soon";
+  if (s.includes("exclu"))                              return "exclu";
+  if (s.includes("suspendu") || s.includes("archiv"))   return "suspendu";
   return s;
 }
 
@@ -50,14 +51,17 @@ function TopStatusTag({ kind }) {
   if (!kind) return null;
 
   const ORANGE = "#FF4A3E";
+  const GREY = "#6B7280";
   const map = {
-    vendu: "VENDU",
-    reserve: "RÉSERVÉ",
-    exclu: "EXCLUSIF",
-    "coming-soon": "COMING SOON",
+    vendu:        { label: "VENDU",       color: ORANGE },
+    reserve:      { label: "RÉSERVÉ",     color: ORANGE },
+    exclu:        { label: "EXCLUSIF",    color: ORANGE },
+    "coming-soon":{ label: "COMING SOON", color: ORANGE },
+    suspendu:     { label: "SUSPENDU",    color: GREY },
   };
-  const label = map[kind];
-  if (!label) return null;
+  const entry = map[kind];
+  if (!entry) return null;
+  const { label, color } = entry;
 
   return (
     <div className="absolute top-3 md:top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
@@ -65,7 +69,7 @@ function TopStatusTag({ kind }) {
         className={`inline-block ${tileRadiusCls} px-3.5 py-1.5 uppercase tracking-[0.20em]
                   text-[11px] md:text-[12px] font-semibold text-white shadow
                   border border-white/90`}
-        style={{ backgroundColor: ORANGE }}
+        style={{ backgroundColor: color }}
       >
         {label}
       </span>
@@ -126,12 +130,13 @@ useEffect(() => {
 
   const hasExclu = (item.tags || []).some((t) => /exclu/i.test(String(t)));
   const recent = isRecent(item.createdAt);
-  const status = normalizeBanner(item.bandeau || (item.vendu ? "vendu" : ""));
+  const status = normalizeBanner(item.bandeau || item.status || (item.vendu ? "vendu" : ""));
   const ribbonKind = status || (hasExclu ? "exclu" : "");
   const badgeLabel = ribbonKind
     ? null
     : item.badge || (hasExclu ? "EXCLUSIVITÉ" : null);
   const isSold = status === "vendu";
+  const isInactive = isSold || status === "reserve" || status === "suspendu";
 
   
   const goPrev = (e) => {
@@ -164,7 +169,7 @@ useEffect(() => {
           loading="lazy"
           decoding="async"
           sizes="(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
-          className={`absolute inset-0 w-full h-full object-cover card-img ${isSold ? "grayscale" : ""}`}
+          className={`absolute inset-0 w-full h-full object-cover card-img ${isSold ? "grayscale" : isInactive ? "grayscale-[50%] opacity-80" : ""}`}
           draggable="false"
         />
         {["vendu", "exclu"].includes(ribbonKind) && (
