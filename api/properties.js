@@ -311,11 +311,11 @@ export default async function handler(req, res) {
       // Le titre peut venir de plusieurs sources
       title = p.title || title || p.reference || "Annonce";
 
-      // Surface: habitable > usable > m2
+      // Surface: habitable > usable > weighted (surface pondérée) > land (terrain)
       const surface =
         (p.habitable != null ? Number(p.habitable) : null) ??
         (p.usable != null ? Number(p.usable) : null) ??
-        (p.m2 != null ? Number(p.m2) : null);
+        (p.weighted != null && Number(p.weighted) > 0 ? Number(p.weighted) : null);
 
       // Résolution du type de bien
       const typeId = p.sub_category_id || p.main_category_id;
@@ -329,7 +329,9 @@ export default async function handler(req, res) {
         id: p.id,
         reference: p.reference || null,
         titre: title,
-        prix: p.price != null ? Number(p.price) : null,
+        prix: p.price != null ? Number(p.price)
+              : p.hidden_price != null ? Number(p.hidden_price)
+              : null,
         devise: "CHF",
         ville: resolveCity(p.city_id, p.zip, p.city),
         zip: p.zip || null,
