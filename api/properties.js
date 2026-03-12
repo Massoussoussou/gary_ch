@@ -105,30 +105,16 @@ const ZIP_TO_CITY = {
   "1870": "Monthey", "1890": "St-Maurice", "1920": "Martigny",
 };
 
-// Fallback pour les statuts de biens (status_id → label FR)
-// Ces IDs seront confirmés/complétés par l'API get-choices-labels
-const STATUS_FALLBACK = {
-  "1":  "Actif",
-  "2":  "Réservé",
-  "3":  "Vendu",
-  "4":  "Suspendu",
-  "5":  "Coming soon",
-  "6":  "En attente",
-  "7":  "Loué",
-  "8":  "Option",
-  "9":  "Actif",
-  "10": "Archivé",
-};
-
-// Détermine le type de bandeau à partir du label de statut
-function statusToBandeau(statusLabel) {
-  if (!statusLabel) return null;
-  const s = statusLabel.toLowerCase();
-  if (/vendu|sold/.test(s))                     return "Vendu";
-  if (/réserv|reserv|option/.test(s))           return "Réservé";
-  if (/coming|bientôt|prochainement/.test(s))   return "Coming soon";
-  if (/suspendu|suspend|inactif|archiv/.test(s)) return "Suspendu";
-  // "Actif", "En attente", etc. → pas de bandeau
+// Détecte si un bien est vendu à partir des signaux disponibles dans l'API.
+// L'endpoint get-full-listings ne retourne que des biens publiés, donc on ne
+// filtre que les vrais "vendus" via p.status (string) ou p.sell_date.
+function detectSoldStatus(p) {
+  // p.status est une string libre renvoyée par Realforce (ex: "Active", "Sold", "Vendu"…)
+  const statusStr = (p.status || "").toLowerCase();
+  if (/vendu|sold/.test(statusStr)) return "Vendu";
+  if (/réserv|reserv|reserved/.test(statusStr)) return "Réservé";
+  // sell_date renseigné = vente finalisée
+  if (p.sell_date) return "Vendu";
   return null;
 }
 
@@ -235,10 +221,7 @@ export default async function handler(req, res) {
     console.log("[properties] Payload count:", payload.count, "data length:", (payload.data || []).length);
 
     // Helpers de résolution
-    const { cities, categories, amenities, choices } = labels;
-
-    // choices non utilisé pour le moment (nécessite le paramètre category correct)
-    void choices;
+    const { cities, categories, amenities } = labels;
 
     const resolveCity = (cityId, zip, cityName) => {
       // Priorité: nom de ville direct > labels API > ZIP mapping > ZIP brut
@@ -273,16 +256,8 @@ export default async function handler(req, res) {
       return CANTON_FALLBACK[String(cantonId)] || String(cantonId);
     };
 
-    // Résolution du statut (status_id → label localisé)
-    // On utilise directement STATUS_FALLBACK car l'API choices nécessite un
-    // paramètre `category` qu'on ne connaît pas encore, et sans lui les labels
-    // retournés peuvent provenir d'une autre catégorie (transaction_type, etc.)
-    // ce qui causerait des mappings incorrects et filtrerait les biens à tort.
-    const resolveStatus = (statusId) => {
-      if (statusId == null) return null;
-      const key = String(statusId);
-      return STATUS_FALLBACK[key] || null;
-    };
+    // Pas de résolution status_id → label : le mapping des IDs Realforce
+    // n'est pas documenté et les valeurs devinées filtraient des biens à tort.
 
     const resolveAmenity = (amenityId) => {
       const entry = amenities[String(amenityId)];
@@ -355,13 +330,10 @@ export default async function handler(req, res) {
         description: stripHtml(descriptionHtml),      // Texte brut pour les cards/previews
         descriptionHtml: descriptionHtml,             // HTML pour la page détail
         equipements,
-        // Statut du bien basé sur status_id (API RealForce)
-        statusId: p.status_id || null,
-        status: resolveStatus(p.status_id),
-        bandeau: statusToBandeau(resolveStatus(p.status_id)),
-        vendu: /vendu|sold/i.test(resolveStatus(p.status_id) || ""),
-        reserve: /réserv|reserv|option/i.test(resolveStatus(p.status_id) || ""),
-        comingSoon: /coming|bientôt|prochainement/i.test(resolveStatus(p.status_id) || ""),
+        // Statut vendu/réservé — détection via p.status (string) et p.sell_date
+        bandeau: detectSoldStatus(p),
+        vendu: detectSoldStatus(p) === "Vendu",
+        reserve: detectSoldStatus(p) === "Réservé",
         tags: [],
         createdAt: p.lastupdate || p.publication_date || p.creation || null,
         coords: {
