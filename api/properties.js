@@ -216,7 +216,7 @@ export default async function handler(req, res) {
       fetch(url.toString(), { headers: { "X-API-KEY": apiKey } }),
       fetchPropertyLabels(primaryLang).catch((err) => {
         console.warn("[properties] Labels fetch failed:", err.message);
-        return { cities: {}, categories: {}, amenities: {} };
+        return { cities: {}, categories: {}, amenities: {}, choices: {} };
       }),
     ]);
 
@@ -237,15 +237,8 @@ export default async function handler(req, res) {
     // Helpers de résolution
     const { cities, categories, amenities, choices } = labels;
 
-    // Log des choices pour debug (à retirer plus tard)
-    if (choices && Object.keys(choices).length > 0) {
-      console.log("[properties] Choices labels keys:", Object.keys(choices).slice(0, 20));
-      // Log un échantillon pour comprendre la structure
-      const sampleKey = Object.keys(choices)[0];
-      if (sampleKey) console.log("[properties] Choices sample:", sampleKey, "→", JSON.stringify(choices[sampleKey]).slice(0, 200));
-    } else {
-      console.log("[properties] No choices labels received");
-    }
+    // choices non utilisé pour le moment (nécessite le paramètre category correct)
+    void choices;
 
     const resolveCity = (cityId, zip, cityName) => {
       // Priorité: nom de ville direct > labels API > ZIP mapping > ZIP brut
@@ -281,19 +274,13 @@ export default async function handler(req, res) {
     };
 
     // Résolution du statut (status_id → label localisé)
+    // On utilise directement STATUS_FALLBACK car l'API choices nécessite un
+    // paramètre `category` qu'on ne connaît pas encore, et sans lui les labels
+    // retournés peuvent provenir d'une autre catégorie (transaction_type, etc.)
+    // ce qui causerait des mappings incorrects et filtrerait les biens à tort.
     const resolveStatus = (statusId) => {
       if (statusId == null) return null;
       const key = String(statusId);
-      // D'abord essayer les labels API (choices)
-      const entry = choices[key];
-      if (entry) {
-        // Structure possible: { "fr": "Vendu" } ou { "labels": { "fr": "Vendu" } } ou string
-        if (typeof entry === "string") return entry;
-        const lbl = entry.labels || entry;
-        const resolved = lbl[primaryLang] || lbl.fr || lbl.en;
-        if (resolved) return resolved;
-      }
-      // Fallback sur notre mapping statique
       return STATUS_FALLBACK[key] || null;
     };
 
