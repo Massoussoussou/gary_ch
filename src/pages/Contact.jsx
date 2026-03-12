@@ -350,34 +350,34 @@ export default function Contact() {
 
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
-                      <label htmlFor="nom" className="text-sm text-black/70">Nom</label>
-                      <input id="nom" name="nom" required className="w-full rounded-lg border border-black/15 bg-white/95 px-3 py-2.5 focus:outline-none focus:ring-4 focus:ring-[rgba(255,74,62,0.25)]" />
+                      <label htmlFor="nom" className="block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5">Nom</label>
+                      <input id="nom" name="nom" required className="w-full px-4 py-3.5 bg-[#FAF7F4] border border-[#E5E7EB] text-gray-900 text-[15px] outline-none transition-colors focus:border-[#FF4A3E] placeholder:text-gray-400" />
                     </div>
                     <div>
-                      <label htmlFor="prenom" className="text-sm text-black/70">Prénom</label>
-                      <input id="prenom" name="prenom" required className="w-full rounded-lg border border-black/15 bg-white/95 px-3 py-2.5 focus:outline-none focus:ring-4 focus:ring-[rgba(255,74,62,0.25)]" />
+                      <label htmlFor="prenom" className="block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5">Prénom</label>
+                      <input id="prenom" name="prenom" required className="w-full px-4 py-3.5 bg-[#FAF7F4] border border-[#E5E7EB] text-gray-900 text-[15px] outline-none transition-colors focus:border-[#FF4A3E] placeholder:text-gray-400" />
                     </div>
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
-                      <label htmlFor="email" className="text-sm text-black/70">Email</label>
-                      <input id="email" name="email" type="email" required className="w-full rounded-lg border border-black/15 bg-white/95 px-3 py-2.5 focus:outline-none focus:ring-4 focus:ring-[rgba(255,74,62,0.25)]" placeholder="vous@exemple.com" />
+                      <label htmlFor="email" className="block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5">Email</label>
+                      <input id="email" name="email" type="email" required className="w-full px-4 py-3.5 bg-[#FAF7F4] border border-[#E5E7EB] text-gray-900 text-[15px] outline-none transition-colors focus:border-[#FF4A3E] placeholder:text-gray-400" placeholder="vous@exemple.com" />
                     </div>
                     <div>
-                      <label htmlFor="tel" className="text-sm text-black/70">Téléphone</label>
-                      <input id="tel" name="tel" type="tel" inputMode="tel" required className="w-full rounded-lg border border-black/15 bg-white/95 px-3 py-2.5 focus:outline-none focus:ring-4 focus:ring-[rgba(255,74,62,0.25)]" placeholder="+41 79 123 45 67" />
+                      <label htmlFor="tel" className="block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5">Téléphone</label>
+                      <input id="tel" name="tel" type="tel" inputMode="tel" required className="w-full px-4 py-3.5 bg-[#FAF7F4] border border-[#E5E7EB] text-gray-900 text-[15px] outline-none transition-colors focus:border-[#FF4A3E] placeholder:text-gray-400" placeholder="+41 79 123 45 67" />
                     </div>
                   </div>
 
                   {/* Type de demande */}
                   <div>
-                    <label htmlFor="type" className="text-sm text-black/70">Type de demande</label>
+                    <label htmlFor="type" className="block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5">Type de demande</label>
                     <select
                       id="type"
                       value={type}
                       onChange={(e) => setType(e.target.value)}
-                      className="w-full rounded-lg border border-black/15 bg-white/95 px-3 py-2.5 focus:outline-none focus:ring-4 focus:ring-[rgba(255,74,62,0.25)]"
+                      className="w-full px-4 py-3.5 bg-[#FAF7F4] border border-[#E5E7EB] text-gray-900 text-[15px] outline-none transition-colors focus:border-[#FF4A3E] placeholder:text-gray-400"
                     >
                       <option value="Estimation">Estimation de mon bien</option>
                       <option value="Achat">Recherche d’un bien à acheter</option>
@@ -388,8 +388,8 @@ export default function Contact() {
 
                   {/* Message */}
                   <div>
-                    <label htmlFor="message" className="text-sm text-black/70">Message</label>
-                    <textarea id="message" name="message" rows={6} required className="w-full rounded-lg border border-black/15 bg-white/95 px-3 py-2.5 focus:outline-none focus:ring-4 focus:ring-[rgba(255,74,62,0.25)]" placeholder="Décrivez votre bien (type, surface, localisation), vos délais, vos questions…" />
+                    <label htmlFor="message" className="block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5">Message</label>
+                    <textarea id="message" name="message" rows={6} required className="w-full px-4 py-3.5 bg-[#FAF7F4] border border-[#E5E7EB] text-gray-900 text-[15px] outline-none transition-colors focus:border-[#FF4A3E] placeholder:text-gray-400" placeholder="Décrivez votre bien (type, surface, localisation), vos délais, vos questions…" />
                   </div>
 
                   {error && (
@@ -401,7 +401,7 @@ export default function Contact() {
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="group inline-flex items-center justify-center gap-2 px-7 md:px-9 py-3 rounded-xl text-white shadow-lg transition hover:shadow-xl disabled:opacity-60"
+                      className="group inline-flex items-center justify-center gap-2 px-7 md:px-9 py-3 text-white shadow-lg transition hover:shadow-xl disabled:opacity-60"
                       style={{ backgroundColor: "#FF4A3E" }}
                     >
                       {submitting ? "Envoi…" : "Envoyer"}

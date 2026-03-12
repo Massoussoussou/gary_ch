@@ -102,18 +102,18 @@ export default function ThreeHeroTiles() {
                   className={`
                     relative z-10
                     leading-none select-none
-                    text-white font-serif
-                    transform transition-all duration-700
+                    text-white font-sans font-light
+                    transform transition-[transform,opacity] duration-700
                     ease-[cubic-bezier(0.175,0.885,0.32,1.275)]
                     ${textEntered ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}
 
                     /* ✅ MOBILE (<640px) : taille fluide + tracking réduit + centrage */
                     text-[clamp(28px,9vw,56px)]
-                    tracking-[0.12em]
+                    tracking-[0.35em]
                     text-center
 
                     /* ✅ DESKTOP (>=640px) : tailles réduites selon demande client */
-                    sm:text-6xl sm:tracking-[0.18em]
+                    sm:text-6xl sm:tracking-[0.35em]
                     md:text-7xl lg:text-8xl
                     ${band.offsetClass}
                   `}

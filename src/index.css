@@ -59,8 +59,11 @@ html {
 
 html, body, #root { height: 100%; }
 
-/* Focus styles for accessibility */
-:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+/* Focus styles for accessibility — exclude form fields (handled by Tailwind/component CSS) */
+:focus-visible:not(input):not(textarea):not(select) { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible { outline: none; }
 
 
 /* === GARY — Fond orangé léger pour les pages === */

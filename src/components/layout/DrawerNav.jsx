@@ -149,35 +149,21 @@ export default function DrawerNav({ open, onClose }) {
                       onClick={onClose}
                       className={`
                         group relative block rounded-2xl px-5 py-3.5 overflow-hidden
-                        border border-black/12
-                        bg-white/55
+                        border
                         transition-all duration-200
-                        hover:bg-white/80 hover:border-black/18
                         focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/30
                         ${
                           active
-                            ? "bg-[#FF4A3E]/6 border-black/18 shadow-[0_10px_24px_rgba(0,0,0,0.06),inset_0_0_0_1px_rgba(255,74,62,0.28)]"
-                            : ""
+                            ? "bg-[#FF4A3E] border-[#FF4A3E] shadow-[0_10px_24px_rgba(255,74,62,0.25)]"
+                            : "border-black/12 bg-white/55 hover:bg-white/80 hover:border-black/18"
                         }
                       `}
                     >
-                      <span
-                        className={`
-                          pointer-events-none absolute left-0 top-0 h-full w-[5px]
-                          bg-[#FF4A3E]
-                          transition-opacity duration-200
-                          ${
-                            active
-                              ? "opacity-100"
-                              : "opacity-0 group-hover:opacity-30"
-                          }
-                        `}
-                      />
                       <div className="pl-2">
-                        <div className="text-black font-light uppercase leading-none tracking-[0.26em] text-[clamp(22px,6.6vw,34px)]">
+                        <div className={`font-light uppercase leading-none tracking-[0.26em] text-[clamp(22px,6.6vw,34px)] ${active ? "text-white" : "text-black"}`}>
                           {item.label}
                         </div>
-                        <div className="mt-2 text-[13px] text-black/70">
+                        <div className={`mt-2 text-[13px] ${active ? "text-white/80" : "text-black/70"}`}>
                           {item.sub}
                         </div>
                       </div>
@@ -193,41 +179,27 @@ export default function DrawerNav({ open, onClose }) {
                   onClick={() => setAboutOpen((v) => !v)}
                   className={`
                     group relative w-full text-left block rounded-2xl px-5 py-3.5 overflow-hidden
-                    border border-black/12
-                    bg-white/55
+                    border
                     transition-all duration-200
-                    hover:bg-white/80 hover:border-black/18
                     focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/30
                     ${
                       aboutActive || aboutOpen
-                        ? "bg-[#FF4A3E]/6 border-black/18 shadow-[0_10px_24px_rgba(0,0,0,0.06),inset_0_0_0_1px_rgba(255,74,62,0.28)]"
-                        : ""
+                        ? "bg-[#FF4A3E] border-[#FF4A3E] shadow-[0_10px_24px_rgba(255,74,62,0.25)]"
+                        : "border-black/12 bg-white/55 hover:bg-white/80 hover:border-black/18"
                     }
                   `}
                 >
-                  <span
-                    className={`
-                      pointer-events-none absolute left-0 top-0 h-full w-[5px]
-                      bg-[#FF4A3E]
-                      transition-opacity duration-200
-                      ${
-                        aboutActive || aboutOpen
-                          ? "opacity-100"
-                          : "opacity-0 group-hover:opacity-30"
-                      }
-                    `}
-                  />
                   <div className="pl-2 flex items-center justify-between">
                     <div>
-                      <div className="text-black font-light uppercase leading-none tracking-[0.26em] text-[clamp(22px,6.6vw,34px)]">
+                      <div className={`font-light uppercase leading-none tracking-[0.26em] text-[clamp(22px,6.6vw,34px)] ${aboutActive || aboutOpen ? "text-white" : "text-black"}`}>
                         À PROPOS
                       </div>
-                      <div className="mt-2 text-[13px] text-black/70">
+                      <div className={`mt-2 text-[13px] ${aboutActive || aboutOpen ? "text-white/80" : "text-black/70"}`}>
                         En savoir plus sur GARY
                       </div>
                     </div>
                     <span
-                      className="text-black/40 text-[20px] transition-transform duration-300 ease-out"
+                      className={`text-[20px] transition-transform duration-300 ease-out ${aboutActive || aboutOpen ? "text-white/60" : "text-black/40"}`}
                       style={{ transform: aboutOpen ? "rotate(180deg)" : "rotate(0deg)" }}
                       aria-hidden
                     >
@@ -256,22 +228,20 @@ export default function DrawerNav({ open, onClose }) {
                             className={`
                               group flex items-center justify-between
                               rounded-xl px-4 py-3
-                              border border-black/8
-                              bg-white/50
+                              border
                               transition-all duration-200
-                              hover:bg-white/80 hover:border-black/15
                               focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/30
                               ${
                                 subActive
-                                  ? "bg-[#FF4A3E]/5 border-black/15"
-                                  : ""
+                                  ? "bg-[#FF4A3E] border-[#FF4A3E] shadow-[0_6px_16px_rgba(255,74,62,0.2)]"
+                                  : "border-black/8 bg-white/50 hover:bg-white/80 hover:border-black/15"
                               }
                             `}
                           >
-                            <span className={`text-[15px] ${subActive ? "text-[#FF4A3E]" : "text-black/85"}`}>
+                            <span className={`text-[15px] ${subActive ? "text-white font-medium" : "text-black/85"}`}>
                               {sub.label}
                             </span>
-                            <span className="text-black/25 group-hover:text-black/45 text-[13px] transition-colors">
+                            <span className={`text-[13px] transition-colors ${subActive ? "text-white/70" : "text-black/25 group-hover:text-black/45"}`}>
                               →
                             </span>
                           </NavLink>
