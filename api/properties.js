@@ -105,16 +105,38 @@ const ZIP_TO_CITY = {
   "1870": "Monthey", "1890": "St-Maurice", "1920": "Martigny",
 };
 
-// Détecte si un bien est vendu à partir des signaux disponibles dans l'API.
-// L'endpoint get-full-listings ne retourne que des biens publiés, donc on ne
-// filtre que les vrais "vendus" via p.status (string) ou p.sell_date.
-function detectSoldStatus(p) {
-  // p.status est une string libre renvoyée par Realforce (ex: "Active", "Sold", "Vendu"…)
-  const statusStr = (p.status || "").toLowerCase();
-  if (/vendu|sold/.test(statusStr)) return "Vendu";
-  if (/réserv|reserv|reserved/.test(statusStr)) return "Réservé";
-  // sell_date renseigné = vente finalisée
-  if (p.sell_date) return "Vendu";
+// Mapping réel des status_id Realforce (choices category 4)
+// Source : /api/debug-statuses → choices_by_category.category_4
+const STATUS_MAP = {
+  "9":   "insertion",     // En cours d'insertion
+  "10":  "actif",         // Actif
+  "11":  "reserve",       // Réservé
+  "12":  "reserve",       // Réservé propriétaire
+  "13":  "vendu",         // Vendu
+  "14":  "vendu",         // Vendu p. propriétaire
+  "15":  "vendu",         // Vendu concur.
+  "17":  "prospect",      // Prospect
+  "18":  "loue",          // Loué
+  "19":  "loue",          // Loué concur.
+  "20":  "expire",        // Contrat expiré
+  "21":  "resilie",       // Contrat résilié
+  "92":  "actif",         // Nouveau (= actif pour l'affichage)
+  "246": "suspendu",      // Suspendu
+  "254": "actif",         // Chantier ouvert
+  "401": "reserve",       // Réservé, acompte versé
+  "404": "reserve",       // Option
+  "459": "offmarket",     // Off Market
+  "505": "gerance",       // En gérance
+};
+
+// Détermine le bandeau à afficher à partir du status_id
+function statusToBandeau(statusId) {
+  const s = STATUS_MAP[String(statusId)];
+  if (!s) return null;
+  if (s === "vendu") return "Vendu";
+  if (s === "reserve") return "Réservé";
+  if (s === "suspendu") return "Suspendu";
+  if (s === "offmarket") return "Off Market";
   return null;
 }
 
@@ -256,8 +278,8 @@ export default async function handler(req, res) {
       return CANTON_FALLBACK[String(cantonId)] || String(cantonId);
     };
 
-    // Pas de résolution status_id → label : le mapping des IDs Realforce
-    // n'est pas documenté et les valeurs devinées filtraient des biens à tort.
+    // Résolution du statut via STATUS_MAP (mapping vérifié depuis choices category 4)
+    const resolveStatusKey = (statusId) => STATUS_MAP[String(statusId)] || null;
 
     const resolveAmenity = (amenityId) => {
       const entry = amenities[String(amenityId)];
@@ -330,10 +352,11 @@ export default async function handler(req, res) {
         description: stripHtml(descriptionHtml),      // Texte brut pour les cards/previews
         descriptionHtml: descriptionHtml,             // HTML pour la page détail
         equipements,
-        // Statut vendu/réservé — détection via p.status (string) et p.sell_date
-        bandeau: detectSoldStatus(p),
-        vendu: detectSoldStatus(p) === "Vendu",
-        reserve: detectSoldStatus(p) === "Réservé",
+        // Statut basé sur status_id (mapping vérifié Realforce category 4)
+        statusId: p.status_id || null,
+        bandeau: statusToBandeau(p.status_id),
+        vendu: resolveStatusKey(p.status_id) === "vendu" || !!p.sell_date,
+        reserve: resolveStatusKey(p.status_id) === "reserve",
         tags: [],
         createdAt: p.lastupdate || p.publication_date || p.creation || null,
         coords: {
