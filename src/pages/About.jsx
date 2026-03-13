@@ -1232,14 +1232,17 @@ function CTASection() {
   const wrapperRef = useRef(null);
   const overlayRef = useRef(null);
   const videoBoxRef = useRef(null);
+  const videoRef = useRef(null);
   const contentRef = useRef(null);
   const [seen, setSeen] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
+    let rafId = 0;
 
-    const onScroll = () => {
+    const update = () => {
       const rect = wrapper.getBoundingClientRect();
       const winH = window.innerHeight;
       const scrollable = rect.height - winH;
@@ -1247,36 +1250,50 @@ function CTASection() {
 
       if (rect.top < winH * 0.7) setSeen(true);
 
-      /* Voile : 0.7 → 0.25 */
       if (overlayRef.current) {
         overlayRef.current.style.opacity = String(0.7 - progress * 0.45);
       }
-
-      /* Vidéo : commence avec marges, finit plein écran */
       if (videoBoxRef.current) {
         const margin = (1 - progress) * 3;
         videoBoxRef.current.style.margin = `${margin}%`;
       }
-
-      /* Contenu : opaque au début, se clarifie avec le scroll */
+      if (progress >= 0.95 && videoRef.current && videoRef.current.paused) {
+        videoRef.current.play();
+        setVideoReady(true);
+      }
       if (contentRef.current) {
         contentRef.current.style.opacity = String(0.3 + progress * 0.7);
       }
     };
 
+    const onScroll = () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(update);
+    };
+
     window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    update();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(rafId);
+    };
   }, []);
 
   return (
     <div ref={wrapperRef} className="relative z-10" style={{ height: "200vh" }}>
       <section className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center bg-[#FAF6F0]">
-        {/* Vidéo de fond */}
+        {/* Image fixe pendant le scale, vidéo lancée une fois plein écran */}
         <div ref={videoBoxRef} className="absolute inset-0 overflow-hidden" style={{ zIndex: 0 }}>
-          <video autoPlay muted loop playsInline disablePictureInPicture
+          <img
+            src="/media/buy/hero24.webp"
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+            style={{ opacity: videoReady ? 0 : 1, transition: "opacity 0.6s ease" }}
+          />
+          <video ref={videoRef} muted loop playsInline disablePictureInPicture preload="auto"
             controlsList="nodownload noplaybackrate noremoteplayback nofullscreen"
-            className="w-full h-full object-cover pointer-events-none"
+            className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+            style={{ opacity: videoReady ? 1 : 0, transition: "opacity 0.6s ease" }}
           >
             <source src="/media/buy/hero24.mp4" type="video/mp4" />
           </video>
@@ -1514,7 +1531,9 @@ function TeamMemberZone({ member, dotX, dotY, zoneX, zoneY, zoneW, zoneH, index 
               fontSize: "12px",
               opacity: hovered ? 1 : 0,
               transform: hovered ? "scale(1)" : "scale(0.7)",
-              transition: "opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s",
+              transition: hovered
+                ? "opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s"
+                : "opacity 0.05s ease, transform 0.05s ease",
             }}
           >
             voir →
@@ -1543,7 +1562,9 @@ function TeamMemberZone({ member, dotX, dotY, zoneX, zoneY, zoneW, zoneH, index 
             padding: hovered ? "10px 20px" : "10px 0px",
             maxWidth: hovered ? "300px" : "0px",
             opacity: hovered ? 1 : 0,
-            transition: "max-width 1.2s cubic-bezier(0.22, 1, 0.36, 1), padding 1.2s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease",
+            transition: hovered
+              ? "max-width 1.2s cubic-bezier(0.22, 1, 0.36, 1), padding 1.2s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease"
+              : "max-width 0.3s ease, padding 0.3s ease, opacity 0.2s ease",
           }}
         >
           {member.name}
