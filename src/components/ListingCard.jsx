@@ -64,11 +64,10 @@ function TopStatusTag({ kind }) {
   const { label, color } = entry;
 
   return (
-    <div className="absolute top-3 md:top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+    <div className="absolute top-5 md:top-6 left-0 z-20 pointer-events-none">
       <span
         className={`inline-block ${tileRadiusCls} px-3.5 py-1.5 uppercase tracking-[0.20em]
-                  text-[11px] md:text-[12px] font-semibold text-white shadow
-                  border border-white/90`}
+                  text-[11px] md:text-[12px] font-semibold text-white shadow`}
         style={{ backgroundColor: color }}
       >
         {label}
@@ -172,12 +171,7 @@ useEffect(() => {
           className={`absolute inset-0 w-full h-full object-cover card-img ${isSold ? "grayscale" : isInactive ? "grayscale-[50%] opacity-80" : ""}`}
           draggable="false"
         />
-        {["vendu", "exclu"].includes(ribbonKind) && (
-          <div
-            className="absolute inset-3 md:inset-4 z-20 pointer-events-none"
-            style={{ border: "1px solid rgba(255,255,255,0.85)", borderRadius: "inherit" }}
-          />
-        )}
+        {/* cadre supprimé — Jared 13/03 */}
 
         {/* NOUVEAU BANDEAU (carré + rectangle blanc, centré haut) */}
         <TopStatusTag kind={ribbonKind} />

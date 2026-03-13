@@ -382,7 +382,7 @@ function KeyFigures() {
   const [sectionRef, seen] = useInViewOnce({ threshold: 0.2 });
 
   return (
-    <section ref={sectionRef} className="relative z-10 w-full bg-[#FAF6F0] py-20 md:py-28">
+    <section id="key-figures" ref={sectionRef} className="relative z-10 w-full bg-[#FAF6F0] py-20 md:py-28">
       <div className="max-w-[1200px] mx-auto px-6 md:px-12 lg:px-16">
         {/* Trait décoratif orange au-dessus */}
         <div className="flex justify-center mb-6">
@@ -593,17 +593,17 @@ function HeroCirclesSection() {
             opacity: phase >= 3 ? 1 : 0, transition: "opacity 0.6s ease-out",
           }}>
             <div className="text-center pt-8 md:pt-12 px-6 md:px-10 w-full flex-1 flex flex-col justify-center">
-              <p className="text-[11px] uppercase tracking-[0.3em] text-neutral-500 mb-6" style={{ opacity: phase >= 4 ? 1 : 0, transform: phase >= 4 ? "translateY(0)" : "translateY(8px)", transition: "all 0.5s ease-out" }}>Qui sommes-nous</p>
+              <p className="text-[11px] uppercase tracking-[0.3em] text-neutral-500 mb-6" style={{ opacity: phase >= 4 ? 1 : 0, transform: phase >= 4 ? "translateY(0)" : "translateY(8px)", transition: "all 0.5s ease-out" }}>GARY, la dualité entre&nbsp;:</p>
               <div className="flex flex-col md:flex-row items-center md:items-stretch">
                 <div className="flex-1 text-center px-4 md:px-8" style={{ opacity: phase >= 4 ? 1 : 0, transform: phase >= 4 ? "translateX(0)" : "translateX(-20px)", transition: "all 0.7s ease-out 0.1s" }}>
-                  <h3 className="font-serif text-[clamp(1.8rem,5.5vw,3.8rem)] text-neutral-900 leading-[1.08]"><span className="text-[#FF4A3E]">{VL.label}</span><br />{VL.sub}</h3>
-                  <p className="mt-4 text-neutral-600 text-[clamp(0.95rem,1.8vw,1.15rem)] leading-relaxed max-w-[360px] mx-auto" dangerouslySetInnerHTML={{ __html: hl(VL.desc, VL.kw) }} />
+                  <h3 className="font-serif text-[clamp(1.8rem,5.5vw,3.8rem)] text-neutral-900 leading-[1.08]"><span className="text-[#FF4A3E]">{VR.label}</span><br />{VR.sub}</h3>
+                  <p className="mt-4 text-neutral-600 text-[clamp(0.95rem,1.8vw,1.15rem)] leading-relaxed max-w-[360px] mx-auto" dangerouslySetInnerHTML={{ __html: hl(VR.desc, VR.kw) }} />
                 </div>
                 <div className="hidden md:flex items-center justify-center w-px relative my-2"><div className="w-px bg-neutral-900 origin-bottom" style={{ height: "80%", transform: phase >= 4 ? "scaleY(1)" : "scaleY(0)", transition: `transform 1.2s ${EASE} 0.3s` }} /></div>
                 <div className="md:hidden flex justify-center my-6"><div className="bg-neutral-900" style={{ height: "2px", width: phase >= 4 ? "50%" : "0%", transition: `width 1.2s ${EASE} 0.3s` }} /></div>
                 <div className="flex-1 text-center px-4 md:px-8" style={{ opacity: phase >= 4 ? 1 : 0, transform: phase >= 4 ? "translateX(0)" : "translateX(20px)", transition: "all 0.7s ease-out 0.2s" }}>
-                  <h3 className="font-serif text-[clamp(1.8rem,5.5vw,3.8rem)] text-neutral-900 leading-[1.08]"><span className="text-[#FF4A3E]">{VR.label}</span><br />{VR.sub}</h3>
-                  <p className="mt-4 text-neutral-600 text-[clamp(0.95rem,1.8vw,1.15rem)] leading-relaxed max-w-[360px] mx-auto" dangerouslySetInnerHTML={{ __html: hl(VR.desc, VR.kw) }} />
+                  <h3 className="font-serif text-[clamp(1.8rem,5.5vw,3.8rem)] text-neutral-900 leading-[1.08]"><span className="text-[#FF4A3E]">{VL.label}</span><br />{VL.sub}</h3>
+                  <p className="mt-4 text-neutral-600 text-[clamp(0.95rem,1.8vw,1.15rem)] leading-relaxed max-w-[360px] mx-auto" dangerouslySetInnerHTML={{ __html: hl(VL.desc, VL.kw) }} />
                 </div>
               </div>
             </div>
@@ -613,7 +613,7 @@ function HeroCirclesSection() {
                   className="cursor-pointer inline-flex flex-col items-center gap-1.5 text-[12px] md:text-[13px] uppercase tracking-[0.15em] text-neutral-600 hover:text-[#FF4A3E] transition-colors duration-300"
                   onClick={() => window.scrollTo({ top: window.innerHeight * 2, behavior: "smooth" })}
                 >
-                  Découvrir nos résultats
+                  Notre identité
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"
                     style={{ animation: "heroScrollBounce 2s ease-in-out infinite" }}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -967,7 +967,31 @@ function IdentitySection() {
         </p>
       </div>
 
-      {/* Ce qui nous distingue — zigzag avec ligne SVG animée au scroll */}
+      {/* Flèche "Découvrir nos résultats" → scrolle vers les chiffres */}
+      <div className="flex justify-center pt-12 pb-4">
+        <span
+          className="cursor-pointer inline-flex flex-col items-center gap-1.5 text-[12px] md:text-[13px] uppercase tracking-[0.15em] text-neutral-600 hover:text-[#FF4A3E] transition-colors duration-300"
+          onClick={() => {
+            const el = document.getElementById("key-figures");
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+          }}
+        >
+          Découvrir nos résultats
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"
+            style={{ animation: "heroScrollBounce 2s ease-in-out infinite" }}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </span>
+      </div>
+    </section>
+  );
+}
+
+/* ========== Section 2b — Ce qui nous distingue (fond blanc) ========== */
+function DistinguishSection() {
+  const [ref, seen] = useInViewOnce({ threshold: 0.05 });
+  return (
+    <section ref={ref} className="relative z-10 bg-white py-16 md:py-24">
       <DistinguishZigzag seen={seen} />
     </section>
   );
@@ -1699,11 +1723,14 @@ export default function About() {
         {/* ====== SECTION 2 — Notre identité (fond blanc) ====== */}
         <IdentitySection />
 
+        {/* ====== SECTION 3 — Chiffres clés 2025 (fond beige) — avant "ce qui nous distingue" ====== */}
+        <KeyFigures />
+
+        {/* ====== SECTION 2b — Ce qui nous distingue (fond blanc) ====== */}
+        <DistinguishSection />
+
         {/* ====== Photo d'équipe — bandeau pleine largeur avec points interactifs ====== */}
         <TeamPhotoSection />
-
-        {/* ====== SECTION 3 — Chiffres clés 2025 (fond beige) ====== */}
-        <KeyFigures />
 
         {/* ====== SECTION 4 — Équipe carousel (fond blanc) ====== */}
         <section ref={teamSectionRef} className="relative bg-white py-16 md:py-24">

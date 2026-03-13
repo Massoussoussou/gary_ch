@@ -88,8 +88,10 @@ function CompactCard({ item }) {
           : <div className="w-full h-full bg-neutral-200" />
         }
         {badge && (
-          <div className="absolute top-3 left-3 bg-white/95 px-3 py-1 text-[12px] uppercase tracking-wide text-neutral-800 border border-neutral-200">
-            {badge}
+          <div className="absolute top-5 md:top-6 left-0 z-20 pointer-events-none">
+            <span className="inline-block px-3.5 py-1.5 uppercase tracking-[0.20em] text-[11px] md:text-[12px] font-semibold text-white shadow" style={{ backgroundColor: "#FF4A3E" }}>
+              {badge.toUpperCase()}
+            </span>
           </div>
         )}
       </div>
@@ -220,8 +222,10 @@ export default function WeekCardV1({
                 : <div className="w-full h-full bg-neutral-200" />
               }
               {badge && (
-                <div className="absolute top-4 left-4 bg-white px-3 py-1 text-[12px] uppercase tracking-wide text-neutral-700 border border-neutral-200">
-                  {badge}
+                <div className="absolute top-5 md:top-6 left-0 z-20 pointer-events-none">
+                  <span className="inline-block px-3.5 py-1.5 uppercase tracking-[0.20em] text-[11px] md:text-[12px] font-semibold text-white shadow" style={{ backgroundColor: "#FF4A3E" }}>
+                    {badge.toUpperCase()}
+                  </span>
                 </div>
               )}
             </div>

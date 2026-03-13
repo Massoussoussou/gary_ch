@@ -467,6 +467,18 @@ export default function BuyIntro() {
 
         <SortMenu value={sort} onChange={setSort} />
 
+        {/* Compteur de biens disponibles */}
+        <div className="max-w-6xl mx-auto px-4 mt-8 mb-6">
+          <p className="text-center">
+            <span className="font-serif text-5xl md:text-7xl text-[#FF4A3E] font-bold leading-none">
+              {filtered.length}
+            </span>
+            <span className="block mt-2 text-lg md:text-xl text-neutral-600 tracking-wide">
+              {filtered.length > 1 ? "biens disponibles" : "bien disponible"}
+            </span>
+          </p>
+        </div>
+
         {/* Première moitié des annonces */}
         <ListingGrid items={firstHalf} isFiltered={isFiltered} />
       </section>

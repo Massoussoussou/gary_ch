@@ -57,12 +57,11 @@ export default function ListingCardSold({
           onDragStart={(e) => e.preventDefault()}
         />
 
-        {/* LÉGER voile + cadre intérieur fin */}
+        {/* LÉGER voile */}
         <div className="absolute inset-0 bg-black/10 card-sold-overlay" />
-        <div className="absolute inset-[14px] border border-white/80 pointer-events-none" />
 
-        {/* TAG haut centré */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2">
+        {/* TAG haut gauche */}
+        <div className="absolute top-5 md:top-6 left-0">
           <span
             className="inline-block px-3.5 py-1.5 text-[11px] md:text-[12px] font-semibold uppercase tracking-[0.22em] text-white shadow-[0_8px_18px_rgba(0,0,0,0.25)]"
             style={{ background: TAG.color }}
@@ -83,15 +82,17 @@ export default function ListingCardSold({
           </div>
         </div>
 
-        {/* Badge prix en bas gauche */}
-        <div className="absolute left-3 bottom-3">
-          <span
-            className="inline-flex items-center px-3.5 py-1.5 text-[12px] md:text-[13px] font-medium text-white rounded-none shadow-sm"
-            style={{ background: mode === "coming" ? ORANGE : "#111827" }}
-          >
-            {priceLabel}
-          </span>
-        </div>
+        {/* Badge prix en bas gauche (masqué pour les biens vendus) */}
+        {mode !== "sold" && (
+          <div className="absolute left-3 bottom-3">
+            <span
+              className="inline-flex items-center px-3.5 py-1.5 text-[12px] md:text-[13px] font-medium text-white rounded-none shadow-sm"
+              style={{ background: mode === "coming" ? ORANGE : "#111827" }}
+            >
+              {priceLabel}
+            </span>
+          </div>
+        )}
       </div>
     </Link>
   );
