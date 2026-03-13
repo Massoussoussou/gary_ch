@@ -306,9 +306,9 @@ function KeyFiguresSection() {
         <div className="flex justify-center mb-6">
           <div className="h-[2px] bg-[#FF4A3E]" style={{ width: seen ? "60px" : "0px", transition: "width 0.8s cubic-bezier(0.22, 1, 0.36, 1)" }} />
         </div>
-        <h3 className="text-center font-serif text-3xl md:text-5xl tracking-wide mb-16 md:mb-20 text-gray-900" style={{ opacity: seen ? 1 : 0, transform: seen ? "translateY(0)" : "translateY(20px)", transition: "opacity 0.8s ease-out, transform 0.8s ease-out" }}>
+        <h2 className="text-center font-serif text-3xl md:text-5xl tracking-wide mb-16 md:mb-20 text-gray-900" style={{ opacity: seen ? 1 : 0, transform: seen ? "translateY(0)" : "translateY(20px)", transition: "opacity 0.8s ease-out, transform 0.8s ease-out" }}>
           Quelques chiffres de <span className="text-[#FF4A3E]">2025</span>
-        </h3>
+        </h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-14 md:gap-y-16 gap-x-8 md:gap-x-12 lg:gap-x-16">
           {BUY_KEY_FIGURES.map((fig, i) => (
             <BuyFigureItem key={i} fig={fig} index={i} active={seen} />

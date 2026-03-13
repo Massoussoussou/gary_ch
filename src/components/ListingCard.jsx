@@ -1,5 +1,5 @@
 // src/components/ListingCard.jsx
-import { useState,useEffect  } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Home, BedDouble, Ruler, Bath, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -91,6 +91,20 @@ export default function ListingCard({ item, size = "md" }) {
   const [idx, setIdx] = useState(start);
 
   const [paused, setPaused] = useState(false);
+  const touchRef = useRef({ startX: 0, startY: 0 });
+
+  const handleTouchStart = (e) => {
+    touchRef.current.startX = e.touches[0].clientX;
+    touchRef.current.startY = e.touches[0].clientY;
+  };
+  const handleTouchEnd = (e) => {
+    const dx = e.changedTouches[0].clientX - touchRef.current.startX;
+    const dy = e.changedTouches[0].clientY - touchRef.current.startY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      if (dx < 0 && idx < imgs.length - 1) setIdx((p) => p + 1);
+      else if (dx > 0 && idx > 0) setIdx((p) => p - 1);
+    }
+  };
 
   // mapping des tailles de carte
   const isS = size === "md";   // S
@@ -160,18 +174,41 @@ useEffect(() => {
         className={`relative aspect-[4/3] md:aspect-[16/10] ${radiusCls} overflow-hidden`}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
+        onTouchStart={imgs.length > 1 ? handleTouchStart : undefined}
+        onTouchEnd={imgs.length > 1 ? handleTouchEnd : undefined}
       >
-        {/* IMAGE */}
-        <img
-          src={imgs[idx] || ""}
-          alt={item.titre || "Annonce"}
-          loading="lazy"
-          decoding="async"
-          sizes="(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
-          className={`absolute inset-0 w-full h-full object-cover card-img ${isSold ? "grayscale" : isInactive ? "grayscale-[50%] opacity-80" : ""}`}
-          draggable="false"
-        />
-        {/* cadre supprimé — Jared 13/03 */}
+        {/* IMAGES (crossfade fluide — on pré-rend prev/current/next) */}
+        {(() => {
+          if (!imgs.length) return null;
+          const nearby = new Set([idx]);
+          if (idx > 0) nearby.add(idx - 1);
+          if (idx < imgs.length - 1) nearby.add(idx + 1);
+          const filterCls = isSold ? "grayscale" : isInactive ? "grayscale-[50%]" : "";
+          return [...nearby].map((i) => (
+            <img
+              key={i}
+              src={imgs[i]}
+              alt={i === idx ? (item.titre || "Annonce") : ""}
+              loading={i === start ? undefined : "lazy"}
+              decoding="async"
+              sizes="(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
+              className={`absolute inset-0 w-full h-full object-cover card-img transition-opacity duration-300 ease-out ${filterCls} ${i === idx ? "" : "opacity-0"}`}
+              style={isInactive && !isSold ? { opacity: i === idx ? 0.8 : 0 } : undefined}
+              draggable="false"
+            />
+          ));
+        })()}
+        {/* Flèches transparentes mobile (swipe) */}
+        {imgs.length > 1 && (
+          <div className="absolute inset-y-0 left-0 right-0 z-30 flex items-center justify-between px-2 pointer-events-none md:hidden">
+            <div className={`rounded-full bg-black/20 p-1 transition-opacity ${idx === 0 ? 'opacity-0' : 'opacity-60'}`}>
+              <ChevronLeft className="w-4 h-4 text-white" />
+            </div>
+            <div className={`rounded-full bg-black/20 p-1 transition-opacity ${idx === imgs.length - 1 ? 'opacity-0' : 'opacity-60'}`}>
+              <ChevronRight className="w-4 h-4 text-white" />
+            </div>
+          </div>
+        )}
 
         {/* NOUVEAU BANDEAU (carré + rectangle blanc, centré haut) */}
         <TopStatusTag kind={ribbonKind} />
