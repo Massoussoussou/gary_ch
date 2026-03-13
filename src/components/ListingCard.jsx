@@ -1,5 +1,5 @@
 // src/components/ListingCard.jsx
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Home, BedDouble, Ruler, Bath, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -91,20 +91,66 @@ export default function ListingCard({ item, size = "md" }) {
   const [idx, setIdx] = useState(start);
 
   const [paused, setPaused] = useState(false);
-  const touchRef = useRef({ startX: 0, startY: 0 });
 
-  const handleTouchStart = (e) => {
-    touchRef.current.startX = e.touches[0].clientX;
-    touchRef.current.startY = e.touches[0].clientY;
-  };
-  const handleTouchEnd = (e) => {
-    const dx = e.changedTouches[0].clientX - touchRef.current.startX;
-    const dy = e.changedTouches[0].clientY - touchRef.current.startY;
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-      if (dx < 0 && idx < imgs.length - 1) setIdx((p) => p + 1);
-      else if (dx > 0 && idx > 0) setIdx((p) => p - 1);
-    }
-  };
+  // --- Swipe tactile (vrai slide qui suit le doigt) ---
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+  const galleryRef = useRef(null);
+  const touchState = useRef({ startX: 0, startY: 0, locked: null });
+  const idxRef = useRef(start);
+  const swipeOffsetRef = useRef(0);
+
+  useEffect(() => { idxRef.current = idx; }, [idx]);
+
+  useEffect(() => {
+    const el = galleryRef.current;
+    if (!el || imgs.length <= 1) return;
+
+    const onStart = (e) => {
+      touchState.current = { startX: e.touches[0].clientX, startY: e.touches[0].clientY, locked: null };
+      setIsSwiping(true);
+    };
+
+    const onMove = (e) => {
+      const ts = touchState.current;
+      const dx = e.touches[0].clientX - ts.startX;
+      const dy = e.touches[0].clientY - ts.startY;
+
+      if (ts.locked === null && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+        ts.locked = Math.abs(dx) >= Math.abs(dy) ? "h" : "v";
+      }
+      if (ts.locked !== "h") return;
+
+      e.preventDefault();
+      const ci = idxRef.current;
+      let off = dx;
+      if ((ci === 0 && dx > 0) || (ci === imgs.length - 1 && dx < 0)) off = dx * 0.25;
+      swipeOffsetRef.current = off;
+      setSwipeOffset(off);
+    };
+
+    const onEnd = () => {
+      const off = swipeOffsetRef.current;
+      const ci = idxRef.current;
+      if (touchState.current.locked === "h") {
+        if (off < -50 && ci < imgs.length - 1) setIdx((p) => p + 1);
+        else if (off > 50 && ci > 0) setIdx((p) => p - 1);
+      }
+      swipeOffsetRef.current = 0;
+      setSwipeOffset(0);
+      setIsSwiping(false);
+    };
+
+    el.addEventListener("touchstart", onStart, { passive: true });
+    el.addEventListener("touchmove", onMove, { passive: false });
+    el.addEventListener("touchend", onEnd, { passive: true });
+
+    return () => {
+      el.removeEventListener("touchstart", onStart);
+      el.removeEventListener("touchmove", onMove);
+      el.removeEventListener("touchend", onEnd);
+    };
+  }, [imgs.length]);
 
   // mapping des tailles de carte
   const isS = size === "md";   // S
@@ -122,7 +168,6 @@ const isLast  = imgs.length > 0 ? idx === imgs.length - 1 : true;
 const handlePrev = (e) => {
   e.preventDefault(); e.stopPropagation();
   setIdx((p) => Math.max(p - 1, 0));
-  // évite l'état focus qui maintient l'affichage
   if (e.currentTarget && e.currentTarget.blur) e.currentTarget.blur();
 };
 const handleNext = (e) => {
@@ -151,17 +196,7 @@ useEffect(() => {
   const isSold = status === "vendu";
   const isInactive = isSold || status === "reserve" || status === "suspendu";
 
-  
-  const goPrev = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIdx((p) => (p - 1 + imgs.length) % imgs.length);
-  };
-  const goNext = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIdx((p) => (p + 1) % imgs.length);
-  };
+  const filterCls = isSold ? "grayscale" : isInactive ? "grayscale-[50%]" : "";
 
   const cardCls =
     `group card-hover relative block ${radiusCls} border border-zinc-200/70 bg-white shadow-sm ` +
@@ -171,33 +206,40 @@ useEffect(() => {
     <Link to={`/annonce/${item.id}`} className={cardCls} aria-label={item.titre}>
       {/* CLIPPER */}
       <div
+        ref={galleryRef}
         className={`relative aspect-[4/3] md:aspect-[16/10] ${radiusCls} overflow-hidden`}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
-        onTouchStart={imgs.length > 1 ? handleTouchStart : undefined}
-        onTouchEnd={imgs.length > 1 ? handleTouchEnd : undefined}
       >
-        {/* IMAGES (crossfade fluide — on pré-rend prev/current/next) */}
-        {(() => {
-          if (!imgs.length) return null;
-          const nearby = new Set([idx]);
-          if (idx > 0) nearby.add(idx - 1);
-          if (idx < imgs.length - 1) nearby.add(idx + 1);
-          const filterCls = isSold ? "grayscale" : isInactive ? "grayscale-[50%]" : "";
-          return [...nearby].map((i) => (
-            <img
-              key={i}
-              src={imgs[i]}
-              alt={i === idx ? (item.titre || "Annonce") : ""}
-              loading={i === start ? undefined : "lazy"}
-              decoding="async"
-              sizes="(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
-              className={`absolute inset-0 w-full h-full object-cover card-img transition-opacity duration-300 ease-out ${filterCls} ${i === idx ? "" : "opacity-0"}`}
-              style={isInactive && !isSold ? { opacity: i === idx ? 0.8 : 0 } : undefined}
-              draggable="false"
-            />
-          ));
-        })()}
+        {/* TRACK — slide horizontal */}
+        <div
+          className="absolute inset-0"
+          style={{
+            transform: `translateX(calc(${-idx * 100}% + ${swipeOffset}px))`,
+            transition: isSwiping ? "none" : "transform 300ms cubic-bezier(0.25, 1, 0.5, 1)",
+          }}
+        >
+          {imgs.map((src, i) => {
+            if (Math.abs(i - idx) > 2) return null;
+            return (
+              <img
+                key={i}
+                src={src}
+                alt={i === idx ? (item.titre || "Annonce") : ""}
+                loading={i === start ? undefined : "lazy"}
+                decoding="async"
+                sizes="(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
+                className={`absolute top-0 h-full w-full object-cover card-img ${filterCls}`}
+                style={{
+                  left: `${i * 100}%`,
+                  ...(isInactive && !isSold ? { opacity: 0.8 } : {}),
+                }}
+                draggable="false"
+              />
+            );
+          })}
+        </div>
+
         {/* Flèches transparentes mobile (swipe) */}
         {imgs.length > 1 && (
           <div className="absolute inset-y-0 left-0 right-0 z-30 flex items-center justify-between px-2 pointer-events-none md:hidden">
@@ -437,7 +479,7 @@ useEffect(() => {
                   {typeof item.sdb !== "undefined" && (
                     <span className="inline-flex items-center gap-1.5">
                       <Bath className="w-4 h-4" />
-                      {item.sdb ?? "-"} s.d’eau
+                      {item.sdb ?? "-"} s.d'eau
                     </span>
                   )}
                 </div>
@@ -494,7 +536,7 @@ useEffect(() => {
             {typeof item.sdb !== "undefined" && (
               <span className="inline-flex items-center gap-2">
                 <Bath className="w-5 h-5" />
-                {item.sdb ?? "-"} s.d’eau
+                {item.sdb ?? "-"} s.d'eau
               </span>
             )}
           </div>
