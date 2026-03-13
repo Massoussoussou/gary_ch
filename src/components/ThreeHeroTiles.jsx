@@ -59,7 +59,7 @@ export default function ThreeHeroTiles() {
       {/* IMAGE HERO DE FOND */}
       <div className="absolute inset-0">
         <img
-          src="/img/gary/01.jpg"
+          src="/img/gary/01.webp"
           alt="Propriété contemporaine avec piscine"
           width={1920}
           height={1080}
