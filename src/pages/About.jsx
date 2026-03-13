@@ -643,11 +643,11 @@ function HeroCirclesSection() {
 
 /* ========== Données "Ce qui nous distingue" ========== */
 const DISTINGUISH_POINTS = [
-  { main: "Chaque courtier possède plus de 10 ans d'expérience sur le marché immobilier local", detail: "Expertise confirmée, conseils stratégiques avisés", image: "/img/gary/02.jpg" },
-  { main: "Une approche marketing moderne et performante", detail: "Mise en valeur sur mesure, photos et vidéos professionnelles, diffusion stratégique", image: "/img/gary/03.jpg" },
-  { main: "Une communauté active et fidèle de plus de 40k followers", detail: null, image: "/img/gary/ExtBlv-8.jpg" },
-  { main: "Un réseau d'acheteurs qualifiés", detail: "Base de données de plus de 5000 clients acheteurs", image: "/img/gary/extver5.jpg" },
-  { main: "Un réseau de partenaires de confiance", detail: "Financements, notaires, avocats, architectes, …", image: "/img/gary/maison35.jpg" },
+  { main: "Chaque courtier possède plus de 10 ans d'expérience sur le marché immobilier local", detail: "Expertise confirmée, conseils stratégiques avisés", image: "/img/gary/02.webp" },
+  { main: "Une approche marketing moderne et performante", detail: "Mise en valeur sur mesure, photos et vidéos professionnelles, diffusion stratégique", image: "/img/gary/03.webp" },
+  { main: "Une communauté active et fidèle de plus de 40k followers", detail: null, image: "/img/gary/ExtBlv-8.webp" },
+  { main: "Un réseau d'acheteurs qualifiés", detail: "Base de données de plus de 5000 clients acheteurs", image: "/img/gary/extver5.webp" },
+  { main: "Un réseau de partenaires de confiance", detail: "Financements, notaires, avocats, architectes, …", image: "/img/gary/maison35.webp" },
 ];
 
 /* ========== Ce qui nous distingue — Zigzag SVG courbe + images alternées ========== */
@@ -1048,12 +1048,12 @@ function InfluencersSection() {
           >
             <div className="grid grid-cols-3 gap-1.5 overflow-hidden">
               {[
-                "/img/gary/01.jpg",
-                "/img/gary/02.jpg",
-                "/img/gary/03.jpg",
-                "/img/gary/ExtBlv-8.jpg",
-                "/img/gary/ExtBlv-9.jpg",
-                "/img/gary/extver5.jpg",
+                "/img/gary/01.webp",
+                "/img/gary/02.webp",
+                "/img/gary/03.webp",
+                "/img/gary/ExtBlv-8.webp",
+                "/img/gary/ExtBlv-9.webp",
+                "/img/gary/extver5.webp",
               ].map((src, i) => (
                 <a
                   key={i}

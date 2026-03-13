@@ -16,41 +16,41 @@ const constatCards = [
   {
     title: "Surexposition trop rapide",
     desc: "Un bien visible partout perd sa valeur perçue.",
-    img: "/img/gary/extcbg1.jpg",
+    img: "/img/gary/extcbg1.webp",
   },
   {
     title: "Signaux irréversibles",
     desc: "Le marché n'oublie pas un bien « qui ne se vend pas ».",
-    img: "/img/gary/extcbg21.jpg",
+    img: "/img/gary/extcbg21.webp",
   },
   {
     title: "Prix mal testés",
     desc: "Un prix public mal calibré crée un signal négatif durable.",
-    img: "/img/gary/exther9.jpg",
+    img: "/img/gary/exther9.webp",
   },
   {
     title: "Confusion stratégique",
     desc: "La visibilité n'est pas synonyme d'efficacité.",
-    mobileImg: "/img/gary/extlcy2.jpg",
+    mobileImg: "/img/gary/extlcy2.webp",
   },
 ];
 
 const philosophiePoints = [
   {
     text: "La publicité n'est jamais un réflexe",
-    img: "/img/gary/garymontalegre03.jpg",
+    img: "/img/gary/garymontalegre03.webp",
   },
   {
     text: <>L'information marché est un actif<br/>stratégique</>,
-    img: "/img/gary/garymontalegre29.jpg",
+    img: "/img/gary/garymontalegre29.webp",
   },
   {
     text: "La relation vendeur prime sur la pression",
-    img: "/img/gary/intgvac4.jpg",
+    img: "/img/gary/intgvac4.webp",
   },
   {
     text: "Chaque bien suit une stratégie sur mesure",
-    img: "/img/gary/intver25.jpg",
+    img: "/img/gary/intver25.webp",
   },
 ];
 
