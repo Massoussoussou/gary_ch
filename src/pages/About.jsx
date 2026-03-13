@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import team from "../data/team.json";
 import CTAFuturaGlow, { PhoneIcon } from "../components/cta/CTAFuturaGlow.jsx";
+import GoogleReviews from "../components/GoogleReviews.jsx";
 
 /* ========== Hook : détecte mobile (< 768px) ========== */
 function useIsMobile() {
@@ -1139,94 +1140,6 @@ function InfluencersSection() {
   );
 }
 
-/* ========== Section 6 — Avis Google (fond blanc) ========== */
-const GOOGLE_REVIEWS = [
-  {
-    name: "Sophie M.",
-    rating: 5,
-    text: "Une équipe au top ! Gregory et son équipe ont été d'une efficacité remarquable pour la vente de notre appartement. Résultat au-dessus de nos attentes. Je recommande vivement !",
-  },
-  {
-    name: "Laurent D.",
-    rating: 5,
-    text: "Professionnalisme et réactivité. Steven a su nous accompagner tout au long du processus de vente avec beaucoup de professionnalisme. La stratégie marketing mise en place était innovante et efficace.",
-  },
-  {
-    name: "Marie-Claire B.",
-    rating: 5,
-    text: "Expérience exceptionnelle avec GARY. Frédéric a trouvé des solutions là où d'autres avaient échoué. Sa connaissance du marché genevois est impressionnante. Merci pour tout !",
-  },
-  {
-    name: "Thomas R.",
-    rating: 5,
-    text: "GARY a vendu notre villa en un temps record et à un prix supérieur à notre estimation. Leur approche marketing sur les réseaux sociaux a fait toute la différence. Bravo à toute l'équipe !",
-  },
-];
-
-function GoogleReviewsSection() {
-  const [ref, seen] = useInViewOnce({ threshold: 0.15 });
-
-  return (
-    <section ref={ref} className="relative z-10 bg-white py-20 md:py-28">
-      <div className="max-w-[1200px] mx-auto px-6 md:px-12">
-        {/* Trait décoratif */}
-        <div className="flex justify-center mb-6">
-          <div
-            className="h-[2px] bg-[#FF4A3E]"
-            style={{
-              width: seen ? "60px" : "0px",
-              transition: "width 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
-            }}
-          />
-        </div>
-
-        <h3
-          className="text-center font-serif text-3xl md:text-5xl tracking-wide mb-14 md:mb-20 text-gray-900"
-          style={{
-            opacity: seen ? 1 : 0,
-            transform: seen ? "translateY(0)" : "translateY(15px)",
-            transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
-          }}
-        >
-          Ce que nos clients <span className="text-[#FF4A3E]">pensent</span> de nous
-        </h3>
-
-        {/* Avis clients */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {GOOGLE_REVIEWS.map((review, i) => (
-            <div
-              key={i}
-              className="bg-white border border-gray-100 shadow-md p-6 md:p-8"
-              style={{
-                opacity: seen ? 1 : 0,
-                transform: seen ? "translateY(0)" : "translateY(15px)",
-                transition: `opacity 0.6s ease-out ${0.2 + i * 0.12}s, transform 0.6s ease-out ${0.2 + i * 0.12}s`,
-              }}
-            >
-              {/* Étoiles */}
-              <div className="flex gap-1 mb-3">
-                {Array.from({ length: review.rating }).map((_, j) => (
-                  <svg key={j} className="w-5 h-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-
-              {/* Texte */}
-              <p className="text-gray-700 text-[15px] md:text-base leading-relaxed mb-4 italic">
-                &ldquo;{review.text}&rdquo;
-              </p>
-
-              {/* Nom */}
-              <p className="text-gray-900 font-semibold text-sm">{review.name}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 /* ========== Section 8 — CTA Final (vidéo plein écran au scroll) ========== */
 function CTASection() {
   const wrapperRef = useRef(null);
@@ -1811,7 +1724,7 @@ export default function About() {
         <InfluencersSection />
 
         {/* ====== SECTION 6 — Avis Google (fond blanc) ====== */}
-        <GoogleReviewsSection />
+        <GoogleReviews />
 
         {/* ====== SECTION 7 — Partenaires (fond beige) ====== */}
         <SponsorsSection />
