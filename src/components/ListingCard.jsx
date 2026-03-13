@@ -243,8 +243,8 @@ useEffect(() => {
         {/* Flèches mobile (swipe) */}
         {imgs.length > 1 && (
           <div className="absolute inset-y-0 left-0 right-0 z-30 flex items-center justify-between px-2 pointer-events-none md:hidden">
-            <ChevronLeft strokeWidth={1} className={`w-10 h-14 text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.6)] transition-opacity ${idx === 0 ? 'opacity-0' : 'opacity-100'}`} />
-            <ChevronRight strokeWidth={1} className={`w-10 h-14 text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.6)] transition-opacity ${idx === imgs.length - 1 ? 'opacity-0' : 'opacity-100'}`} />
+            <ChevronLeft strokeWidth={1.5} className={`w-14 h-20 text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.6)] transition-opacity animate-[nudge-left_1.5s_ease-in-out_infinite] ${idx === 0 ? 'opacity-0' : 'opacity-100'}`} />
+            <ChevronRight strokeWidth={1.5} className={`w-14 h-20 text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.6)] transition-opacity animate-[nudge-right_1.5s_ease-in-out_infinite] ${idx === imgs.length - 1 ? 'opacity-0' : 'opacity-100'}`} />
           </div>
         )}
 
