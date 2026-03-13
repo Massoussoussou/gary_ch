@@ -70,17 +70,7 @@ export default function ListingCardSold({
           </span>
         </div>
 
-        {/* Texte centre (ville + type) */}
-        <div className="absolute inset-0 grid place-items-center px-4 text-center pointer-events-none">
-          <div className="drop-shadow-[0_2px_12px_rgba(0,0,0,0.35)]">
-            <div className="text-white font-serif uppercase tracking-[0.18em] text-[22px] md:text-[26px]">
-              {city || it.titre || "Localisation confidentielle"}
-            </div>
-            <div className="mt-1 text-white/90 text-[13px] md:text-[14px] tracking-wide">
-              {subtitle}
-            </div>
-          </div>
-        </div>
+        {/* Texte centre supprimé — les photos contiennent déjà les titres */}
 
         {/* Badge prix en bas gauche (masqué pour les biens vendus) */}
         {mode !== "sold" && (
