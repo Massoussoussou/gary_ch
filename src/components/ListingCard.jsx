@@ -240,15 +240,11 @@ useEffect(() => {
           })}
         </div>
 
-        {/* Flèches transparentes mobile (swipe) */}
+        {/* Flèches mobile (swipe) */}
         {imgs.length > 1 && (
           <div className="absolute inset-y-0 left-0 right-0 z-30 flex items-center justify-between px-2 pointer-events-none md:hidden">
-            <div className={`rounded-full bg-black/20 p-1 transition-opacity ${idx === 0 ? 'opacity-0' : 'opacity-60'}`}>
-              <ChevronLeft className="w-4 h-4 text-white" />
-            </div>
-            <div className={`rounded-full bg-black/20 p-1 transition-opacity ${idx === imgs.length - 1 ? 'opacity-0' : 'opacity-60'}`}>
-              <ChevronRight className="w-4 h-4 text-white" />
-            </div>
+            <ChevronLeft strokeWidth={1} className={`w-10 h-14 text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.6)] transition-opacity ${idx === 0 ? 'opacity-0' : 'opacity-100'}`} />
+            <ChevronRight strokeWidth={1} className={`w-10 h-14 text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.6)] transition-opacity ${idx === imgs.length - 1 ? 'opacity-0' : 'opacity-100'}`} />
           </div>
         )}
 
