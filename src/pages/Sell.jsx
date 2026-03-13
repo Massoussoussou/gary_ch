@@ -16,41 +16,41 @@ const constatCards = [
   {
     title: "Surexposition trop rapide",
     desc: "Un bien visible partout perd sa valeur perçue.",
-    img: "https://images.pexels.com/photos/2102587/pexels-photo-2102587.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    img: "/img/gary/extcbg1.jpg",
   },
   {
     title: "Signaux irréversibles",
     desc: "Le marché n'oublie pas un bien « qui ne se vend pas ».",
-    img: "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    img: "/img/gary/extcbg21.jpg",
   },
   {
     title: "Prix mal testés",
     desc: "Un prix public mal calibré crée un signal négatif durable.",
-    img: "https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    img: "/img/gary/exther9.jpg",
   },
   {
     title: "Confusion stratégique",
     desc: "La visibilité n'est pas synonyme d'efficacité.",
-    mobileImg: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    mobileImg: "/img/gary/extlcy2.jpg",
   },
 ];
 
 const philosophiePoints = [
   {
     text: "La publicité n'est jamais un réflexe",
-    img: "https://images.pexels.com/photos/2119714/pexels-photo-2119714.jpeg?auto=compress&cs=tinysrgb&w=600",
+    img: "/img/gary/garymontalegre03.jpg",
   },
   {
     text: <>L'information marché est un actif<br/>stratégique</>,
-    img: "https://images.pexels.com/photos/2102587/pexels-photo-2102587.jpeg?auto=compress&cs=tinysrgb&w=600",
+    img: "/img/gary/garymontalegre29.jpg",
   },
   {
     text: "La relation vendeur prime sur la pression",
-    img: "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=600",
+    img: "/img/gary/intgvac4.jpg",
   },
   {
     text: "Chaque bien suit une stratégie sur mesure",
-    img: "https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg?auto=compress&cs=tinysrgb&w=600",
+    img: "/img/gary/intver25.jpg",
   },
 ];
 
@@ -135,7 +135,7 @@ function ConstatSection() {
           <div className="pl-10 lg:pl-16 pt-20 lg:pt-28 pb-24 lg:pb-32 overflow-hidden">
             <div ref={imgColRef} className="will-change-transform">
               {/* Spacer = titre sticky height + premier mt */}
-              <div style={{ height: `calc(${TITLE_H} + 18vh)` }} />
+              <div style={{ height: "0px" }} />
 
               {constatCards.filter((c) => c.img).map((card, i) => (
                 <div key={i} className="mt-[14vh] first:mt-0">

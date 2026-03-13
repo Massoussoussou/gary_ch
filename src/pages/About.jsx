@@ -643,11 +643,11 @@ function HeroCirclesSection() {
 
 /* ========== Données "Ce qui nous distingue" ========== */
 const DISTINGUISH_POINTS = [
-  { main: "Chaque courtier possède plus de 10 ans d'expérience sur le marché immobilier local", detail: "Expertise confirmée, conseils stratégiques avisés", image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900&h=600&fit=crop&q=80" },
-  { main: "Une approche marketing moderne et performante", detail: "Mise en valeur sur mesure, photos et vidéos professionnelles, diffusion stratégique", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900&h=600&fit=crop&q=80" },
-  { main: "Une communauté active et fidèle de plus de 40k followers", detail: null, image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=900&h=600&fit=crop&q=80" },
-  { main: "Un réseau d'acheteurs qualifiés", detail: "Base de données de plus de 5000 clients acheteurs", image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=900&h=600&fit=crop&q=80" },
-  { main: "Un réseau de partenaires de confiance", detail: "Financements, notaires, avocats, architectes, …", image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=900&h=600&fit=crop&q=80" },
+  { main: "Chaque courtier possède plus de 10 ans d'expérience sur le marché immobilier local", detail: "Expertise confirmée, conseils stratégiques avisés", image: "/img/gary/02.jpg" },
+  { main: "Une approche marketing moderne et performante", detail: "Mise en valeur sur mesure, photos et vidéos professionnelles, diffusion stratégique", image: "/img/gary/03.jpg" },
+  { main: "Une communauté active et fidèle de plus de 40k followers", detail: null, image: "/img/gary/ExtBlv-8.jpg" },
+  { main: "Un réseau d'acheteurs qualifiés", detail: "Base de données de plus de 5000 clients acheteurs", image: "/img/gary/extver5.jpg" },
+  { main: "Un réseau de partenaires de confiance", detail: "Financements, notaires, avocats, architectes, …", image: "/img/gary/maison35.jpg" },
 ];
 
 /* ========== Ce qui nous distingue — Zigzag SVG courbe + images alternées ========== */
@@ -1048,12 +1048,12 @@ function InfluencersSection() {
           >
             <div className="grid grid-cols-3 gap-1.5 overflow-hidden">
               {[
-                "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=400&fit=crop&q=80",
-                "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=400&fit=crop&q=80",
-                "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=400&fit=crop&q=80",
-                "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&h=400&fit=crop&q=80",
-                "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400&h=400&fit=crop&q=80",
-                "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=400&fit=crop&q=80",
+                "/img/gary/01.jpg",
+                "/img/gary/02.jpg",
+                "/img/gary/03.jpg",
+                "/img/gary/ExtBlv-8.jpg",
+                "/img/gary/ExtBlv-9.jpg",
+                "/img/gary/extver5.jpg",
               ].map((src, i) => (
                 <a
                   key={i}

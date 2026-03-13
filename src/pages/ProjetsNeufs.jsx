@@ -22,7 +22,7 @@ export default function ProjetNeuf() {
       name: "Découvrez nos projets",
       tagline: "Des lieux d'exception, une signature GARY.",
       cover:
-        "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2000&auto=format&fit=crop",
+        "/img/gary/ExtBlv-9.jpg",
     };
     const coming = { id: "__coming__", kind: "coming" };
     return [intro, ...data, coming];
@@ -369,7 +369,7 @@ function CTAEnrollButton(){
       className="proj-bg"
       style={{
         backgroundImage:
-          "url(https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2000&auto=format&fit=crop)",
+          "url(/img/gary/ExtVer-6.jpg)",
       }}
     />
     {/* Voile blanc identique aux heros */}
