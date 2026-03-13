@@ -63,7 +63,7 @@ export default function ThreeHeroTiles() {
 
       {/* CONTENU */}
       <div className="relative z-10 h-full w-full flex flex-col justify-center sm:block">
-        <div className="grid w-full grid-rows-3 border-y-0 sm:border-y-[1.5px] border-white/60 divide-y-0 sm:divide-y-[1.5px] divide-white/45 h-[78%] sm:h-full">
+        <div className="grid w-full grid-rows-3 gap-6 sm:gap-0 border-y-0 sm:border-y-[1.5px] border-white/60 divide-y-0 sm:divide-y-[1.5px] divide-white/45 h-[90%] sm:h-full">
           {bands.map((band, i) => (
             <Link
               key={band.id}
