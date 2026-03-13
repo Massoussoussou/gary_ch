@@ -71,6 +71,8 @@ function LogoWithHoverAnim() {
       <img
         src="/Logo/logo-gary-orange.png"
         alt="GARY"
+        width={138}
+        height={36}
         className={`block ${showVideo ? 'invisible' : 'visible'}`}
         style={{ height: S.logoH, width: 'auto' }}
         decoding="async"

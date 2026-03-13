@@ -61,6 +61,9 @@ export default function ThreeHeroTiles() {
         <img
           src="/bg-house.webp"
           alt="Propriété contemporaine avec piscine"
+          width={1920}
+          height={1080}
+          fetchpriority="high"
           className={`
             h-full w-full object-cover
             transform transition-transform duration-[1200ms] ease-out
