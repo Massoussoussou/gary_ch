@@ -176,9 +176,25 @@ REALFORCE_PUBLIC_DEFAULT_LOCALE=fr
 - Fichiers les plus lourds restants : FiltersBarCompact.jsx (891), FiltersBar.jsx (807), CTAFuturaGlow.jsx (594), ListingCard.jsx (534)
 
 ### Performances du site
-- Audit général des performances (Lighthouse, bundle size)
-- JS bundle actuel : 595 kB (warning Vite > 500 kB) → envisager code-splitting
-- Optimiser les images, les vidéos
+- ✅ **Lighthouse 96/100/96/100** (13 mars 2026) — LCP passé de 6.3s à 1.1s
+- ✅ Images converties en WebP (81 MB → 7 MB)
+- ✅ Google Fonts réduit de 10 à 3 familles, rendu non-bloquant
+- ✅ Failles de sécurité corrigées (`npm audit fix` — 6/8 résolues)
+- ✅ Dépendances mineures mises à jour (framer-motion, lenis, postcss, autoprefixer)
+- **Règle : toute nouvelle image doit être en WebP** (convertir avec sharp)
+
+### 🔴 Migrations majeures à planifier (breaking changes)
+**À faire quand on aura du temps — chaque migration peut casser des choses, tester à fond après.**
+
+| Package | Actuel | Cible | Difficulté | Notes |
+|---------|--------|-------|------------|-------|
+| **Vite** | 5.4 | 8.0 | Élevée | Corrige les 2 failles restantes (esbuild). Revoir config + plugins |
+| **React** | 18.3 | 19.x | Élevée | Nouvelles APIs, changements Suspense, hooks modifiés |
+| **Tailwind CSS** | 3.4 | 4.x | Moyenne | Nouvelle syntaxe config, utility classes renommées |
+| **react-router-dom** | 6.30 | 7.x | Moyenne | Nouvelle API loaders/actions, changements de routing |
+
+**Ordre recommandé :** Vite → Tailwind → react-router-dom → React (du moins au plus risqué)
+**Méthode :** une migration à la fois, sur une branche dédiée, build + test complet avant merge
 
 ### Filtres des biens immobiliers
 - Faire fonctionner correctement les filtres sur la page acheter/catalogue

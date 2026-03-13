@@ -155,6 +155,7 @@ function CityAutosuggest({ options = [], value, onChange, placeholder = "Ville" 
           className="w-full outline-none text-[15px] md:text-[16px]"
           value={query}
           placeholder={placeholder}
+          aria-label="Rechercher une ville"
           onFocus={() => setOpen(true)}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -568,6 +569,7 @@ export default function FiltersBar({
           <input
             inputMode="numeric"
             placeholder="Min CHF"
+            aria-label="Budget minimum en CHF"
             value={priceMin}
             onChange={(e) => setPriceMin(e.target.value)}
             className="h-12 w-full border border-neutral-200 bg-white px-4 text-[15px]"
@@ -575,6 +577,7 @@ export default function FiltersBar({
           <input
             inputMode="numeric"
             placeholder="Max CHF"
+            aria-label="Budget maximum en CHF"
             value={priceMax}
             onChange={(e) => setPriceMax(e.target.value)}
             className="h-12 w-full border border-neutral-200 bg-white px-4 text-[15px]"
@@ -598,6 +601,7 @@ export default function FiltersBar({
           <input
             inputMode="numeric"
             placeholder="Min m²"
+            aria-label="Surface minimum en m²"
             value={surfaceMin}
             onChange={(e) => setSurfaceMin(e.target.value)}
             className="h-12 w-full border border-neutral-200 bg-white px-4 text-[15px]"
@@ -605,6 +609,7 @@ export default function FiltersBar({
           <input
             inputMode="numeric"
             placeholder="Max m²"
+            aria-label="Surface maximum en m²"
             value={surfaceMax}
             onChange={(e) => setSurfaceMax(e.target.value)}
             className="h-12 w-full border border-neutral-200 bg-white px-4 text-[15px]"
@@ -855,6 +860,7 @@ export default function FiltersBar({
                     <input
                       inputMode="numeric"
                       placeholder="Min"
+                      aria-label="Budget minimum"
                       value={priceMin}
                       onChange={(e) => setPriceMin(e.target.value)}
                       className="h-12 w-full border border-line/70 bg-white px-3"
@@ -863,6 +869,7 @@ export default function FiltersBar({
                       <input
                         inputMode="numeric"
                         placeholder="Max"
+                        aria-label="Budget maximum"
                         value={priceMax}
                         onChange={(e) => setPriceMax(e.target.value)}
                         className="h-12 w-full border border-line/70 bg-white px-3"
@@ -918,6 +925,7 @@ export default function FiltersBar({
                     <input
                       inputMode="numeric"
                       placeholder="Min (m²)"
+                      aria-label="Surface minimum en m²"
                       value={surfaceMin}
                       onChange={(e) => setSurfaceMin(e.target.value)}
                       className="h-12 w-full border border-line/70 bg-white px-3"
@@ -925,6 +933,7 @@ export default function FiltersBar({
                     <input
                       inputMode="numeric"
                       placeholder="Max (m²)"
+                      aria-label="Surface maximum en m²"
                       value={surfaceMax}
                       onChange={(e) => setSurfaceMax(e.target.value)}
                       className="h-12 w-full border border-line/70 bg-white px-3"

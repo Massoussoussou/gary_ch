@@ -1,7 +1,8 @@
 // src/components/cards/WeekCardV1.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 /* ---------------- utils ---------------- */
 function formatCHF(n) {
@@ -76,17 +77,51 @@ Panel.propTypes = { item: PropTypes.object.isRequired };
 
 function CompactCard({ item }) {
   const imgs = Array.isArray(item.images) ? item.images : [];
-  const idx = Number.isInteger(item.heroIdx) && item.heroIdx >= 0 && item.heroIdx < imgs.length ? item.heroIdx : 0;
-  const hero = imgs[idx];
+  const startIdx = Number.isInteger(item.heroIdx) && item.heroIdx >= 0 && item.heroIdx < imgs.length ? item.heroIdx : 0;
+  const [idx, setIdx] = useState(startIdx);
   const badge = badgeFrom(item);
+  const touchRef = useRef({ startX: 0, startY: 0 });
+
+  const onTouchStart = (e) => { touchRef.current = { startX: e.touches[0].clientX, startY: e.touches[0].clientY }; };
+  const onTouchEnd = (e) => {
+    const dx = e.changedTouches[0].clientX - touchRef.current.startX;
+    const dy = e.changedTouches[0].clientY - touchRef.current.startY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      if (dx < 0 && idx < imgs.length - 1) setIdx((p) => p + 1);
+      else if (dx > 0 && idx > 0) setIdx((p) => p - 1);
+    }
+  };
+
+  const nearby = new Set([idx]);
+  if (idx > 0) nearby.add(idx - 1);
+  if (idx < imgs.length - 1) nearby.add(idx + 1);
 
   return (
     <article className="relative isolate bg-white border border-neutral-200 shadow-[0_10px_30px_rgba(0,0,0,0.06)] overflow-hidden">
-      <div className="relative aspect-[4/3] md:aspect-[5/4] overflow-hidden">
-        {hero
-          ? <img src={hero} alt={item.titre || "Bien en vedette"} className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-[1.03] ${item.vendu ? "grayscale" : ""}`} loading="lazy" />
-          : <div className="w-full h-full bg-neutral-200" />
-        }
+      <div
+        className="relative aspect-[4/3] md:aspect-[5/4] overflow-hidden"
+        onTouchStart={imgs.length > 1 ? onTouchStart : undefined}
+        onTouchEnd={imgs.length > 1 ? onTouchEnd : undefined}
+      >
+        {imgs.length > 0 ? [...nearby].map((i) => (
+          <img
+            key={i}
+            src={imgs[i]}
+            alt={i === idx ? (item.titre || "Bien en vedette") : ""}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ease-out ${i === idx ? "" : "opacity-0"} ${item.vendu ? "grayscale" : ""}`}
+            loading="lazy"
+          />
+        )) : <div className="w-full h-full bg-neutral-200" />}
+        {imgs.length > 1 && (
+          <div className="absolute inset-y-0 left-0 right-0 z-30 flex items-center justify-between px-2 pointer-events-none md:hidden">
+            <div className={`rounded-full bg-black/20 p-1 transition-opacity ${idx === 0 ? 'opacity-0' : 'opacity-60'}`}>
+              <ChevronLeft className="w-4 h-4 text-white" />
+            </div>
+            <div className={`rounded-full bg-black/20 p-1 transition-opacity ${idx === imgs.length - 1 ? 'opacity-0' : 'opacity-60'}`}>
+              <ChevronRight className="w-4 h-4 text-white" />
+            </div>
+          </div>
+        )}
         {badge && (
           <div className="absolute top-5 md:top-6 left-0 z-20 pointer-events-none">
             <span className="inline-block px-3.5 py-1.5 uppercase tracking-[0.20em] text-[11px] md:text-[12px] font-semibold text-white shadow" style={{ backgroundColor: "#FF4A3E" }}>
@@ -146,9 +181,25 @@ export default function WeekCardV1({
     () => (Array.isArray(item.images) ? item.images.filter(Boolean) : []),
     [item.images]
   );
-  const idx = Number.isInteger(item.heroIdx) && item.heroIdx >= 0 && item.heroIdx < imgs.length ? item.heroIdx : 0;
-  const hero = imgs[idx];
+  const startIdx = Number.isInteger(item.heroIdx) && item.heroIdx >= 0 && item.heroIdx < imgs.length ? item.heroIdx : 0;
+  const [imgIdx, setImgIdx] = useState(startIdx);
+  const hero = imgs[imgIdx];
   const badge = badgeFrom(item);
+  const splitTouchRef = useRef({ startX: 0, startY: 0 });
+
+  const onSplitTouchStart = (e) => { splitTouchRef.current = { startX: e.touches[0].clientX, startY: e.touches[0].clientY }; };
+  const onSplitTouchEnd = (e) => {
+    const dx = e.changedTouches[0].clientX - splitTouchRef.current.startX;
+    const dy = e.changedTouches[0].clientY - splitTouchRef.current.startY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      if (dx < 0 && imgIdx < imgs.length - 1) setImgIdx((p) => p + 1);
+      else if (dx > 0 && imgIdx > 0) setImgIdx((p) => p - 1);
+    }
+  };
+
+  const splitNearby = new Set([imgIdx]);
+  if (imgIdx > 0) splitNearby.add(imgIdx - 1);
+  if (imgIdx < imgs.length - 1) splitNearby.add(imgIdx + 1);
 
   const reduceMotion = useMemo(() => {
     if (typeof window === "undefined") return false;
@@ -216,11 +267,30 @@ export default function WeekCardV1({
         <div className="grid grid-cols-12 gap-8 items-center">
           {/* image élargie à gauche */}
           <div className="col-span-12 md:col-span-8">
-            <div className="relative aspect-[16/9] md:aspect-[5/4] overflow-hidden">
-              {hero
-                ? <img src={hero} alt={item.titre || "Bien de la semaine"} className="absolute inset-0 w-full h-full object-cover" />
-                : <div className="w-full h-full bg-neutral-200" />
-              }
+            <div
+              className="relative aspect-[16/9] md:aspect-[5/4] overflow-hidden"
+              onTouchStart={imgs.length > 1 ? onSplitTouchStart : undefined}
+              onTouchEnd={imgs.length > 1 ? onSplitTouchEnd : undefined}
+            >
+              {imgs.length > 0 ? [...splitNearby].map((i) => (
+                <img
+                  key={i}
+                  src={imgs[i]}
+                  alt={i === imgIdx ? (item.titre || "Bien de la semaine") : ""}
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ease-out ${i === imgIdx ? "" : "opacity-0"}`}
+                  loading="lazy"
+                />
+              )) : <div className="w-full h-full bg-neutral-200" />}
+              {imgs.length > 1 && (
+                <div className="absolute inset-y-0 left-0 right-0 z-30 flex items-center justify-between px-2 pointer-events-none md:hidden">
+                  <div className={`rounded-full bg-black/20 p-1 transition-opacity ${imgIdx === 0 ? 'opacity-0' : 'opacity-60'}`}>
+                    <ChevronLeft className="w-4 h-4 text-white" />
+                  </div>
+                  <div className={`rounded-full bg-black/20 p-1 transition-opacity ${imgIdx === imgs.length - 1 ? 'opacity-0' : 'opacity-60'}`}>
+                    <ChevronRight className="w-4 h-4 text-white" />
+                  </div>
+                </div>
+              )}
               {badge && (
                 <div className="absolute top-5 md:top-6 left-0 z-20 pointer-events-none">
                   <span className="inline-block px-3.5 py-1.5 uppercase tracking-[0.20em] text-[11px] md:text-[12px] font-semibold text-white shadow" style={{ backgroundColor: "#FF4A3E" }}>
