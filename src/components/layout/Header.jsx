@@ -227,13 +227,13 @@ export default function Header(){
                 </NavLink>
                 {/* Dropdown */}
                 <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 opacity-0 invisible group-hover/dd:opacity-100 group-hover/dd:visible transition-all duration-200 z-50">
-                  <div className="bg-white rounded-lg shadow-lg border border-black/5 py-2 min-w-[160px]">
+                  <div className="bg-white rounded-lg shadow-lg border border-black/5 py-3 min-w-[200px]">
                     {dropdown.map((sub) => (
                       <NavLink
                         key={sub.to}
                         to={sub.to}
                         className={({ isActive }) =>
-                          'block px-5 py-2.5 text-[13px] tracking-[0.05em] transition-colors duration-150 ' +
+                          'block px-6 py-3 text-[14px] tracking-[0.05em] transition-colors duration-150 ' +
                           (isActive ? 'text-[#FF4A3E]' : 'text-neutral-700 hover:text-[#FF4A3E] hover:bg-neutral-50')
                         }
                       >
