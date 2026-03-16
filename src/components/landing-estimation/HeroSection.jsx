@@ -32,7 +32,7 @@ function HeroContent({ children }) {
           <div className="bg-white/60 backdrop-blur-md shadow-[0_22px_70px_-30px_rgba(0,0,0,0.25)] flex flex-col">
 
             {/* Text content */}
-            <div className="px-7 sm:px-10 pt-10 sm:pt-12 pb-4 text-center md:text-left">
+            <div className="px-7 sm:px-10 pt-10 sm:pt-12 pb-8 sm:pb-10 text-center md:text-left">
               {/* Eyebrow */}
               <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-neutral-600 mb-3">
                 Estimation immobilière
@@ -52,21 +52,6 @@ function HeroContent({ children }) {
               </p>
             </div>
 
-            {/* Stats — pleine largeur, bas de la tuile */}
-            <div className="mt-auto border-t border-neutral-200/80 px-7 sm:px-10 py-6 sm:py-8 flex justify-between">
-              <div className="text-center">
-                <span className="font-serif text-[28px] sm:text-[32px] font-bold text-[#FF4A3E] leading-none">3</span>
-                <span className="block text-[11px] text-neutral-500 mt-2">Phases de vente</span>
-              </div>
-              <div className="text-center">
-                <span className="font-serif text-[28px] sm:text-[32px] font-bold text-[#FF4A3E] leading-none">48h</span>
-                <span className="block text-[11px] text-neutral-500 mt-2">Estimation détaillée</span>
-              </div>
-              <div className="text-center">
-                <span className="font-serif text-[28px] sm:text-[32px] font-bold text-[#FF4A3E] leading-none">100%</span>
-                <span className="block text-[11px] text-neutral-500 mt-2">Gratuit & sans engagement</span>
-              </div>
-            </div>
 
           </div>
         </div>

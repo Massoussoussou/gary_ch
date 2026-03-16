@@ -1,77 +1,156 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 const phases = [
   {
-    num: "Phase 1",
-    big: "01",
+    num: "01",
     title: "Off-Market",
-    desc: "Votre bien est présenté exclusivement à un cercle restreint d'acquéreurs qualifiés. La rareté crée la valeur et les premières offres arrivent avant toute publication.",
+    desc: "Votre bien est présenté exclusivement à un cercle restreint d'acquéreurs qualifiés. La rareté crée la valeur.",
     tag: "Crée l'exclusivité",
+    img: "/img/gary/garymontalegre03.webp",
   },
   {
-    num: "Phase 2",
-    big: "02",
+    num: "02",
     title: "Coming Soon",
-    desc: "La visibilité s'élargit progressivement. Les acquéreurs qui n'ont pas agi en phase 1 réalisent que la fenêtre d'opportunité se referme.",
+    desc: "La visibilité s'élargit progressivement. Les acquéreurs réalisent que la fenêtre se referme.",
     tag: "Amplifie la demande",
+    img: "/img/gary/ExtVer-6.webp",
   },
   {
-    num: "Phase 3",
-    big: "03",
+    num: "03",
     title: "Public",
-    desc: "Publication sur tous les portails. Votre bien arrive sur le marché avec un historique de demandes déjà constitué et une dynamique de prix favorable.",
+    desc: "Publication sur tous les portails avec un historique de demandes et une dynamique de prix favorable.",
     tag: "Maximise le prix",
+    img: "/img/gary/ExtBlv-8.webp",
   },
 ];
 
 export default function MethodSection() {
-  const scrollToForm = (e) => {
-    e.preventDefault();
-    const el = document.getElementById("form");
+  const headerRef = useRef(null);
+  const [headerVisible, setHeaderVisible] = useState(false);
+  const cardRefs = useRef([]);
+  const [revealed, setRevealed] = useState([false, false, false]);
+
+  useEffect(() => {
+    const el = headerRef.current;
     if (!el) return;
-    if (window.__lenis) {
-      window.__lenis.scrollTo(0);
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) setHeaderVisible(true); },
+      { threshold: 0.2 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const observers = cardRefs.current.map((el, i) => {
+      if (!el) return null;
+      const obs = new IntersectionObserver(
+        ([e]) => {
+          if (e.isIntersecting) {
+            setRevealed((prev) => {
+              const next = [...prev];
+              next[i] = true;
+              return next;
+            });
+          }
+        },
+        { threshold: 0.2 }
+      );
+      obs.observe(el);
+      return obs;
+    });
+    return () => observers.forEach((o) => o?.disconnect());
+  }, []);
 
   return (
-    <section className="method">
-      <div className="method-inner">
-        <div className="method-header">
-          <div className="method-eyebrow">Notre approche exclusive</div>
-          <h2>Une stratégie en 3 phases pour vendre au meilleur prix</h2>
-          <p>
-            La plupart des agences publient votre bien immédiatement sur tous les
-            portails. Nous faisons l'inverse : une diffusion séquentielle qui crée
-            l'urgence à chaque étape.
+    <section className="bg-white py-24 md:py-36 overflow-hidden">
+      <div className="max-w-[1300px] mx-auto px-5 md:px-8">
+        {/* Header */}
+        <div
+          ref={headerRef}
+          className="max-w-[650px] mb-16 md:mb-24"
+          style={{
+            opacity: headerVisible ? 1 : 0,
+            transform: headerVisible ? "translateY(0)" : "translateY(25px)",
+            transition: "opacity 0.7s ease, transform 0.7s ease",
+          }}
+        >
+          <p className="text-[12px] uppercase tracking-[0.3em] text-[#FF4A3E] mb-4">
+            Notre approche exclusive
+          </p>
+          <h2 className="font-serif text-[clamp(2.2rem,4.5vw,3.6rem)] tracking-[-0.03em] leading-[1.05] text-[#1A1A1A] mb-5">
+            Une stratégie en 3 phases pour vendre au meilleur prix
+            <span className="text-[#FF4A3E]">.</span>
+          </h2>
+          <p className="text-[1.05rem] text-neutral-500 leading-relaxed">
+            La plupart des agences publient immédiatement. Nous faisons
+            l'inverse : une diffusion séquentielle qui crée l'urgence à chaque
+            étape.
           </p>
         </div>
-        <div className="phases">
-          {phases.map((p) => (
-            <div className="phase-card" key={p.big}>
-              <div className="phase-big-num">{p.big}</div>
-              <div className="phase-num-wrap">
-                <span className="phase-num">{p.num}</span>
-                <div className="phase-num-line" />
+
+        {/* Triptych — three vertical cards */}
+        <div className="grid md:grid-cols-3 gap-5 md:gap-6">
+          {phases.map((p, i) => (
+            <div
+              key={p.num}
+              ref={(el) => (cardRefs.current[i] = el)}
+              className="group"
+              style={{
+                opacity: revealed[i] ? 1 : 0,
+                transform: revealed[i] ? "translateY(0)" : "translateY(50px)",
+                transition: `opacity 0.8s ease ${i * 0.15}s, transform 0.8s cubic-bezier(0.22,1,0.36,1) ${i * 0.15}s`,
+              }}
+            >
+              {/* Image */}
+              <div className="relative aspect-[4/3] md:aspect-[3/4] overflow-hidden">
+                <img
+                  src={p.img}
+                  alt={p.title}
+                  className="absolute inset-0 w-full h-full object-cover scale-100 group-hover:scale-[1.04]"
+                  style={{
+                    filter: revealed[i] ? "grayscale(0)" : "grayscale(1)",
+                    transition: `filter 1.5s ease ${i * 0.15 + 0.3}s, transform 0.7s ease-out`,
+                  }}
+                  loading="lazy"
+                />
+                {/* Dark gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/70 via-[#1A1A1A]/10 to-transparent" />
+
+                {/* Phase badge */}
+                <div className="absolute top-5 left-5">
+                  <span className="inline-block bg-white/90 backdrop-blur-sm text-[#1A1A1A] text-[0.65rem] font-semibold uppercase tracking-[0.18em] px-3 py-1.5">
+                    Phase {p.num}
+                  </span>
+                </div>
+
+                {/* Large number watermark */}
+                <span className="absolute bottom-2 right-4 font-serif text-[5rem] md:text-[6.5rem] text-white/[0.1] leading-none select-none pointer-events-none">
+                  {p.num}
+                </span>
+
+                {/* Title on image */}
+                <div className="absolute bottom-5 left-5 right-5">
+                  <h3 className="font-serif text-[1.6rem] md:text-[1.9rem] text-white tracking-[-0.01em] leading-[1.1]">
+                    {p.title}
+                  </h3>
+                </div>
               </div>
-              <h3>{p.title}</h3>
-              <p>{p.desc}</p>
-              <div className="phase-tag">{p.tag}</div>
+
+              {/* Content below */}
+              <div className="pt-5 pb-3">
+                <p className="text-[0.95rem] text-neutral-600 leading-relaxed mb-4">
+                  {p.desc}
+                </p>
+                <span className="inline-flex items-center gap-2.5 text-[0.78rem] text-[#FF4A3E] font-medium tracking-[0.02em]">
+                  <span className="w-5 h-px bg-[#FF4A3E]" />
+                  {p.tag}
+                </span>
+              </div>
             </div>
           ))}
         </div>
-        <div className="method-cta-wrap">
-          <p>Chaque bien est différent. Chaque stratégie aussi.</p>
-          <div className="big">
-            Découvrez quelle approche maximise la valeur de votre bien lors de
-            votre estimation personnalisée.
-          </div>
-          <button className="method-cta" onClick={scrollToForm}>
-            Demander mon estimation
-          </button>
-        </div>
+
       </div>
     </section>
   );

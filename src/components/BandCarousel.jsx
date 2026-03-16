@@ -80,7 +80,7 @@ export default function BandCarousel({ title, items = [], cta, onCta, renderItem
   if (!items.length) return null
 
   return (
-    <section ref={wrapRef} className="w-full max-w-6xl mx-auto px-4 md:px-5 py-10 md:py-12">
+    <section ref={wrapRef} className="w-full max-w-[1600px] mx-auto px-4 md:px-8 py-10 md:py-12">
       <div className="mb-4 md:mb-5 flex items-center justify-between">
         <div className="flex items-center gap-2 md:gap-3">
           <h2 className="font-serif text-2xl md:text-5xl">{title}</h2>
@@ -138,7 +138,7 @@ export default function BandCarousel({ title, items = [], cta, onCta, renderItem
         {items.map((it, i) => (
           <div
             key={it.id ?? i}
-            className="shrink-0 w-[320px] sm:w-[360px] md:w-[400px] lg:w-[420px] 2xl:w-[440px]"
+            className="shrink-0 w-[360px] sm:w-[420px] md:w-[480px] lg:w-[520px] 2xl:w-[560px]"
           >
             <Card key={it.id ?? it.href ?? it.titre} listing={it} item={it} />
           </div>

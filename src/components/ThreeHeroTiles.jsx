@@ -53,8 +53,26 @@ export default function ThreeHeroTiles() {
 
   return (
     <section className="relative w-full overflow-hidden bg-black" style={{ height: 'calc(100svh - var(--header-h, 80px))' }}>
-      {/* IMAGE HERO DE FOND */}
+      {/* FOND HERO — vidéo portrait sur mobile, image sur desktop */}
       <div className="absolute inset-0">
+        {/* Mobile : vidéo portrait */}
+        <video
+          className={`
+            md:hidden h-full w-full object-cover
+            transform transition-transform duration-[1200ms] ease-out
+            ${imageEntered ? "scale-100" : "scale-110"}
+          `}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/img/gary/01.webp"
+        >
+          <source src="/media/home/hero-mobile.mp4" type="video/mp4" />
+        </video>
+
+        {/* Desktop : image */}
         <img
           src="/img/gary/01.webp"
           alt="Propriété contemporaine avec piscine"
@@ -62,7 +80,7 @@ export default function ThreeHeroTiles() {
           height={1080}
           fetchpriority="high"
           className={`
-            h-full w-full object-cover
+            hidden md:block h-full w-full object-cover
             transform transition-transform duration-[1200ms] ease-out
             ${imageEntered ? "scale-100" : "scale-110"}
           `}
