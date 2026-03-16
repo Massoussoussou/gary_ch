@@ -356,7 +356,7 @@ function ConstatSection() {
     {/* Cercle sur image de fond */}
     <section
       ref={sectionRef}
-      className="relative pt-20 md:pt-28 pb-20 md:pb-32 overflow-visible"
+      className="relative pt-20 md:pt-28 pb-20 md:pb-32 overflow-x-clip"
       style={{ zIndex: 2 }}
     >
       <img
@@ -370,6 +370,7 @@ function ConstatSection() {
       <div className="relative max-w-[900px] mx-auto px-6 md:px-10 text-center">
         <div>
         <div className="flex justify-center">
+          <div className="lg:scale-[0.65] xl:scale-[0.8] 2xl:scale-100 origin-center">
           <div
             ref={circleRef}
             data-circle
@@ -511,7 +512,7 @@ function ConstatSection() {
             ].map(({ card, style, align }, i) => (
               <div
                 key={`label-${i}`}
-                className={`absolute hidden lg:flex flex-col max-w-[360px] md:max-w-[420px] ${align} bg-white p-5 md:p-6`}
+                className={`absolute hidden lg:flex flex-col max-w-[360px] 2xl:max-w-[420px] ${align} bg-white p-5 md:p-6`}
                 style={{
                   ...style,
                   opacity: seen ? 1 : 0,
@@ -527,6 +528,7 @@ function ConstatSection() {
               </div>
             ))}
           </div>
+          </div>{/* fin wrapper scale */}
         </div>
 
         <style>{`
