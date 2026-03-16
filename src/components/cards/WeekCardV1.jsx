@@ -1,7 +1,8 @@
 // src/components/cards/WeekCardV1.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 /* ---------------- utils ---------------- */
 function formatCHF(n) {
@@ -16,6 +17,71 @@ function badgeFrom(item) {
   if (s.includes("nouveau") || s.includes("nouveauté") || s.includes("new")) return "nouveau";
   if (s.includes("réserv") || s.includes("reserve")) return "réservé";
   return "";
+}
+
+/* ---------------- hook swipe tactile ---------------- */
+function useSwipeGallery(imgs, startIdx = 0) {
+  const [idx, setIdx] = useState(startIdx);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+  const ref = useRef(null);
+  const touchState = useRef({ startX: 0, startY: 0, locked: null });
+  const idxRef = useRef(startIdx);
+  const offsetRef = useRef(0);
+
+  useEffect(() => { idxRef.current = idx; }, [idx]);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || imgs.length <= 1) return;
+
+    const onStart = (e) => {
+      touchState.current = { startX: e.touches[0].clientX, startY: e.touches[0].clientY, locked: null };
+      setIsSwiping(true);
+    };
+    const onMove = (e) => {
+      const ts = touchState.current;
+      const dx = e.touches[0].clientX - ts.startX;
+      const dy = e.touches[0].clientY - ts.startY;
+      if (ts.locked === null && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+        ts.locked = Math.abs(dx) >= Math.abs(dy) ? "h" : "v";
+      }
+      if (ts.locked !== "h") return;
+      e.preventDefault();
+      const ci = idxRef.current;
+      let off = dx;
+      if ((ci === 0 && dx > 0) || (ci === imgs.length - 1 && dx < 0)) off = dx * 0.25;
+      offsetRef.current = off;
+      setSwipeOffset(off);
+    };
+    const onEnd = () => {
+      const off = offsetRef.current;
+      const ci = idxRef.current;
+      if (touchState.current.locked === "h") {
+        if (off < -50 && ci < imgs.length - 1) setIdx((p) => p + 1);
+        else if (off > 50 && ci > 0) setIdx((p) => p - 1);
+      }
+      offsetRef.current = 0;
+      setSwipeOffset(0);
+      setIsSwiping(false);
+    };
+
+    el.addEventListener("touchstart", onStart, { passive: true });
+    el.addEventListener("touchmove", onMove, { passive: false });
+    el.addEventListener("touchend", onEnd, { passive: true });
+    return () => {
+      el.removeEventListener("touchstart", onStart);
+      el.removeEventListener("touchmove", onMove);
+      el.removeEventListener("touchend", onEnd);
+    };
+  }, [imgs.length]);
+
+  const trackStyle = {
+    transform: `translateX(calc(${-idx * 100}% + ${swipeOffset}px))`,
+    transition: isSwiping ? "none" : "transform 300ms cubic-bezier(0.25, 1, 0.5, 1)",
+  };
+
+  return { idx, setIdx, ref, trackStyle, isSwiping };
 }
 
 /* --------------- sous-composants --------------- */
@@ -74,19 +140,44 @@ function Panel({ item }) {
 }
 Panel.propTypes = { item: PropTypes.object.isRequired };
 
+function SwipeArrows({ idx, total }) {
+  if (total <= 1) return null;
+  return (
+    <div className="absolute inset-y-0 left-0 right-0 z-30 flex items-center justify-between px-2 pointer-events-none md:hidden">
+      <ChevronLeft strokeWidth={1.5} className={`w-14 h-20 text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.6)] transition-opacity animate-[nudge-left_1.5s_ease-in-out_infinite] ${idx === 0 ? 'opacity-0' : 'opacity-100'}`} />
+      <ChevronRight strokeWidth={1.5} className={`w-14 h-20 text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.6)] transition-opacity animate-[nudge-right_1.5s_ease-in-out_infinite] ${idx === total - 1 ? 'opacity-0' : 'opacity-100'}`} />
+    </div>
+  );
+}
+
 function CompactCard({ item }) {
   const imgs = Array.isArray(item.images) ? item.images : [];
-  const idx = Number.isInteger(item.heroIdx) && item.heroIdx >= 0 && item.heroIdx < imgs.length ? item.heroIdx : 0;
-  const hero = imgs[idx];
+  const startIdx = Number.isInteger(item.heroIdx) && item.heroIdx >= 0 && item.heroIdx < imgs.length ? item.heroIdx : 0;
+  const { idx, ref, trackStyle } = useSwipeGallery(imgs, startIdx);
   const badge = badgeFrom(item);
 
   return (
     <article className="relative isolate bg-white border border-neutral-200 shadow-[0_10px_30px_rgba(0,0,0,0.06)] overflow-hidden">
-      <div className="relative aspect-[4/3] md:aspect-[5/4] overflow-hidden">
-        {hero
-          ? <img src={hero} alt={item.titre || "Bien en vedette"} className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-[1.03] ${item.vendu ? "grayscale" : ""}`} loading="lazy" />
-          : <div className="w-full h-full bg-neutral-200" />
-        }
+      <div ref={ref} className="relative aspect-[4/3] md:aspect-[5/4] overflow-hidden">
+        {imgs.length > 0 ? (
+          <div className="absolute inset-0" style={trackStyle}>
+            {imgs.map((src, i) => {
+              if (Math.abs(i - idx) > 2) return null;
+              return (
+                <img
+                  key={i}
+                  src={src}
+                  alt={i === idx ? (item.titre || "Bien en vedette") : ""}
+                  className={`absolute top-0 h-full w-full object-cover ${item.vendu ? "grayscale" : ""}`}
+                  style={{ left: `${i * 100}%` }}
+                  loading="lazy"
+                  draggable="false"
+                />
+              );
+            })}
+          </div>
+        ) : <div className="w-full h-full bg-neutral-200" />}
+        <SwipeArrows idx={idx} total={imgs.length} />
         {badge && (
           <div className="absolute top-5 md:top-6 left-0 z-20 pointer-events-none">
             <span className="inline-block px-3.5 py-1.5 uppercase tracking-[0.20em] text-[11px] md:text-[12px] font-semibold text-white shadow" style={{ backgroundColor: "#FF4A3E" }}>
@@ -125,19 +216,13 @@ function CompactCard({ item }) {
 CompactCard.propTypes = { item: PropTypes.object.isRequired };
 
 /* --------------- composant principal --------------- */
-/**
- * @param {{ item: object, mode?: 'split'|'card',
- * bg?: 'none'|'blur'|'slideshow',
- * bgOpacity?: number, bgBlur?: number, overlay?: 'light'|'none',
- * bgIntervalMs?: number }}
- */
 export default function WeekCardV1({
   item,
   mode = "split",
   bg = "slideshow",
-  bgOpacity = 0.6,   // << plus visible
-  bgBlur = 6,        // << moins flou
-  overlay = "light", // 'none' pour zéro voile
+  bgOpacity = 0.6,
+  bgBlur = 6,
+  overlay = "light",
   bgIntervalMs = 9000,
 }) {
   if (!item) return null;
@@ -146,8 +231,9 @@ export default function WeekCardV1({
     () => (Array.isArray(item.images) ? item.images.filter(Boolean) : []),
     [item.images]
   );
-  const idx = Number.isInteger(item.heroIdx) && item.heroIdx >= 0 && item.heroIdx < imgs.length ? item.heroIdx : 0;
-  const hero = imgs[idx];
+  const startIdx = Number.isInteger(item.heroIdx) && item.heroIdx >= 0 && item.heroIdx < imgs.length ? item.heroIdx : 0;
+  const { idx: imgIdx, ref: splitRef, trackStyle: splitTrackStyle } = useSwipeGallery(imgs, startIdx);
+  const hero = imgs[imgIdx];
   const badge = badgeFrom(item);
 
   const reduceMotion = useMemo(() => {
@@ -204,7 +290,6 @@ export default function WeekCardV1({
             ))}
           </div>
 
-          {/* overlay allégé pour garder la lisibilité sans étouffer l’image */}
           {overlay === "light" && (
             <div className="absolute inset-0 bg-gradient-to-b from-white/25 via-white/10 to-transparent" />
           )}
@@ -216,11 +301,26 @@ export default function WeekCardV1({
         <div className="grid grid-cols-12 gap-8 items-center">
           {/* image élargie à gauche */}
           <div className="col-span-12 md:col-span-8">
-            <div className="relative aspect-[16/9] md:aspect-[5/4] overflow-hidden">
-              {hero
-                ? <img src={hero} alt={item.titre || "Bien de la semaine"} className="absolute inset-0 w-full h-full object-cover" />
-                : <div className="w-full h-full bg-neutral-200" />
-              }
+            <div ref={splitRef} className="relative aspect-[16/9] md:aspect-[5/4] overflow-hidden">
+              {imgs.length > 0 ? (
+                <div className="absolute inset-0" style={splitTrackStyle}>
+                  {imgs.map((src, i) => {
+                    if (Math.abs(i - imgIdx) > 2) return null;
+                    return (
+                      <img
+                        key={i}
+                        src={src}
+                        alt={i === imgIdx ? (item.titre || "Bien de la semaine") : ""}
+                        className="absolute top-0 h-full w-full object-cover"
+                        style={{ left: `${i * 100}%` }}
+                        loading="lazy"
+                        draggable="false"
+                      />
+                    );
+                  })}
+                </div>
+              ) : <div className="w-full h-full bg-neutral-200" />}
+              <SwipeArrows idx={imgIdx} total={imgs.length} />
               {badge && (
                 <div className="absolute top-5 md:top-6 left-0 z-20 pointer-events-none">
                   <span className="inline-block px-3.5 py-1.5 uppercase tracking-[0.20em] text-[11px] md:text-[12px] font-semibold text-white shadow" style={{ backgroundColor: "#FF4A3E" }}>

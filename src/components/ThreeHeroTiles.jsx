@@ -7,7 +7,6 @@ const bands = [
     id: "acheter",
     label: "ACHETER",
     to: "/acheter",
-    // Mobile: centré / Desktop: gauche
     justify: "justify-center sm:justify-start",
     offsetClass: "md:ml-[8vw] lg:ml-[10vw]",
     direction: "left",
@@ -17,7 +16,6 @@ const bands = [
     id: "vendre",
     label: "VENDRE",
     to: "/vendre",
-    // Mobile: centré / Desktop: droite
     justify: "justify-center sm:justify-end",
     offsetClass: "md:mr-[10vw] lg:mr-[12vw]",
     direction: "right",
@@ -27,7 +25,6 @@ const bands = [
     id: "estimer",
     label: "ESTIMER",
     to: "/estimer",
-    // Mobile: centré / Desktop: gauche
     justify: "justify-center sm:justify-start",
     offsetClass: "md:ml-[6vw] lg:ml-[8vw]",
     direction: "left",
@@ -59,7 +56,7 @@ export default function ThreeHeroTiles() {
       {/* IMAGE HERO DE FOND */}
       <div className="absolute inset-0">
         <img
-          src="/img/gary/01.jpg"
+          src="/img/gary/01.webp"
           alt="Propriété contemporaine avec piscine"
           width={1920}
           height={1080}
@@ -75,8 +72,8 @@ export default function ThreeHeroTiles() {
 
       {/* CONTENU */}
       <div className="relative z-10 h-full w-full flex flex-col justify-center sm:block">
-        <div className="grid w-full grid-rows-3 border-y-[1.5px] border-white/60 divide-y-[1.5px] divide-white/45 h-[78%] sm:h-full">
-          {bands.map((band) => {
+        <div className="grid w-full grid-rows-3 gap-6 sm:gap-0 border-y-0 sm:border-y-[1.5px] border-white/60 divide-y-0 sm:divide-y-[1.5px] divide-white/45 h-[90%] sm:h-full">
+          {bands.map((band, i) => {
             const isLeft = band.direction === "left";
             const hiddenTransform = isLeft ? "-translate-x-full" : "translate-x-full";
             const peekTransform = isLeft ? "-translate-x-[60%]" : "translate-x-[60%]";
@@ -88,10 +85,16 @@ export default function ThreeHeroTiles() {
                 to={band.to}
                 className={`group relative flex ${band.justify} items-center overflow-hidden px-4 sm:px-6`}
               >
-                {/* Remplissage orange animé */}
+                {/* Ligne raccourcie entre les boutons (mobile only) */}
+                {i > 0 && (
+                  <div className="absolute top-0 left-[10%] right-[10%] h-[1px] bg-white/50 sm:hidden" />
+                )}
+
+                {/* Remplissage orange animé (desktop only) */}
                 <div
                   className={`
                     pointer-events-none absolute inset-0 bg-[#FF4A3E]
+                    hidden sm:block
                     transform ${baseTransform}
                     transition-transform ease-out
                     ${pulsePhase === 1 ? "duration-700" : "duration-300"}
@@ -106,16 +109,17 @@ export default function ThreeHeroTiles() {
                     relative z-10
                     leading-none select-none
                     text-white font-sans font-light
-                    transform transition-[transform,opacity] duration-700
+                    transition-[transform,opacity,color] duration-300
                     ease-[cubic-bezier(0.175,0.885,0.32,1.275)]
                     ${textEntered ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}
 
-                    /* ✅ MOBILE (<640px) : taille fluide + tracking réduit + centrage */
+                    active:scale-110 active:text-[#FF4A3E]
+                    sm:active:scale-100 sm:active:text-white
+
                     text-[clamp(28px,9vw,56px)]
                     tracking-[0.35em]
                     text-center
 
-                    /* ✅ DESKTOP (>=640px) : tailles réduites selon demande client */
                     sm:text-6xl sm:tracking-[0.35em]
                     md:text-7xl lg:text-8xl
                     ${band.offsetClass}

@@ -22,7 +22,7 @@ export default function ProjetNeuf() {
       name: "Découvrez nos projets",
       tagline: "Des lieux d'exception, une signature GARY.",
       cover:
-        "/img/gary/ExtBlv-9.jpg",
+        "/img/gary/ExtBlv-9.webp",
     };
     const coming = { id: "__coming__", kind: "coming" };
     return [intro, ...data, coming];
@@ -369,7 +369,7 @@ function CTAEnrollButton(){
       className="proj-bg"
       style={{
         backgroundImage:
-          "url(/img/gary/ExtVer-6.jpg)",
+          "url(/img/gary/ExtVer-6.webp)",
       }}
     />
     {/* Voile blanc identique aux heros */}

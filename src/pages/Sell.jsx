@@ -159,17 +159,17 @@ const constatCards = [
   {
     title: "Surexposition immédiate",
     desc: <>Votre bien est vu par tout le monde en 48h.<br/>Passé ce pic, il est <span className="text-[#FF4A3E]">perçu comme invendu</span>.<br/>Les acquéreurs négocient à la baisse.</>,
-    img: "/img/gary/extcbg1.jpg",
+    img: "/img/gary/extcbg1.webp",
   },
   {
     title: "Prix mal positionné",
     desc: <>Sans analyse des comparables récents,<br/>le prix est souvent trop haut puis <span className="text-[#FF4A3E]">baissé publiquement</span>,<br/>ce qui affaiblit votre position.</>,
-    img: "/img/gary/extcbg21.jpg",
+    img: "/img/gary/extcbg21.webp",
   },
   {
     title: "Aucune stratégie de diffusion",
     desc: <>Publier partout en même temps<br/>n'est pas une stratégie. Résultat :<br/>des <span className="text-[#FF4A3E]">visites non qualifiées</span> et un bien qui stagne.</>,
-    img: "/img/gary/exther9.jpg",
+    img: "/img/gary/exther9.webp",
   },
 ];
 
@@ -177,17 +177,17 @@ const philosophiePoints = [
   {
     text: "Estimations factuelles",
     desc: "Pas un chiffre sorti d'un algorithme. Une analyse des ventes récentes dans votre quartier, un positionnement prix argumenté, et un dossier complet que vous pouvez partager avec votre notaire ou conseiller financier.",
-    img: "/img/gary/ExtBlv-8.jpg",
+    img: "/img/gary/ExtBlv-8.webp",
   },
   {
     text: "Diffusion contrôlée",
     desc: "Votre bien est présenté d'abord à un cercle restreint d'acquéreurs qualifiés, puis élargi progressivement aux portails. Chaque étape est validée avec vous. C'est cette séquence qui protège votre prix.",
-    img: "/img/gary/ExtVer-6.jpg",
+    img: "/img/gary/ExtVer-6.webp",
   },
   {
     text: <>Accès discret aux bons<br/>acquéreurs</>,
     desc: "Nous ne publions pas pour attirer la masse. Nous activons notre réseau d'acquéreurs qualifiés qui cherchent exactement votre type de bien. Discrétion garantie.",
-    img: "/img/gary/maison35.jpg",
+    img: "/img/gary/maison35.webp",
   },
 ];
 
