@@ -4,23 +4,40 @@ import { Link } from "react-router-dom";
 
 export default function StickyCTA() {
   const [show, setShow] = useState(false);
+
   useEffect(() => {
-    const onScroll = () => setShow(window.scrollY > 140);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const check = () => {
+      const scrolled = window.scrollY > 400;
+
+      // Disparaît quand le CTA final est visible
+      const ctaEl = document.getElementById("cta-final-sell");
+      const atCta = ctaEl
+        ? ctaEl.getBoundingClientRect().top < window.innerHeight * 0.8
+        : false;
+
+      setShow(scrolled && !atCta);
+    };
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    return () => window.removeEventListener("scroll", check);
   }, []);
+
   return (
-    <div className={[
-      "fixed z-40 left-0 right-0 bottom-5 md:bottom-6 flex justify-center pointer-events-none",
-      show ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3",
-      "transition"
-    ].join(" ")}>
-      <div className="pointer-events-auto bg-white/90 backdrop-blur px-3 py-3 border border-[#E1DBD3] shadow-lg rounded-none">
-        <div className="flex gap-2">
-          <Link to="/contact" className="px-5 py-2.5 bg-primary text-white rounded-none">Prendre RDV</Link>
-          <Link to="/estimer" className="px-5 py-2.5 border border-[#DCD6CE] bg-white rounded-none">Estimer en ligne</Link>
+    <div
+      className="fixed bottom-0 left-0 right-0 md:hidden z-50 transition-transform duration-300"
+      style={{ transform: show ? "translateY(0)" : "translateY(100%)" }}
+    >
+      <div className="bg-white/95 backdrop-blur-md border-t border-neutral-200 px-4 py-3 flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[0.85rem] font-medium text-[#1A1A1A] truncate">Estimation gratuite</p>
+          <p className="text-[0.7rem] text-neutral-400">Résultat sous 48h</p>
         </div>
+        <Link
+          to="/estimer"
+          className="shrink-0 bg-[#FF4A3E] text-white px-5 py-2.5 text-[0.8rem] font-medium tracking-[0.03em] active:bg-[#e5382d] transition-colors"
+        >
+          Estimer mon bien
+        </Link>
       </div>
     </div>
   );

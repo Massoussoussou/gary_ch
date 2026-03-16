@@ -7,6 +7,7 @@ import AlreadyOwner from "../components/AlreadyOwner.jsx";
 import useProperties from "../hooks/useProperties.js";
 import BandCarousel from "../components/BandCarousel.jsx";
 import SellHero from "../components/sell/SellHero";
+import StickyCTA from "../components/sell/StickyCTA";
 
 import { useRevealOnce } from "../hooks/useRevealOnce.js";
 import { hasTag } from "../utils/data.js";
@@ -101,7 +102,7 @@ function ProofSection() {
                 }}
               >
                 <span
-                  className="font-sans font-bold text-[52px] md:text-[72px] lg:text-[88px] leading-none tracking-tight text-[#FF4A3E]"
+                  className="font-sans font-bold text-[36px] sm:text-[52px] md:text-[72px] lg:text-[88px] leading-none tracking-tight text-[#FF4A3E]"
                   style={{ fontVariantNumeric: "tabular-nums" }}
                 >
                   {Math.round(count)}{stat.suffix}
@@ -131,9 +132,9 @@ function ProofSection() {
         >
           <Link
             to="/estimer"
-            className="group inline-flex items-center gap-3 bg-[#FF4A3E] hover:bg-[#e5382d] text-white px-10 py-4 text-[13px] font-medium uppercase tracking-[0.15em] transition-all duration-300 hover:-translate-y-0.5"
+            className="group inline-flex items-center gap-3 bg-[#FF4A3E] text-white px-14 py-5 text-[15px] font-medium uppercase tracking-[0.15em] transition-all duration-300 hover:brightness-110 hover:shadow-lg hover:shadow-[#FF4A3E]/25"
           >
-            Estimer mon bien gratuitement
+            Estimer mon bien
             <svg
               className="w-4 h-4 group-hover:translate-x-1 transition-transform"
               fill="none"
@@ -313,24 +314,28 @@ function ConstatSection() {
 
   // Ligne verticale qui grandit au scroll depuis le bas du cercle
   useEffect(() => {
+    let rafId = 0;
     const onScroll = () => {
-      const circle = circleRef.current;
-      if (!circle) return;
-      const rect = circle.getBoundingClientRect();
-      const circleBottom = rect.bottom;
-      const viewH = window.innerHeight;
-      // La ligne commence à grandir quand le bas du cercle atteint 70% du viewport
-      const progress = Math.max(0, (viewH * 0.7 - circleBottom) / (viewH * 0.5));
-      setLineHeight(Math.min(progress * 600, 600));
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const circle = circleRef.current;
+        if (!circle) return;
+        const rect = circle.getBoundingClientRect();
+        const circleBottom = rect.bottom;
+        const viewH = window.innerHeight;
+        const progress = Math.max(0, (viewH * 0.7 - circleBottom) / (viewH * 0.5));
+        setLineHeight(Math.min(progress * 600, 600));
+      });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => { window.removeEventListener("scroll", onScroll); cancelAnimationFrame(rafId); };
   }, []);
 
   return (
     <>
     {/* Titre + paragraphe sur fond uni */}
     <section
+      id="constat"
       className="relative bg-[#F5F2ED] pt-16 md:pt-24 pb-16 md:pb-24"
       style={{ zIndex: 2 }}
     >
@@ -351,7 +356,7 @@ function ConstatSection() {
     {/* Cercle sur image de fond */}
     <section
       ref={sectionRef}
-      className="relative pt-32 md:pt-44 pb-20 md:pb-32 overflow-visible"
+      className="relative pt-20 md:pt-28 pb-20 md:pb-32 overflow-visible"
       style={{ zIndex: 2 }}
     >
       <img
@@ -405,25 +410,24 @@ function ConstatSection() {
                 })}
               </g>
 
-              {/* Texte central dans le cercle */}
-              <text x="100" y="88" textAnchor="middle" fill="#FF4A3E" fontSize="32" fontWeight="700" fontFamily="sans-serif"
+              {/* Texte central dans le cercle — plus bas sur mobile */}
+              <text x="100" y="95" textAnchor="middle" fill="#FF4A3E" fontSize="32" fontWeight="700" fontFamily="sans-serif"
+                className="lg:![dominant-baseline:auto]"
                 style={{ opacity: seen ? 1 : 0, transition: "opacity 0.6s ease-out 0.4s" }}
               >73%</text>
-              <text x="100" y="106" textAnchor="middle" fill="#1A1A1A" fontSize="6.5" fontFamily="sans-serif"
+              <text x="100" y="113" textAnchor="middle" fill="#1A1A1A" fontSize="6.5" fontFamily="sans-serif"
                 style={{ opacity: seen ? 1 : 0, transition: "opacity 0.6s ease-out 0.6s" }}
               >des biens au-delà de 90 jours</text>
-              <text x="100" y="115" textAnchor="middle" fill="#FF4A3E" fontSize="6.5" fontWeight="400" fontFamily="sans-serif"
+              <text x="100" y="122" textAnchor="middle" fill="#FF4A3E" fontSize="6.5" fontWeight="400" fontFamily="sans-serif"
                 style={{ opacity: seen ? 1 : 0, transition: "opacity 0.6s ease-out 0.6s" }}
               >subissent une décote</text>
 
-              {/* Traits en 2 segments (diagonal court + horizontal) + points statiques */}
+              {/* Traits + points — desktop uniquement */}
+              <g className="hidden lg:block">
               {(() => {
                 const dots = [
-                  // bas-gauche : diag vers bas-gauche, puis horizontal vers la gauche
                   { angle: 150, midX: 5, midY: 195, endX: -75, endY: 195 },
-                  // bas-droite : diag vers bas-droite, puis horizontal vers la droite
                   { angle: 30, midX: 195, midY: 195, endX: 275, endY: 195 },
-                  // haut : diag vers haut-gauche, puis horizontal vers la gauche
                   { angle: -90, midX: 70, midY: -15, endX: -10, endY: -15 },
                 ];
                 return dots.map(({ angle, midX, midY, endX, endY }, i) => {
@@ -434,7 +438,6 @@ function ConstatSection() {
                   const seg2Len = Math.abs(endX - midX);
                   return (
                     <g key={`trait-${i}`}>
-                      {/* Segment 1 : diagonal court */}
                       <line
                         x1={cx} y1={cy} x2={midX} y2={midY}
                         stroke="#FF4A3E"
@@ -446,7 +449,6 @@ function ConstatSection() {
                           transition: `stroke-dashoffset 0.5s cubic-bezier(0.22, 1, 0.36, 1) ${0.6 + i * 0.2}s`,
                         }}
                       />
-                      {/* Segment 2 : horizontal */}
                       <line
                         x1={midX} y1={midY} x2={endX} y2={endY}
                         stroke="#FF4A3E"
@@ -458,64 +460,58 @@ function ConstatSection() {
                           transition: `stroke-dashoffset 0.5s cubic-bezier(0.22, 1, 0.36, 1) ${0.9 + i * 0.2}s`,
                         }}
                       />
-                      {/* Point statique (par-dessus) */}
                       <circle cx={cx} cy={cy} r="6" fill="#FF4A3E" stroke="#F5F2ED" strokeWidth="2" />
                     </g>
                   );
                 });
               })()}
+              </g>
 
             </svg>
 
-            {/* Encart eBook — haut droite */}
-            <div
-              className="absolute top-[-2%] right-[-65%] hidden lg:flex flex-col items-center gap-6 max-w-[400px]"
+            {/* Encart eBook — haut droite (desktop only) */}
+            <Link
+              to="/ressources"
+              className="group/ebook absolute top-[-2%] right-[-65%] hidden lg:block w-[320px] shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 origin-center"
               style={{
                 opacity: seen ? 1 : 0,
                 transform: seen ? "translateY(0)" : "translateY(16px)",
                 transition: "opacity 0.7s ease-out 1.4s, transform 0.7s ease-out 1.4s",
+                background: "#FF4A3E",
               }}
             >
               <img
                 src="/ebook-cover.png"
-                alt="eBook GARY"
-                className="w-[420px] rounded-md shadow-xl"
+                alt="eBook GARY — Lire le guide"
+                className="w-full block"
               />
-              <Link
-                to="/ressources"
-                className="inline-flex items-center gap-3 bg-[#FF4A3E] hover:bg-[#e5382d] text-white px-8 py-3.5 text-[14px] font-medium uppercase tracking-[0.12em] transition-all duration-300 hover:-translate-y-0.5 rounded-sm"
-              >
+              <p className="text-center text-white py-3 text-[14px] font-medium uppercase tracking-[0.12em]">
                 Lire le guide
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </Link>
-            </div>
+                <span className="inline-block ml-2 transition-transform duration-300 group-hover/ebook:translate-x-1">→</span>
+              </p>
+            </Link>
 
-            {/* Labels au bout du 2e trait (horizontal) */}
+            {/* Labels au bout du 2e trait — desktop uniquement */}
             {[
               {
                 card: constatCards[0],
-                // bout du trait horizontal bas-gauche
                 style: { bottom: "6%", left: "-14%", transform: "translateX(-100%)" },
                 align: "text-left items-start",
               },
               {
                 card: constatCards[2],
-                // bout du trait horizontal bas-droite
                 style: { bottom: "6%", right: "-14%", transform: "translateX(100%)" },
                 align: "text-left items-start",
               },
               {
                 card: constatCards[1],
-                // bout du trait horizontal haut-gauche
                 style: { top: "-4%", left: "5%", transform: "translateX(-100%)" },
                 align: "text-left items-start",
               },
             ].map(({ card, style, align }, i) => (
               <div
                 key={`label-${i}`}
-                className={`absolute flex flex-col max-w-[360px] md:max-w-[420px] ${align} bg-white p-5 md:p-6`}
+                className={`absolute hidden lg:flex flex-col max-w-[360px] md:max-w-[420px] ${align} bg-white p-5 md:p-6`}
                 style={{
                   ...style,
                   opacity: seen ? 1 : 0,
@@ -540,6 +536,28 @@ function ConstatSection() {
           }
         `}</style>
         </div>
+
+        {/* ── Mobile : cartes constat sous le cercle ── */}
+        <div className="lg:hidden mt-10 flex flex-col gap-4 px-1">
+          {constatCards.map((card, i) => (
+            <div
+              key={`m-constat-${i}`}
+              className="bg-white p-5 border border-neutral-100 shadow-sm"
+              style={{
+                opacity: seen ? 1 : 0,
+                transform: seen ? "translateY(0)" : "translateY(16px)",
+                transition: `opacity 0.5s ease-out ${0.6 + i * 0.15}s, transform 0.5s ease-out ${0.6 + i * 0.15}s`,
+              }}
+            >
+              <h3 className="font-serif text-[1.25rem] leading-tight text-[#1A1A1A] mb-2">
+                {card.title}
+              </h3>
+              <p className="text-[15px] text-neutral-600 leading-relaxed">
+                {card.desc}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
     </>
@@ -552,16 +570,21 @@ function PhilosophieSection() {
   const imgColRef = useRef(null);
 
   useEffect(() => {
+    if (window.innerWidth < 768) return; // pas de parallax sur mobile
+    let rafId = 0;
     const onScroll = () => {
-      const section = sectionRef.current;
-      const imgCol = imgColRef.current;
-      if (!section || !imgCol) return;
-      const rect = section.getBoundingClientRect();
-      const offset = Math.max(0, -rect.top) * 0.22;
-      imgCol.style.transform = `translateY(${offset}px)`;
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const section = sectionRef.current;
+        const imgCol = imgColRef.current;
+        if (!section || !imgCol) return;
+        const rect = section.getBoundingClientRect();
+        const offset = Math.max(0, -rect.top) * 0.22;
+        imgCol.style.transform = `translateY(${offset}px)`;
+      });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => { window.removeEventListener("scroll", onScroll); cancelAnimationFrame(rafId); };
   }, []);
 
   return (
@@ -672,21 +695,25 @@ function ParcoursSection() {
   const total = parcoursSteps.length;
 
   useEffect(() => {
+    let rafId = 0;
     const onScroll = () => {
-      const el = sectionRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const scrolled = -rect.top;
-      const stepH = el.offsetHeight / total;
-      const rawIdx = scrolled / stepH;
-      const idx = Math.max(0, Math.min(total - 1, Math.floor(rawIdx)));
-      const progress = Math.max(0, Math.min(1, rawIdx - idx));
-      setActiveIndex(idx);
-      setStepProgress(progress);
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const el = sectionRef.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const scrolled = -rect.top;
+        const stepH = el.offsetHeight / total;
+        const rawIdx = scrolled / stepH;
+        const idx = Math.max(0, Math.min(total - 1, Math.floor(rawIdx)));
+        const progress = Math.max(0, Math.min(1, rawIdx - idx));
+        setActiveIndex(idx);
+        setStepProgress(progress);
+      });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => { window.removeEventListener("scroll", onScroll); cancelAnimationFrame(rafId); };
   }, [total]);
 
   const scrollToStep = useCallback((idx) => {
@@ -725,10 +752,50 @@ function ParcoursSection() {
       : 1;
 
   return (
+    <>
+    {/* ── Mobile : parcours en cartes verticales ── */}
+    <section id="parcours" className="md:hidden relative bg-[#F5F2ED] py-14 px-5" style={{ zIndex: 2 }}>
+      <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] mb-4">
+        Votre parcours
+      </p>
+      <h2 className="font-serif text-[clamp(1.8rem,8vw,2.6rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-10">
+        De la rencontre<br />à la remise des clés<span className="text-[#FF4A3E]">.</span>
+      </h2>
+
+      <div className="flex flex-col gap-8">
+        {parcoursSteps.map((step, i) => (
+          <div key={`m-parcours-${i}`}>
+            <div className="overflow-hidden rounded-sm shadow-[0_4px_24px_rgba(0,0,0,0.06)] mb-4">
+              <img
+                src={step.img}
+                alt={step.title}
+                className="w-full aspect-[16/10] object-cover"
+                loading="lazy"
+              />
+            </div>
+            <div className="flex items-center gap-3 mb-2">
+              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#FF4A3E] text-white text-[13px] font-semibold shrink-0">
+                {step.num}
+              </span>
+              <span className="text-[11px] uppercase tracking-[0.15em] text-[#FF4A3E] border border-[#FF4A3E]/30 px-3 py-1">
+                {step.tag}
+              </span>
+            </div>
+            <h3 className="font-serif text-[1.5rem] leading-[1.15] text-[#1A1A1A] mb-2">
+              {step.title}
+            </h3>
+            <p className="text-[0.95rem] text-neutral-600 leading-relaxed">
+              {step.desc}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* ── Desktop : parcours scroll-driven ── */}
     <section
       ref={sectionRef}
-      id="parcours"
-      className="relative"
+      className="relative hidden md:block"
       style={{ zIndex: 2, height: `${(total + 1) * 100}vh` }}
     >
       <div className="sticky top-0 h-screen overflow-hidden bg-[#F5F2ED]">
@@ -855,39 +922,33 @@ function ParcoursSection() {
           </div>
         </div>
 
-        {/* ── Mobile : dots ── */}
-        <div className="md:hidden absolute bottom-20 left-1/2 -translate-x-1/2 flex gap-3 z-20">
-          {parcoursSteps.map((_, i) => (
-            <button
-              key={`m-${i}`}
-              onClick={() => scrollToStep(i)}
-              className="w-[10px] h-[10px] rounded-full border-2 transition-all"
-              style={{
-                borderColor: i === activeIndex ? "#FF4A3E" : "#D4D4D4",
-                backgroundColor: i <= activeIndex ? "#FF4A3E" : "transparent",
-                transform: i === activeIndex ? "scale(1.3)" : "scale(1)",
-              }}
-            />
-          ))}
-        </div>
+        {/* Mobile dots removed — mobile uses separate card layout above */}
 
-        {/* ── Boutons skip ── */}
+        {/* ── Boutons navigation sections ── */}
         <div className="absolute bottom-8 right-8 flex items-center gap-3 z-20">
           <button
-            onClick={() => scrollToStep(Math.max(0, activeIndex - 1))}
-            disabled={activeIndex === 0}
-            className="w-11 h-11 rounded-full border border-neutral-300 bg-white/60 backdrop-blur-sm flex items-center justify-center text-neutral-500 hover:border-[#FF4A3E] hover:text-[#FF4A3E] transition-all disabled:opacity-25 disabled:cursor-not-allowed"
-            aria-label="Étape précédente"
+            onClick={() => {
+              const el = document.getElementById("constat");
+              if (!el) return;
+              const top = el.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.15;
+              window.scrollTo({ top, behavior: "smooth" });
+            }}
+            className="w-11 h-11 rounded-full border border-neutral-300 bg-white/60 backdrop-blur-sm flex items-center justify-center text-neutral-500 hover:border-[#FF4A3E] hover:text-[#FF4A3E] transition-all"
+            aria-label="Section précédente"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
             </svg>
           </button>
           <button
-            onClick={() => scrollToStep(Math.min(total - 1, activeIndex + 1))}
-            disabled={activeIndex === total - 1}
-            className="w-11 h-11 rounded-full border border-neutral-300 bg-white/60 backdrop-blur-sm flex items-center justify-center text-neutral-500 hover:border-[#FF4A3E] hover:text-[#FF4A3E] transition-all disabled:opacity-25 disabled:cursor-not-allowed"
-            aria-label="Étape suivante"
+            onClick={() => {
+              const el = document.getElementById("vendus");
+              if (!el) return;
+              const top = el.getBoundingClientRect().top + window.scrollY;
+              window.scrollTo({ top, behavior: "smooth" });
+            }}
+            className="w-11 h-11 rounded-full border border-neutral-300 bg-white/60 backdrop-blur-sm flex items-center justify-center text-neutral-500 hover:border-[#FF4A3E] hover:text-[#FF4A3E] transition-all"
+            aria-label="Section suivante"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -906,11 +967,12 @@ function ParcoursSection() {
         </div>
       </div>
     </section>
+    </>
   );
 }
 
 /* ─── Icônes livrables ─── */
-function LivrableIcon({ index, small }) {
+function LivrableIcon({ index, small, color = "white" }) {
   const cls = small
     ? "w-8 h-8 md:w-10 md:h-10"
     : "w-14 h-14 md:w-20 md:h-20";
@@ -918,7 +980,7 @@ function LivrableIcon({ index, small }) {
     className: cls,
     viewBox: "0 0 64 64",
     fill: "none",
-    stroke: "white",
+    stroke: color,
     strokeWidth: 2,
     strokeLinecap: "round",
     strokeLinejoin: "round",
@@ -993,17 +1055,21 @@ function LivrablesSection() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    let rafId = 0;
     const onScroll = () => {
-      const el = sectionRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const scrolled = -rect.top;
-      const maxScroll = el.offsetHeight - window.innerHeight;
-      setProgress(Math.max(0, Math.min(1, scrolled / maxScroll)));
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const el = sectionRef.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const scrolled = -rect.top;
+        const maxScroll = el.offsetHeight - window.innerHeight;
+        setProgress(Math.max(0, Math.min(1, scrolled / maxScroll)));
+      });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => { window.removeEventListener("scroll", onScroll); cancelAnimationFrame(rafId); };
   }, []);
 
   /* ── Phases (550vh total) ── */
@@ -1035,9 +1101,71 @@ function LivrablesSection() {
   ];
 
   return (
+    <>
+    {/* ── Mobile : livrables + témoignages en cartes ── */}
+    <section className="md:hidden relative py-14 px-5 overflow-hidden" style={{ zIndex: 2 }}>
+      {/* Fond photo + overlay noir */}
+      <img
+        src="/img/gary/extver5.webp"
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover"
+        loading="lazy"
+      />
+      <div className="absolute inset-0 bg-black/80" />
+
+      {/* Contenu */}
+      <div className="relative z-10">
+        <p className="text-[12px] uppercase tracking-[0.25em] text-white/50 mb-4">Nos livrables</p>
+        <h2 className="font-serif text-[clamp(1.8rem,8vw,2.6rem)] tracking-[-0.02em] leading-[1.1] text-white mb-3">
+          Pas des promesses<span className="text-[#FF4A3E]">.</span><br />
+          Des livrables concrets<span className="text-[#FF4A3E]">.</span>
+        </h2>
+        <p className="text-[0.95rem] text-white/60 leading-relaxed mb-8">
+          Chaque étape produit un document ou un outil tangible.
+        </p>
+
+        <div className="grid grid-cols-2 gap-3 mb-14">
+          {livrables.map((item, i) => (
+            <div
+              key={`m-liv-${i}`}
+              className="bg-white/10 backdrop-blur-sm p-4 border border-white/10 flex flex-col items-center text-center"
+            >
+              <div className="mb-3">
+                <LivrableIcon index={i} small color="#FF4A3E" />
+              </div>
+              <h3 className="font-serif text-[0.95rem] leading-tight text-white mb-1.5">{item.title}</h3>
+              <p className="text-[0.78rem] text-white/60 leading-snug line-clamp-3">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Témoignages mobile */}
+        <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] mb-3">Témoignages</p>
+        <h2 className="font-serif text-[clamp(1.6rem,7vw,2.2rem)] tracking-[-0.02em] leading-[1.1] text-white mb-6">
+          Ce que disent nos clients<span className="text-[#FF4A3E]">.</span>
+        </h2>
+        <div className="flex flex-col gap-4">
+          {temoignages.map((temo, i) => (
+            <div key={`m-temo-${i}`} className="bg-white/10 backdrop-blur-sm p-5 border border-white/10">
+              <div className="flex gap-0.5 mb-3">
+                {Array.from({ length: temo.stars }).map((_, j) => (
+                  <svg key={j} className="w-4 h-4" fill="#FF4A3E" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                ))}
+              </div>
+              <p className="text-[0.9rem] leading-relaxed text-white/90 mb-3">« {temo.text} »</p>
+              <p className="text-[0.82rem] text-white/50">— {temo.name}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* ── Desktop : livrables scroll-driven ── */}
     <section
       ref={sectionRef}
-      className="relative"
+      className="relative hidden md:block"
       style={{ zIndex: 2, height: "550vh" }}
     >
       <div className="sticky top-0 h-screen overflow-hidden">
@@ -1090,10 +1218,10 @@ function LivrablesSection() {
           }}
         >
           {livrables.map((item, i) => (
-            <div key={i} className="group relative flex flex-col items-center justify-center p-4 md:p-6 cursor-pointer overflow-hidden">
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/55 transition-all duration-500" />
+            <div key={i} className="group relative flex flex-col items-center justify-center p-4 md:p-6 cursor-pointer" style={{ overflow: "clip" }}>
+              <div className="absolute inset-[1px] bg-black/0 group-hover:bg-black/55 transition-all duration-500" />
               {(i === 0 || i === 2 || i === 4) && (
-                <div className="absolute inset-0 bg-[#FF4A3E] z-[5] pointer-events-none" style={{ opacity: orangeFill }} />
+                <div className="absolute inset-[1px] bg-[#FF4A3E] z-[5] pointer-events-none" style={{ opacity: orangeFill }} />
               )}
               <div className="relative z-10 group-hover:opacity-0 group-hover:scale-90 transition-all duration-500">
                 <LivrableIcon index={i} />
@@ -1128,11 +1256,11 @@ function LivrablesSection() {
                 <div className="absolute inset-0 bg-white" />
                 {/* Orange qui slide vers bas-droite et se clippe en triangle */}
                 <div
-                  className="absolute inset-0 bg-[#FF4A3E]"
+                  className="absolute -inset-px bg-[#FF4A3E]"
                   style={{
                     clipPath: cardContent <= 0
-                      ? "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)"
-                      : `polygon(${lerp(0, 150, cardContent)}% 0%, 100% 0%, 100% 100%, 0% 100%, 0% ${lerp(0, 150, cardContent)}%)`,
+                      ? "polygon(-1% -1%, 101% -1%, 101% 101%, -1% 101%)"
+                      : `polygon(${lerp(-1, 151, cardContent)}% -1%, 101% -1%, 101% 101%, -1% 101%, -1% ${lerp(-1, 151, cardContent)}%)`,
                   }}
                 />
                 {/* Contenu texte (apparaît) */}
@@ -1168,6 +1296,7 @@ function LivrablesSection() {
         </div>
       </div>
     </section>
+    </>
   );
 }
 
@@ -1187,6 +1316,7 @@ function GenevaMapSection() {
   const [openIdx, setOpenIdx] = useState(null);
   const [containerSize, setContainerSize] = useState({ w: 1920, h: 800 });
   const bubblePosRef = useRef({ x: 0, y: 0 });
+  const transitionRef = useRef(false);
   const BUBBLE_R = 220;
   const PROXIMITY = 80;
 
@@ -1200,7 +1330,23 @@ function GenevaMapSection() {
     return () => window.removeEventListener("resize", update);
   }, []);
 
+  const switchToPoint = (idx, cw, ch) => {
+    if (transitionRef.current) return;
+    transitionRef.current = true;
+    // Fermer la bulle
+    setNearIdx(null);
+    setOpenIdx(null);
+    // Rouvrir sur le nouveau point après un court délai
+    setTimeout(() => {
+      const pt = mapPoints[idx];
+      bubblePosRef.current = { x: (pt.x / 100) * cw, y: (pt.y / 100) * ch };
+      setNearIdx(idx);
+      transitionRef.current = false;
+    }, 280);
+  };
+
   const onMouseMove = (e) => {
+    if (transitionRef.current) return;
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
     const mx = e.clientX - rect.left;
@@ -1225,9 +1371,14 @@ function GenevaMapSection() {
     })();
 
     if (closestDist < PROXIMITY && closest !== null) {
-      const pt = mapPoints[closest];
-      bubblePosRef.current = { x: (pt.x / 100) * cw, y: (pt.y / 100) * ch };
-      setNearIdx(closest);
+      if (nearIdx !== null && closest !== nearIdx) {
+        // Switching between points — animate close then reopen
+        switchToPoint(closest, cw, ch);
+      } else {
+        const pt = mapPoints[closest];
+        bubblePosRef.current = { x: (pt.x / 100) * cw, y: (pt.y / 100) * ch };
+        setNearIdx(closest);
+      }
     } else if (inBubble) {
       // reste sur le point actuel
     } else {
@@ -1243,8 +1394,61 @@ function GenevaMapSection() {
   const isNear = nearIdx !== null;
 
   return (
-    <section className="relative bg-white">
-      <div className="text-center pt-20 pb-10 px-4">
+    <>
+    {/* ── Mobile : FAQ accordéon ── */}
+    <section className="md:hidden relative bg-white py-14 px-5" style={{ zIndex: 2 }}>
+      <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] mb-3">
+        Questions fréquentes
+      </p>
+      <h2 className="font-serif text-[clamp(1.8rem,8vw,2.4rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-2">
+        Vous vous posez la question ?<br />Nous y répondons<span className="text-[#FF4A3E]">.</span>
+      </h2>
+      <p className="text-[0.9rem] text-neutral-500 leading-relaxed mb-8">
+        Les réponses directes aux questions que se posent tous les vendeurs.
+      </p>
+
+      <div className="flex flex-col">
+        {faqItems.map((item, i) => {
+          const isActive = openIdx === i;
+          return (
+            <div key={`m-faq-${i}`} className="border-b border-neutral-100">
+              <button
+                onClick={() => setOpenIdx(isActive ? null : i)}
+                className="w-full flex items-center justify-between py-4 text-left group"
+              >
+                <span className="text-[0.9rem] text-[#1A1A1A] pr-4 group-active:text-[#FF4A3E] transition-colors">
+                  {item.q}
+                </span>
+                <span
+                  className="shrink-0 w-6 h-6 flex items-center justify-center text-neutral-400 transition-transform duration-300"
+                  style={{ transform: isActive ? "rotate(45deg)" : "rotate(0)" }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M7 1v12M1 7h12" />
+                  </svg>
+                </span>
+              </button>
+              <div
+                className="overflow-hidden"
+                style={{
+                  maxHeight: isActive ? "300px" : "0",
+                  opacity: isActive ? 1 : 0,
+                  transition: "max-height 0.4s ease, opacity 0.3s ease",
+                }}
+              >
+                <p className="text-[0.85rem] text-neutral-500 leading-relaxed pb-4 pr-6">
+                  {item.a}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    {/* ── Desktop : carte interactive ── */}
+    <section className="relative bg-white hidden md:block">
+      <div className="relative z-10 text-center pt-20 -mb-40 px-4">
         <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] mb-3">
           Questions fréquentes
         </p>
@@ -1263,6 +1467,9 @@ function GenevaMapSection() {
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
       >
+        {/* Fade bas discret */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent z-30 pointer-events-none" />
+
         {/* Line art fond */}
         <img
           src="/media/sell/geneva-lineart.png"
@@ -1392,6 +1599,7 @@ function GenevaMapSection() {
         })}
       </div>
     </section>
+    </>
   );
 }
 
@@ -1459,45 +1667,239 @@ function FAQSection() {
   );
 }
 
-/* ─── Section Équipe + CTA (sticky scroll) ─── */
+/* ─── Section Vendus — animation d'entrée au scroll ─── */
+function VendusSection({ vendus }) {
+  const ref = useRef(null);
+  const [seen, setSeen] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) setSeen(true); },
+      { threshold: 0.15 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  return (
+    <section ref={ref} id="vendus" className="relative bg-white overflow-hidden" style={{ zIndex: 2 }}>
+      {/* ── Mobile : même layout que page Acheter ── */}
+      <div className="md:hidden">
+        <div
+          className="pt-14 pb-2 px-4"
+          style={{
+            opacity: seen ? 1 : 0,
+            transform: seen ? "translateY(0)" : "translateY(24px)",
+            transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
+          }}
+        >
+          <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] mb-3">
+            Résultats
+          </p>
+          <h2 className="font-serif text-2xl tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-2">
+            Vendus récemment<span className="text-[#FF4A3E]">.</span>
+          </h2>
+          <p className="text-[0.9rem] text-neutral-500 leading-relaxed">
+            Des résultats concrets, pas des promesses.
+          </p>
+        </div>
+        <BandCarousel
+          title=""
+          items={vendus}
+          renderItem={ListingCardSold}
+        />
+      </div>
+
+      {/* ── Desktop : layout actuel avec décalage gauche ── */}
+      <div className="hidden md:block py-24">
+        <div
+          className="max-w-[1600px] mx-auto px-8 mb-10"
+          style={{
+            opacity: seen ? 1 : 0,
+            transform: seen ? "translateY(0)" : "translateY(40px)",
+            transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
+          }}
+        >
+          <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] mb-4">
+            Résultats
+          </p>
+          <h2 className="font-serif text-[clamp(2rem,5vw,3.2rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-3">
+            Vendus récemment<span className="text-[#FF4A3E]">.</span>
+          </h2>
+          <p className="text-[1.1rem] text-neutral-500 leading-relaxed">
+            Des résultats concrets, pas des promesses.
+          </p>
+        </div>
+        <div
+          className="-ml-20 lg:-ml-32 xl:-ml-40"
+          style={{
+            opacity: seen ? 1 : 0,
+            transform: seen ? "translateX(0)" : "translateX(100px)",
+            transition: "opacity 0.8s ease-out 0.25s, transform 0.8s ease-out 0.25s",
+          }}
+        >
+          <BandCarousel
+            items={vendus}
+            renderItem={ListingCardSold}
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Compteur animé ─── */
+function CountNumber({ value, active }) {
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    if (!active) return;
+    const duration = 1200;
+    const start = performance.now();
+    const step = (now) => {
+      const t = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+      setDisplay(Math.round(ease * value));
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [active, value]);
+  return <>{display}</>;
+}
+
+/* ─── Section Équipe ─── */
 function EquipeSection() {
-  const sectionRef = useRef(null);
-  const [progress, setProgress] = useState(0);
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  const [countUp, setCountUp] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setVisible(true); setTimeout(() => setCountUp(true), 600); } },
+      { threshold: 0.15 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const stats = [
+    { value: 50, suffix: "%", label: "vendus avant publication" },
+    { value: 8, suffix: " sem.", label: "délai moyen de vente" },
+    { value: 500, suffix: "K", label: "portée mensuelle" },
+  ];
+
+  return (
+    <section ref={ref} className="relative bg-white overflow-hidden" style={{ zIndex: 2 }}>
+      {/* Photo d'équipe — entière, pas coupée */}
+      <div
+        className="w-full"
+        style={{
+          opacity: visible ? 1 : 0,
+          transition: "opacity 1s ease",
+        }}
+      >
+        <img
+          src="/team-photo.jpg"
+          alt="L'équipe GARY"
+          className="w-full h-auto object-contain"
+          loading="lazy"
+        />
+      </div>
+
+      {/* Texte en dessous */}
+      <div className="bg-[#F5F2ED] py-16 md:py-24">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-12 lg:px-16 grid md:grid-cols-[1.2fr_1fr] gap-10 md:gap-20 items-start">
+          {/* Colonne gauche — texte */}
+          <div>
+            <p
+              className="text-[12px] uppercase tracking-[0.3em] text-[#FF4A3E] mb-5"
+              style={{
+                opacity: visible ? 1 : 0,
+                transform: visible ? "translateY(0)" : "translateY(12px)",
+                transition: "opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s",
+              }}
+            >
+              L'équipe
+            </p>
+            <h2
+              className="font-serif text-[clamp(2.4rem,5vw,4rem)] tracking-[-0.03em] leading-[1] text-[#1A1A1A] mb-6"
+              style={{
+                opacity: visible ? 1 : 0,
+                transform: visible ? "translateY(0)" : "translateY(20px)",
+                transition: "opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s",
+              }}
+            >
+              Des courtiers,<br />pas des commerciaux<span className="text-[#FF4A3E]">.</span>
+            </h2>
+            <p
+              className="text-[1.05rem] text-neutral-600 leading-relaxed mb-8 max-w-[48ch]"
+              style={{
+                opacity: visible ? 1 : 0,
+                transform: visible ? "translateY(0)" : "translateY(20px)",
+                transition: "opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s",
+              }}
+            >
+              GARY est une agence à taille humaine, basée à Genève. Chaque courtier connaît son marché par cœur et accompagne un nombre limité de mandats à la fois. Votre bien n'est pas un dossier parmi d'autres — c'est une mission.
+            </p>
+
+            {/* Citation */}
+            <div
+              className="border-l-2 border-[#FF4A3E] pl-5"
+              style={{
+                opacity: visible ? 1 : 0,
+                transform: visible ? "translateX(0)" : "translateX(-20px)",
+                transition: "opacity 0.6s ease 0.5s, transform 0.6s ease 0.5s",
+              }}
+            >
+              <p className="text-[0.95rem] italic text-neutral-500 leading-relaxed">
+                « Dans notre métier, la confiance ne se décrète pas. Elle se démontre, bien par bien, étape par étape. »
+              </p>
+            </div>
+          </div>
+
+          {/* Colonne droite — stats */}
+          <div className="grid grid-cols-3 md:grid-cols-1 gap-4 md:gap-12 md:pt-12">
+            {stats.map((s, i) => (
+              <div
+                key={i}
+                style={{
+                  opacity: visible ? 1 : 0,
+                  transform: visible ? "translateY(0)" : "translateY(20px)",
+                  transition: `opacity 0.5s ease ${0.6 + i * 0.15}s, transform 0.5s ease ${0.6 + i * 0.15}s`,
+                }}
+              >
+                <p className="font-serif text-[clamp(1.6rem,4.5vw,3.4rem)] text-[#1A1A1A] leading-none mb-1">
+                  <CountNumber value={s.value} active={countUp} />{s.suffix}
+                </p>
+                <p className="text-[0.65rem] md:text-[0.75rem] uppercase tracking-[0.12em] text-neutral-400">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Section CTA Final ─── */
+function CTAFinalSection() {
+  const ref = useRef(null);
   const [visible, setVisible] = useState(false);
   const [phone, setPhone] = useState("");
 
   useEffect(() => {
-    const el = sectionRef.current;
+    const el = ref.current;
     if (!el) return;
-
-    const obsVisible = new IntersectionObserver(
+    const obs = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) setVisible(true); },
-      { threshold: 0.1 }
+      { threshold: 0.2 }
     );
-    obsVisible.observe(el);
-
-    const onScroll = () => {
-      const rect = el.getBoundingClientRect();
-      const scrollable = el.scrollHeight - window.innerHeight;
-      if (scrollable <= 0) return;
-      const raw = -rect.top / scrollable;
-      setProgress(Math.max(0, Math.min(1, raw)));
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      obsVisible.disconnect();
-      window.removeEventListener("scroll", onScroll);
-    };
+    obs.observe(el);
+    return () => obs.disconnect();
   }, []);
-
-  // Switch at 50% scroll
-  const showCTA = progress > 0.45;
-
-  const stats = [
-    { value: "50%", label: "Vendus avant publication" },
-    { value: "8 sem.", label: "Délai moyen de vente" },
-    { value: "500K", label: "Portée mensuelle" },
-  ];
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -1507,132 +1909,85 @@ function EquipeSection() {
   };
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative bg-[#F5F2ED]"
-      style={{ height: "200vh" }}
-    >
-      <div className="sticky top-0 h-screen overflow-hidden flex items-center">
-        <div className="max-w-[1600px] w-full mx-auto px-0 md:px-8 grid md:grid-cols-[1.6fr_1fr] gap-8 md:gap-14 items-center">
-          {/* Photo équipe — toujours visible */}
+    <section ref={ref} id="cta-final-sell" className="relative min-h-screen flex items-center overflow-hidden" style={{ zIndex: 2 }}>
+      {/* Image de fond — belle propriété */}
+      <img
+        src="/img/gary/ExtBlv-8.webp"
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover"
+        loading="lazy"
+      />
+      <div className="absolute inset-0 bg-[#1A1A1A]/75" />
+
+      {/* Grain subtil */}
+      <div
+        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")" }}
+      />
+
+      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 lg:px-16 py-20 md:py-28">
+        <div className="grid md:grid-cols-[1.3fr_1fr] gap-12 md:gap-20 items-center">
+          {/* Texte */}
+          <div
+            style={{
+              opacity: visible ? 1 : 0,
+              transform: visible ? "translateY(0)" : "translateY(30px)",
+              transition: "opacity 0.7s ease, transform 0.7s ease",
+            }}
+          >
+            <p className="text-[12px] uppercase tracking-[0.3em] text-[#FF4A3E] mb-5">
+              Prochaine étape
+            </p>
+            <h2 className="font-serif text-[clamp(2rem,5vw,4.2rem)] tracking-[-0.03em] leading-[1.05] text-white mb-6 md:whitespace-nowrap">
+              Parlons de votre bien<span className="text-[#FF4A3E]">.</span>
+            </h2>
+            <p className="text-[0.95rem] md:text-[1.1rem] text-white/60 leading-relaxed md:whitespace-nowrap">
+              Un courtier de votre secteur vous rappelle sous 24h — sans engagement, sans pression.
+            </p>
+          </div>
+
+          {/* Formulaire dans une tuile glassmorphique */}
           <div
             className="relative"
             style={{
               opacity: visible ? 1 : 0,
-              transform: visible ? "translateX(0)" : "translateX(-30px)",
-              transition: "opacity 0.7s ease, transform 0.7s ease",
+              transform: visible ? "translateY(0)" : "translateY(30px)",
+              transition: "opacity 0.7s ease 0.2s, transform 0.7s ease 0.2s",
             }}
           >
-            <div className="relative overflow-hidden md:-ml-8 lg:-ml-16">
-              <img
-                src="/team-photo.jpg"
-                alt="L'équipe GARY"
-                className="w-full h-auto object-contain"
-                loading="lazy"
-              />
-            </div>
-            {/* Citation superposée */}
-            <div
-              className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur-sm p-5"
-              style={{
-                opacity: visible ? 1 : 0,
-                transform: visible ? "translateY(0)" : "translateY(20px)",
-                transition: "opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s",
-              }}
-            >
-              <p className="text-[0.88rem] italic text-neutral-700 leading-relaxed">
-                « Dans notre métier, la confiance ne se décrète pas. Elle se démontre, bien par bien, étape par étape. »
-              </p>
-            </div>
-          </div>
-
-          {/* Right column — content transitions */}
-          <div className="relative min-h-[400px] flex items-center">
-            {/* Panel 1: Équipe */}
-            <div
-              className="w-full"
-              style={{
-                opacity: showCTA ? 0 : 1,
-                transform: showCTA ? "translateY(-40px)" : "translateY(0)",
-                transition: "opacity 0.5s ease, transform 0.5s ease",
-                pointerEvents: showCTA ? "none" : "auto",
-                position: showCTA ? "absolute" : "relative",
-              }}
-            >
-              <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] mb-3">
-                L'équipe
-              </p>
-              <h2 className="font-serif text-[clamp(2rem,4.5vw,3.2rem)] tracking-[-0.02em] leading-[1.05] text-[#1A1A1A] mb-6">
-                Des courtiers,<br />pas des commerciaux<span className="text-[#FF4A3E]">.</span>
-              </h2>
-              <p className="text-[1rem] text-neutral-600 leading-relaxed mb-8 max-w-[48ch]">
-                GARY est une agence à taille humaine, basée à Genève. Chaque courtier connaît son marché par cœur et accompagne un nombre limité de mandats à la fois. Votre bien n'est pas un dossier parmi d'autres — c'est une mission.
+            <div className="bg-white/[0.07] backdrop-blur-md border border-white/[0.12] p-8 md:p-10">
+              <p className="text-[0.85rem] text-white/80 mb-6 leading-relaxed">
+                Laissez-nous votre numéro, un courtier expert de votre quartier vous contacte pour une première discussion confidentielle.
               </p>
 
-              <div className="grid grid-cols-3 gap-6">
-                {stats.map((s, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      opacity: visible ? 1 : 0,
-                      transform: visible ? "translateY(0)" : "translateY(20px)",
-                      transition: `opacity 0.5s ease ${0.4 + i * 0.1}s, transform 0.5s ease ${0.4 + i * 0.1}s`,
-                    }}
-                  >
-                    <p className="font-serif text-[clamp(1.8rem,3.5vw,2.4rem)] text-[#1A1A1A] leading-none mb-1">
-                      {s.value}
-                    </p>
-                    <p className="text-[0.78rem] text-neutral-500">{s.label}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Panel 2: CTA Parlons de votre bien */}
-            <div
-              className="w-full"
-              style={{
-                opacity: showCTA ? 1 : 0,
-                transform: showCTA ? "translateY(0)" : "translateY(40px)",
-                transition: "opacity 0.5s ease, transform 0.5s ease",
-                pointerEvents: showCTA ? "auto" : "none",
-                position: showCTA ? "relative" : "absolute",
-              }}
-            >
-              <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] mb-3">
-                Contact
-              </p>
-              <h2 className="font-serif text-[clamp(2rem,4.5vw,3.2rem)] tracking-[-0.02em] leading-[1.05] text-[#1A1A1A] mb-4">
-                Parlons de votre bien<span className="text-[#FF4A3E]">.</span>
-              </h2>
-              <p className="text-[1rem] text-neutral-600 leading-relaxed mb-8 max-w-[48ch]">
-                Un courtier de votre secteur vous rappelle sous 24&nbsp;heures — sans engagement, sans pression.
-              </p>
-
-              <form onSubmit={handleSubmit} className="max-w-[420px]">
-                <label htmlFor="phone-cta" className="block text-[0.85rem] text-neutral-500 mb-2">
-                  Votre numéro de téléphone
-                </label>
-                <div className="flex gap-3">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="phone-final" className="block text-[0.75rem] uppercase tracking-[0.15em] text-white/35 mb-2">
+                    Téléphone
+                  </label>
                   <input
-                    id="phone-cta"
+                    id="phone-final"
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+41 79 000 00 00"
-                    className="flex-1 px-4 py-3 border border-neutral-300 bg-white text-[1rem] text-[#1A1A1A] placeholder:text-neutral-400 focus:outline-none focus:border-[#FF4A3E] transition-colors"
+                    className="w-full px-5 py-4 bg-white/[0.06] border border-white/15 text-[1.05rem] text-white placeholder:text-white/25 focus:outline-none focus:border-[#FF4A3E]/60 transition-colors"
                   />
-                  <button
-                    type="submit"
-                    className="px-6 py-3 bg-[#FF4A3E] text-white text-[0.9rem] font-medium hover:brightness-110 transition-all whitespace-nowrap"
-                  >
-                    Être rappelé
-                  </button>
                 </div>
-                <p className="text-[0.75rem] text-neutral-400 mt-3">
-                  Nous ne partageons jamais vos informations.
-                </p>
+                <button
+                  type="submit"
+                  className="w-full py-4 bg-[#FF4A3E] text-white text-[0.9rem] font-medium uppercase tracking-[0.12em] hover:bg-[#e5382d] transition-all flex items-center justify-center gap-3"
+                >
+                  Être rappelé sous 24h
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </button>
               </form>
+
+              <p className="text-[0.7rem] text-white/20 mt-4 text-center">
+                Gratuit · Sans engagement · Confidentiel
+              </p>
             </div>
           </div>
         </div>
@@ -1696,43 +2051,44 @@ function ConnectLine() {
 
     update();
     window.addEventListener("resize", update);
-    window.addEventListener("scroll", update, { passive: true });
     const timer = setTimeout(update, 500);
-    return () => { window.removeEventListener("resize", update); window.removeEventListener("scroll", update); clearTimeout(timer); };
+    return () => { window.removeEventListener("resize", update); clearTimeout(timer); };
   }, []);
 
   // Animation au scroll — le trait se trace progressivement du cercle jusqu'au bas du séparateur
   useEffect(() => {
     if (!pathLen) return;
+    let rafId = 0;
     const onScroll = () => {
-      const wrapper = wrapperRef.current;
-      const circleEl = wrapper?.querySelector("[data-circle]");
-      const sepEl = wrapper?.querySelector("[data-separator]");
-      if (!circleEl || !sepEl) return;
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const wrapper = wrapperRef.current;
+        const circleEl = wrapper?.querySelector("[data-circle]");
+        const sepEl = wrapper?.querySelector("[data-separator]");
+        if (!circleEl || !sepEl) return;
 
-      const circleBottom = circleEl.getBoundingClientRect().bottom;
-      const sepBottom = sepEl.getBoundingClientRect().bottom;
-      const viewH = window.innerHeight;
+        const circleBottom = circleEl.getBoundingClientRect().bottom;
+        const sepBottom = sepEl.getBoundingClientRect().bottom;
+        const viewH = window.innerHeight;
 
-      // Le trait commence quand le bas du cercle passe à 70% du viewport
-      // et finit quand le bas du séparateur atteint le milieu du viewport
-      const scrollStart = circleBottom - viewH * 0.7;
-      const scrollEnd = sepBottom - viewH * 0.5;
-      const scrollRange = scrollEnd - scrollStart;
+        const scrollStart = circleBottom - viewH * 0.7;
+        const scrollEnd = sepBottom - viewH * 0.5;
+        const scrollRange = scrollEnd - scrollStart;
 
-      const progress = Math.max(0, Math.min(1, -scrollStart / Math.max(scrollRange, 1)));
-      setDrawLen(progress * pathLen);
+        const progress = Math.max(0, Math.min(1, -scrollStart / Math.max(scrollRange, 1)));
+        setDrawLen(progress * pathLen);
+      });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => { window.removeEventListener("scroll", onScroll); cancelAnimationFrame(rafId); };
   }, [pathLen]);
 
   return (
     <div ref={wrapperRef} className="relative">
-      {/* SVG overlay pour la ligne */}
+      {/* SVG overlay pour la ligne — desktop uniquement */}
       <svg
-        className="absolute inset-0 w-full h-full pointer-events-none"
+        className="absolute inset-0 w-full h-full pointer-events-none hidden lg:block"
         style={{ zIndex: 10 }}
       >
         <path
@@ -1783,25 +2139,7 @@ export default function Sell() {
       <ParcoursSection />
 
       {/* RÉSULTATS — DÉJÀ VENDU */}
-      {vendus.length > 0 && (
-        <section className="relative py-24 bg-white" style={{ zIndex: 2 }}>
-          <div className="max-w-[1600px] mx-auto px-4 md:px-8 mb-10">
-            <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] mb-4">
-              Résultats
-            </p>
-            <h2 className="font-serif text-[clamp(2rem,5vw,3.2rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-3">
-              Vendus récemment<span className="text-[#FF4A3E]">.</span>
-            </h2>
-            <p className="text-[1rem] md:text-[1.1rem] text-neutral-500 leading-relaxed">
-              Des résultats concrets, pas des promesses.
-            </p>
-          </div>
-          <BandCarousel
-            items={vendus}
-            renderItem={ListingCardSold}
-          />
-        </section>
-      )}
+      {vendus.length > 0 && <VendusSection vendus={vendus} />}
 
       {/* LIVRABLES */}
       <LivrablesSection />
@@ -1811,10 +2149,20 @@ export default function Sell() {
       {/* CARTE DE GENÈVE INTERACTIVE */}
       <GenevaMapSection />
 
+      {/* Espace blanc */}
+      <div className="h-24 md:h-36 bg-white relative" style={{ zIndex: 2 }} />
 
       {/* ÉQUIPE */}
       <EquipeSection />
 
+      {/* Espace */}
+      <div className="h-24 md:h-36 bg-[#F5F2ED] relative" style={{ zIndex: 2 }} />
+
+      {/* CTA FINAL */}
+      <CTAFinalSection />
+
+      {/* Sticky CTA mobile — disparaît au CTA final */}
+      <StickyCTA />
     </main>
   );
 }
