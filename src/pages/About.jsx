@@ -71,7 +71,7 @@ const SPONSORS = [
     src: "/sponsors/mise-en-voix.jpeg",
     url: "https://www.mise-en-voix.ch",
     subtitle: "Association locale",
-    short: null,
+    short: "Mise en Voix est une association culturelle basée à Cologny qui met à l'honneur l'art de la voix et l'univers de l'opéra à travers différents projets artistiques et rencontres.",
     long: "Mise en Voix est une association culturelle basée à Cologny qui met à l'honneur l'art de la voix et l'univers de l'opéra à travers différents projets artistiques et rencontres. En réunissant artistes, passionnés et partenaires, l'association contribue à faire vivre la scène culturelle de la région genevoise.",
   },
   {
@@ -260,14 +260,14 @@ function SponsorCard({ sponsor, index, seen }) {
             <div
               className="px-8 md:px-10 pb-7"
               style={{
-                maxHeight: hovered ? "400px" : "0px",
+                maxHeight: hovered ? "600px" : "0px",
                 opacity: hovered ? 1 : 0,
                 overflow: "hidden",
                 transition: "max-height 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease 0.08s",
               }}
             >
               <p className="text-[11px] uppercase tracking-[0.15em] text-[#FF4A3E] font-semibold mb-2">{sponsor.subtitle}</p>
-              {sponsor.short && <p className="text-gray-600 text-[15px] leading-relaxed mb-3">{sponsor.short}</p>}
+              {sponsor.short && <p className="text-gray-600 text-[15px] leading-relaxed mb-3 break-words">{sponsor.short}</p>}
               <span className="inline-flex items-center gap-1.5 text-[#FF4A3E] text-sm font-medium mt-1">
                 Voir plus
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -1541,7 +1541,7 @@ export default function About() {
   const [teamSeen, setTeamSeen] = useState(false);
   const teamSectionRef = useRef(null);
 
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  // scroll to top géré par ScrollToTop.jsx
 
   // Détecte quand la section équipe est visible → lance le carrousel
   useEffect(() => {

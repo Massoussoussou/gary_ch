@@ -195,7 +195,16 @@ export default function Header(){
 
           {[
             { to: '/acheter',       label: 'Acheter' },
-            { to: '/vendre',        label: 'Vendre' },
+            { to: '/vendre',        label: 'Vendre', dropdown: [
+              { to: '/vendre#constat',        label: 'Le constat' },
+              { to: '/vendre#difference',     label: 'Notre différence' },
+              { to: '/vendre#parcours',       label: 'Votre parcours' },
+              { to: '/vendre#livrables',      label: 'Nos livrables' },
+              { to: '/vendre#faq',            label: 'Questions fréquentes' },
+              { to: '/vendre#vendus',         label: 'Vendus récemment' },
+              { to: '/vendre#equipe',         label: "L'équipe" },
+              { to: '/vendre#cta-final-sell', label: 'Contactez-nous' },
+            ]},
             { to: '/estimer',       label: 'Estimer' },
             { to: '/projets-neufs', label: 'Projets\u00A0neufs' },
             { to: '/actualites',    label: 'Actualités', dropdown: [
@@ -228,18 +237,37 @@ export default function Header(){
                 {/* Dropdown */}
                 <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 opacity-0 invisible group-hover/dd:opacity-100 group-hover/dd:visible transition-all duration-200 z-50">
                   <div className="bg-white rounded-lg shadow-lg border border-black/5 py-3 min-w-[200px]">
-                    {dropdown.map((sub) => (
-                      <NavLink
-                        key={sub.to}
-                        to={sub.to}
-                        className={({ isActive }) =>
-                          'block px-6 py-3 text-[14px] tracking-[0.05em] transition-colors duration-150 ' +
-                          (isActive ? 'text-[#FF4A3E]' : 'text-neutral-700 hover:text-[#FF4A3E] hover:bg-neutral-50')
+                    {dropdown.map((sub) => {
+                      const hasHash = sub.to.includes('#');
+                      const handleClick = hasHash ? (e) => {
+                        e.preventDefault();
+                        const hash = sub.to.split('#')[1];
+                        const basePath = sub.to.split('#')[0];
+                        if (pathname === basePath || pathname === basePath + '/') {
+                          const el = document.getElementById(hash);
+                          if (el) {
+                            const headerH = headerRef.current?.offsetHeight || 72;
+                            const y = el.getBoundingClientRect().top + window.scrollY - headerH - 20;
+                            window.scrollTo({ top: y, behavior: 'smooth' });
+                          }
+                        } else {
+                          window.location.href = sub.to;
                         }
-                      >
-                        {sub.label}
-                      </NavLink>
-                    ))}
+                      } : undefined;
+                      return (
+                        <NavLink
+                          key={sub.to}
+                          to={sub.to}
+                          onClick={handleClick}
+                          className={({ isActive }) =>
+                            'block px-6 py-3 text-[14px] tracking-[0.05em] transition-colors duration-150 ' +
+                            (isActive && !hasHash ? 'text-[#FF4A3E]' : 'text-neutral-700 hover:text-[#FF4A3E] hover:bg-neutral-50')
+                          }
+                        >
+                          {sub.label}
+                        </NavLink>
+                      );
+                    })}
                   </div>
                 </div>
               </div>

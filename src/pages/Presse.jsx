@@ -55,7 +55,7 @@ function PressCard({ article, index }) {
           <p className="text-[12px] tracking-[0.12em] uppercase text-neutral-400 mb-2">
             {article.date}
           </p>
-          <h2 className="font-serif text-[18px] md:text-[20px] leading-snug text-neutral-900 line-clamp-2 group-hover:text-[#FF4A3E] transition-colors duration-300">
+          <h2 className="font-serif font-medium text-[22px] md:text-[26px] leading-[1.15] text-neutral-900 group-hover:text-[#FF4A3E] transition-colors duration-300">
             {article.title}
           </h2>
         </div>

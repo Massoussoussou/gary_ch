@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import team from '../data/team.json';
 import { Linkedin } from "lucide-react";
 
@@ -7,6 +7,7 @@ import "../styles/projet.css";
 
 export default function Member() {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const member = team.find(m => m.slug === slug);
 
   if (!member) {
@@ -23,8 +24,9 @@ export default function Member() {
   return (
     <main className="min-h-screen bg-white">
       {/* Bouton croix animé (style ProjetNeufDetail) */}
-      <Link
-        to="/a-propos"
+      <button
+        type="button"
+        onClick={() => navigate(-1)}
         className="close-back-btn close-back-btn--inverted"
         aria-label="Retour à l'équipe"
         title="Retour à l'équipe"
@@ -32,7 +34,7 @@ export default function Member() {
         <svg className="close-back-icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
         </svg>
-      </Link>
+      </button>
 
       {/* ====== MOBILE LAYOUT (< md) ====== */}
       <div className="md:hidden">

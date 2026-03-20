@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { usePromotionDetail } from "../hooks/usePromotions.js";
 import team from "../data/team.json";
 
@@ -61,6 +61,7 @@ function SpecIcon({ name }) {
 
 export default function ProjetNeufDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { data: p, loading, error } = usePromotionDetail(id);
   const [isReady, setIsReady] = useState(false);
 
@@ -211,8 +212,9 @@ export default function ProjetNeufDetail() {
       {/* HERO */}
       <main className="detail-hero-fixed">
         {/* Bouton retour vers Projets Neufs */}
-<Link
-  to="/projets-neufs"
+<button
+  type="button"
+  onClick={() => navigate(-1)}
   className="close-back-btn"
   aria-label="Revenir à la page Projets Neufs"
   title="Revenir aux projets neufs"
@@ -220,7 +222,7 @@ export default function ProjetNeufDetail() {
   <svg className="close-back-icon" viewBox="0 0 24 24" aria-hidden="true">
     <path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
   </svg>
-</Link>
+</button>
 
         <section className={`hero-pane ${isReady ? "is-visible" : ""}`}>
           <header className="detail-hero__title">

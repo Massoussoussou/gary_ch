@@ -319,6 +319,59 @@ function KeyFiguresSection() {
   );
 }
 
+/* ---------- Compteur avec rectangle animé ---------- */
+function CounterBanner({ count }) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      { threshold: 0.3 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} className="w-full max-w-[1500px] 2xl:max-w-[1600px] mx-auto px-4 lg:px-6 pt-10 pb-2 flex justify-center">
+      <div className="relative inline-flex items-baseline justify-center gap-3 md:gap-6 lg:gap-10 px-8 md:px-14 lg:px-20 py-5 md:py-8">
+        {/* Rectangle SVG animé */}
+        <svg
+          className="absolute inset-0 w-full h-full"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect
+            x="0.5" y="0.5" width="99" height="99"
+            stroke="#FF4A3E"
+            strokeWidth="0.8"
+            vectorEffect="non-scaling-stroke"
+            pathLength="100"
+            strokeDasharray="100"
+            strokeDashoffset={visible ? "0" : "100"}
+            style={{ transition: "stroke-dashoffset 1.6s cubic-bezier(0.22, 1, 0.36, 1)" }}
+          />
+        </svg>
+
+        <span className="relative text-4xl md:text-6xl lg:text-8xl uppercase leading-none tracking-wide text-[#FF4A3E] font-medium">
+          {count}
+        </span>
+        <span className="relative text-4xl md:text-6xl lg:text-8xl uppercase leading-none tracking-wide text-neutral-900 font-serif font-light">
+          BIEN{count > 1 ? "S" : ""}
+        </span>
+        <span className="relative text-4xl md:text-6xl lg:text-8xl uppercase leading-none tracking-wide text-neutral-900 font-serif font-light">
+          DISPONIBLE{count > 1 ? "S" : ""}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 /* ---------- composant principal ---------- */
 export default function BuyIntro() {
   const location = useLocation();
@@ -462,22 +515,13 @@ export default function BuyIntro() {
             resultCount={filtered.length}
             onChange={setFilters}
             initialFilters={filters}
+            sortValue={sort}
+            onSortChange={setSort}
           />
         </div>
 
-        <SortMenu value={sort} onChange={setSort} />
-
         {/* Compteur de biens disponibles */}
-        <div className="max-w-6xl mx-auto px-4 mt-8 mb-6">
-          <p className="text-center">
-            <span className="font-serif text-5xl md:text-7xl text-[#FF4A3E] font-bold leading-none">
-              {filtered.length}
-            </span>
-            <span className="block mt-2 text-lg md:text-xl text-neutral-600 tracking-wide">
-              {filtered.length > 1 ? "biens disponibles" : "bien disponible"}
-            </span>
-          </p>
-        </div>
+        <CounterBanner count={filtered.length} />
 
         {/* Première moitié des annonces */}
         <ListingGrid items={firstHalf} isFiltered={isFiltered} />

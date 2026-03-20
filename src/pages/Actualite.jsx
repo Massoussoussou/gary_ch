@@ -110,7 +110,7 @@ function FeaturedCard({ article }) {
           <p className="text-[12px] tracking-[0.15em] uppercase text-neutral-400 mb-4">
             {article.date}
           </p>
-          <h2 className="font-serif text-[24px] md:text-[32px] leading-[1.15] text-neutral-900 group-hover:text-[#FF4A3E] transition-colors duration-300">
+          <h2 className="font-serif font-medium text-[28px] md:text-[38px] leading-[1.1] text-neutral-900 group-hover:text-[#FF4A3E] transition-colors duration-300">
             {article.title}
           </h2>
           <p className="mt-4 text-[15px] leading-relaxed text-neutral-500 line-clamp-3 md:line-clamp-4">
@@ -184,7 +184,7 @@ function ArticleCard({ article, index }) {
           <p className="text-[12px] tracking-[0.12em] uppercase text-neutral-400 mb-2">
             {article.date}
           </p>
-          <h2 className="font-serif text-[18px] md:text-[20px] leading-snug text-neutral-900 line-clamp-2 group-hover:text-[#FF4A3E] transition-colors duration-300">
+          <h2 className="font-serif font-medium text-[22px] md:text-[26px] leading-[1.15] text-neutral-900 group-hover:text-[#FF4A3E] transition-colors duration-300">
             {article.title}
           </h2>
         </div>
@@ -332,7 +332,7 @@ export default function Actualite() {
         <div className="max-w-7xl mx-auto px-6 md:px-8">
           <AnimatedDivider label="Tous les articles" />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14 md:gap-y-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8 md:gap-y-10">
             {rest.map((article, i) => (
               <ArticleCard key={article.id} article={article} index={i} />
             ))}

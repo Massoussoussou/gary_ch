@@ -5,7 +5,9 @@ export default function DrawerNav({ open, onClose }) {
   const { pathname } = useLocation();
   const firstLinkRef = useRef(null);
   const aboutSubsRef = useRef(null);
+  const vendreSubsRef = useRef(null);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [vendreOpen, setVendreOpen] = useState(false);
 
   const isPathActive = (to) =>
     pathname === to || (to !== "/" && pathname.startsWith(to + "/"));
@@ -30,12 +32,12 @@ export default function DrawerNav({ open, onClose }) {
     };
   }, [open, onClose]);
 
-  // Fermer l'accordéon quand le drawer se ferme
+  // Fermer les accordéons quand le drawer se ferme
   useEffect(() => {
-    if (!open) setAboutOpen(false);
+    if (!open) { setAboutOpen(false); setVendreOpen(false); }
   }, [open]);
 
-  // Scroll en bas quand l'accordéon s'ouvre
+  // Scroll en bas quand un accordéon s'ouvre
   useEffect(() => {
     if (!aboutOpen) return;
     const t = setTimeout(() => {
@@ -49,12 +51,37 @@ export default function DrawerNav({ open, onClose }) {
     return () => clearTimeout(t);
   }, [aboutOpen]);
 
+  useEffect(() => {
+    if (!vendreOpen) return;
+    const t = setTimeout(() => {
+      const el = vendreSubsRef.current;
+      if (!el) return;
+      const scrollParent = el.closest("[class*='overflow-y']") || el.closest("nav");
+      if (scrollParent) {
+        el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }, 160);
+    return () => clearTimeout(t);
+  }, [vendreOpen]);
+
   const navItems = [
     { to: "/acheter", label: "ACHETER", sub: "Découvrir nos biens" },
-    { to: "/vendre", label: "VENDRE", sub: "Vendre avec GARY" },
-    { to: "/estimer", label: "ESTIMER", sub: "Estimation confidentielle" },
-    { to: "/projets-neufs", label: "PROJETS NEUFS", sub: "Programmes immobiliers" },
+    { to: "/estimer", label: "ESTIMER", sub: "Estimation et stratégie" },
+    { to: "/projets-neufs", label: "PROJETS NEUFS", sub: "Nos projets neufs" },
   ];
+
+  const vendreSubs = [
+    { to: "/vendre#constat",        label: "Le constat" },
+    { to: "/vendre#difference",     label: "Notre différence" },
+    { to: "/vendre#parcours",       label: "Votre parcours" },
+    { to: "/vendre#livrables",      label: "Nos livrables" },
+    { to: "/vendre#faq",            label: "Questions fréquentes" },
+    { to: "/vendre#vendus",         label: "Vendus récemment" },
+    { to: "/vendre#equipe",         label: "L'équipe" },
+    { to: "/vendre#cta-final-sell", label: "Contactez-nous" },
+  ];
+
+  const vendreActive = pathname === "/vendre" || pathname.startsWith("/vendre/");
 
   const aboutSubs = [
     { to: "/a-propos", label: "Qui est GARY" },
@@ -139,33 +166,99 @@ export default function DrawerNav({ open, onClose }) {
           {/* Content */}
           <nav className="flex-1 overflow-y-auto px-6 py-6">
             <ul className="space-y-3">
-              {navItems.map((item, idx) => {
-                const active = !aboutOpen && isPathActive(item.to);
+              {/* ACHETER */}
+              <li>
+                <NavLink
+                  ref={firstLinkRef}
+                  to="/acheter"
+                  onClick={onClose}
+                  className={`
+                    group relative block rounded-2xl px-5 py-3.5 overflow-hidden border
+                    transition-all duration-200
+                    focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/30
+                    ${!aboutOpen && !vendreOpen && isPathActive("/acheter")
+                      ? "bg-[#FF4A3E] border-[#FF4A3E] shadow-[0_10px_24px_rgba(255,74,62,0.25)]"
+                      : "border-black/12 bg-white/55 hover:bg-white/80 hover:border-black/18"}
+                  `}
+                >
+                  <div className="pl-2">
+                    <div className={`font-light uppercase leading-none tracking-[0.26em] text-[clamp(22px,6.6vw,34px)] ${!aboutOpen && !vendreOpen && isPathActive("/acheter") ? "text-white" : "text-black"}`}>ACHETER</div>
+                    <div className={`mt-2 text-[13px] ${!aboutOpen && !vendreOpen && isPathActive("/acheter") ? "text-white/80" : "text-black/70"}`}>Découvrir nos biens</div>
+                  </div>
+                </NavLink>
+              </li>
+
+              {/* VENDRE — accordéon */}
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setVendreOpen((v) => !v)}
+                  className={`
+                    group relative w-full text-left block rounded-2xl px-5 py-3.5 overflow-hidden border
+                    transition-all duration-200
+                    focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/30
+                    ${vendreActive || vendreOpen
+                      ? "bg-[#FF4A3E] border-[#FF4A3E] shadow-[0_10px_24px_rgba(255,74,62,0.25)]"
+                      : "border-black/12 bg-white/55 hover:bg-white/80 hover:border-black/18"}
+                  `}
+                >
+                  <div className="pl-2 flex items-center justify-between">
+                    <div>
+                      <div className={`font-light uppercase leading-none tracking-[0.26em] text-[clamp(22px,6.6vw,34px)] ${vendreActive || vendreOpen ? "text-white" : "text-black"}`}>VENDRE</div>
+                      <div className={`mt-2 text-[13px] ${vendreActive || vendreOpen ? "text-white/80" : "text-black/70"}`}>Le processus complet</div>
+                    </div>
+                    <span
+                      className={`text-[20px] transition-transform duration-300 ease-out ${vendreActive || vendreOpen ? "text-white/60" : "text-black/40"}`}
+                      style={{ transform: vendreOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                      aria-hidden
+                    >▾</span>
+                  </div>
+                </button>
+                <div
+                  ref={vendreSubsRef}
+                  className="overflow-hidden transition-all duration-150 ease-out"
+                  style={{
+                    maxHeight: vendreOpen ? `${vendreSubs.length * 56}px` : "0px",
+                    opacity: vendreOpen ? 1 : 0,
+                  }}
+                >
+                  <ul className="mt-2 ml-4 space-y-1.5">
+                    {vendreSubs.map((sub) => (
+                      <li key={sub.label}>
+                        <NavLink
+                          to={sub.to}
+                          onClick={onClose}
+                          className="group flex items-center justify-between rounded-xl px-4 py-3 border border-black/8 bg-white/50 hover:bg-white/80 hover:border-black/15 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/30"
+                        >
+                          <span className="text-[15px] text-black/85">{sub.label}</span>
+                          <span className="text-[13px] text-black/25 group-hover:text-black/45 transition-colors">→</span>
+                        </NavLink>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+
+              {/* ESTIMER, PROJETS NEUFS */}
+              {navItems.filter(item => item.to !== "/acheter").map((item) => {
+                const active = !aboutOpen && !vendreOpen && isPathActive(item.to);
                 return (
                   <li key={item.to}>
                     <NavLink
-                      ref={idx === 0 ? firstLinkRef : undefined}
                       to={item.to}
                       onClick={onClose}
                       className={`
-                        group relative block rounded-2xl px-5 py-3.5 overflow-hidden
-                        border
+                        group relative block rounded-2xl px-5 py-3.5 overflow-hidden border
                         transition-all duration-200
                         focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/30
-                        ${
-                          active
-                            ? "bg-[#FF4A3E] border-[#FF4A3E] shadow-[0_10px_24px_rgba(255,74,62,0.25)]"
-                            : "border-black/12 bg-white/55 hover:bg-white/80 hover:border-black/18"
-                        }
+                        ${active
+                          ? "bg-[#FF4A3E] border-[#FF4A3E] shadow-[0_10px_24px_rgba(255,74,62,0.25)]"
+                          : "border-black/12 bg-white/55 hover:bg-white/80 hover:border-black/18"}
                       `}
                     >
                       <div className="pl-2">
-                        <div className={`font-light uppercase leading-none tracking-[0.26em] text-[clamp(22px,6.6vw,34px)] ${active ? "text-white" : "text-black"}`}>
-                          {item.label}
-                        </div>
-                        <div className={`mt-2 text-[13px] ${active ? "text-white/80" : "text-black/70"}`}>
-                          {item.sub}
-                        </div>
+                        <div className={`font-light uppercase leading-none tracking-[0.26em] text-[clamp(22px,6.6vw,34px)] ${active ? "text-white" : "text-black"}`}>{item.label}</div>
+                        <div className={`mt-2 text-[13px] ${active ? "text-white/80" : "text-black/70"}`}>{item.sub}</div>
                       </div>
                     </NavLink>
                   </li>

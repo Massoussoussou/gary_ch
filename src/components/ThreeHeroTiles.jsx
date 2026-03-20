@@ -6,6 +6,7 @@ const bands = [
   {
     id: "acheter",
     label: "ACHETER",
+    sub: "Découvrir nos biens",
     to: "/acheter",
     justify: "justify-center sm:justify-start",
     offsetClass: "md:ml-[8vw] lg:ml-[10vw]",
@@ -15,6 +16,7 @@ const bands = [
   {
     id: "vendre",
     label: "VENDRE",
+    sub: "Le processus complet",
     to: "/vendre",
     justify: "justify-center sm:justify-end",
     offsetClass: "md:mr-[10vw] lg:mr-[12vw]",
@@ -24,6 +26,7 @@ const bands = [
   {
     id: "estimer",
     label: "ESTIMER",
+    sub: "Estimation et stratégie",
     to: "/estimer",
     justify: "justify-center sm:justify-start",
     offsetClass: "md:ml-[6vw] lg:ml-[8vw]",
@@ -72,19 +75,22 @@ export default function ThreeHeroTiles() {
           <source src="/media/home/hero-mobile.mp4" type="video/mp4" />
         </video>
 
-        {/* Desktop : image */}
-        <img
-          src="/img/gary/01.webp"
-          alt="Propriété contemporaine avec piscine"
-          width={1920}
-          height={1080}
-          fetchpriority="high"
+        {/* Desktop : vidéo */}
+        <video
           className={`
             hidden md:block h-full w-full object-cover
             transform transition-transform duration-[1200ms] ease-out
             ${imageEntered ? "scale-100" : "scale-110"}
           `}
-        />
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/img/gary/01.webp"
+        >
+          <source src="/media/home/hero-desktop.mp4" type="video/mp4" />
+        </video>
         <div className="absolute inset-0 bg-black/40" />
       </div>
 
@@ -144,6 +150,9 @@ export default function ThreeHeroTiles() {
                   `}
                 >
                   {band.label}
+                  <span className="block sm:hidden text-[14px] tracking-[0.15em] font-normal text-white/90 mt-4">
+                    {band.sub}
+                  </span>
                 </span>
               </Link>
             );

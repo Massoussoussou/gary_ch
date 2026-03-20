@@ -1,6 +1,6 @@
 // src/pages/Sell.jsx
 import { useMemo, useRef, useEffect, useState, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import ListingCardSold from "../components/cards/ListingCardSold.jsx";
 import AlreadyOwner from "../components/AlreadyOwner.jsx";
@@ -176,18 +176,18 @@ const constatCards = [
 
 const philosophiePoints = [
   {
-    text: "Estimations factuelles",
-    desc: "Pas un chiffre sorti d'un algorithme. Une analyse des ventes récentes dans votre quartier, un positionnement prix argumenté, et un dossier complet que vous pouvez partager avec votre notaire ou conseiller financier.",
+    text: <><span className="text-[#FF4A3E]">Estimations</span> factuelles</>,
+    desc: <>Pas un chiffre sorti d'un algorithme. Une <span className="text-[#FF4A3E]">analyse des ventes récentes</span> dans votre quartier, un positionnement prix argumenté, et un <span className="text-[#FF4A3E]">dossier complet</span> que vous pouvez partager avec votre notaire ou conseiller financier.</>,
     img: "/img/gary/ExtBlv-8.webp",
   },
   {
-    text: "Diffusion contrôlée",
-    desc: "Votre bien est présenté d'abord à un cercle restreint d'acquéreurs qualifiés, puis élargi progressivement aux portails. Chaque étape est validée avec vous. C'est cette séquence qui protège votre prix.",
+    text: <>Diffusion <span className="text-[#FF4A3E]">contrôlée</span></>,
+    desc: <>Votre bien est présenté d'abord à un <span className="text-[#FF4A3E]">cercle restreint</span> d'acquéreurs qualifiés, puis élargi progressivement aux portails. Chaque étape est validée avec vous. C'est cette séquence qui <span className="text-[#FF4A3E]">protège votre prix</span>.</>,
     img: "/img/gary/ExtVer-6.webp",
   },
   {
-    text: <>Accès discret aux bons<br/>acquéreurs</>,
-    desc: "Nous ne publions pas pour attirer la masse. Nous activons notre réseau d'acquéreurs qualifiés qui cherchent exactement votre type de bien. Discrétion garantie.",
+    text: <>Accès <span className="text-[#FF4A3E]">discret</span> aux bons acquéreurs</>,
+    desc: <>Nous ne publions pas pour attirer la masse. Nous activons notre <span className="text-[#FF4A3E]">réseau d'acquéreurs qualifiés</span> qui cherchent exactement votre type de bien. <span className="text-[#FF4A3E]">Discrétion garantie</span>.</>,
     img: "/img/gary/maison35.webp",
   },
 ];
@@ -340,7 +340,7 @@ function ConstatSection() {
       style={{ zIndex: 2 }}
     >
       <div className="max-w-[900px] mx-auto px-6 md:px-10 text-center">
-        <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] font-medium mb-5">
+        <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-5">
           Le constat
         </p>
         <h2 className="font-serif text-[clamp(2rem,5vw,3.2rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-5">
@@ -369,6 +369,9 @@ function ConstatSection() {
 
       <div className="relative max-w-[900px] mx-auto px-6 md:px-10 text-center">
         <div>
+        <h3 className="font-serif text-[clamp(2rem,5vw,3.6rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-14 md:mb-20 -mt-6 md:-mt-10">
+          Les <span className="text-[#FF4A3E]">3 erreurs</span> les plus courantes<span className="text-[#FF4A3E]">.</span>
+        </h3>
         <div className="flex justify-center">
           <div className="lg:scale-[0.65] xl:scale-[0.8] 2xl:scale-100 origin-center">
           <div
@@ -520,7 +523,7 @@ function ConstatSection() {
                 }}
               >
                 <h3 className="font-serif text-[1.5rem] md:text-[1.9rem] leading-tight text-[#1A1A1A] mb-2">
-                  {card.title}
+                  <span className="text-[#FF4A3E] font-semibold">{i === 0 ? "1" : i === 1 ? "3" : "2"}.</span> {card.title}
                 </h3>
                 <p className="text-[17px] md:text-[19px] text-neutral-600 leading-relaxed">
                   {card.desc}
@@ -552,7 +555,7 @@ function ConstatSection() {
               }}
             >
               <h3 className="font-serif text-[1.25rem] leading-tight text-[#1A1A1A] mb-2">
-                {card.title}
+                <span className="text-[#FF4A3E] font-semibold">{i + 1}.</span> {card.title}
               </h3>
               <p className="text-[15px] text-neutral-600 leading-relaxed">
                 {card.desc}
@@ -590,21 +593,20 @@ function PhilosophieSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative bg-[#F5F2ED]" style={{ zIndex: 2 }}>
+    <section ref={sectionRef} id="difference" className="relative bg-[#F5F2ED]" style={{ zIndex: 2 }}>
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-16">
 
         {/* ── Desktop : deux colonnes séparées ── */}
-        <div className="hidden md:grid grid-cols-[minmax(0,5fr)_3px_minmax(0,6fr)] gap-0">
+        <div className="hidden md:grid grid-cols-[minmax(0,7fr)_3px_minmax(0,5fr)] gap-0">
 
           {/* ─ Colonne gauche : titre sticky + textes ─ */}
-          <div className="pr-10 lg:pr-16 pt-20 lg:pt-28 pb-24 lg:pb-32">
-            <div className="sticky top-[var(--header-h,72px)] z-10 bg-[#F5F2ED] pt-6 pb-10">
-              <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] font-medium mb-5">
+          <div className="pr-6 lg:pr-10 pt-20 lg:pt-28 pb-24 lg:pb-32">
+            <div className="sticky top-[var(--header-h,72px)] z-10 bg-[#F5F2ED] pt-6 pb-6">
+              <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-5">
                 Notre différence
               </p>
               <h2 className="font-serif text-[clamp(2.2rem,4.5vw,3.4rem)] tracking-[-0.02em] leading-[1.08] text-[#1A1A1A]">
-                Ce que d'autres promettent,<br/>
-                <span className="text-[#FF4A3E]">nous le livrons.</span>
+                Ce que d'autres promettent, <span className="text-[#FF4A3E]">nous le livrons.</span>
               </h2>
               <p className="mt-5 text-[1.1rem] text-neutral-500 leading-relaxed">
                 Trois engagements concrets qui changent le résultat de votre vente.
@@ -612,14 +614,14 @@ function PhilosophieSection() {
             </div>
 
             {philosophiePoints.map((point, i) => (
-              <div key={i} className="mt-[38vh] first:mt-[18vh]">
+              <div key={i} className="mt-[22vh] first:mt-[8vh]">
                 <p className="text-[13px] text-neutral-400 tracking-wide mb-3">
                   {i + 1} / {philosophiePoints.length}
                 </p>
                 <h3 className="font-serif text-[clamp(1.4rem,2.5vw,2rem)] tracking-[-0.01em] leading-[1.2] text-[#1A1A1A] mb-3">
                   {point.text}
                 </h3>
-                <p className="text-[1.05rem] lg:text-[1.15rem] text-neutral-500 leading-relaxed max-w-[38ch]">
+                <p className="text-[1.05rem] lg:text-[1.15rem] text-neutral-500 leading-relaxed max-w-[44ch]">
                   {point.desc}
                 </p>
               </div>
@@ -650,7 +652,7 @@ function PhilosophieSection() {
 
         {/* ── Mobile : empilé ── */}
         <div className="md:hidden py-16">
-          <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] font-medium mb-4">
+          <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-4">
             Notre différence
           </p>
           <h2 className="font-serif text-[clamp(1.8rem,8vw,2.6rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-4">
@@ -694,6 +696,9 @@ function ParcoursSection() {
   const sectionRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [stepProgress, setStepProgress] = useState(0.5);
+  const prevIndexRef = useRef(0);
+  const scrollDir = activeIndex >= prevIndexRef.current ? "down" : "up";
+  prevIndexRef.current = activeIndex;
   const total = parcoursSteps.length;
 
   useEffect(() => {
@@ -757,7 +762,7 @@ function ParcoursSection() {
     <>
     {/* ── Mobile : parcours en cartes verticales ── */}
     <section id="parcours" className="md:hidden relative bg-[#F5F2ED] py-14 px-5" style={{ zIndex: 2 }}>
-      <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] mb-4">
+      <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-4">
         Votre parcours
       </p>
       <h2 className="font-serif text-[clamp(1.8rem,8vw,2.6rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-10">
@@ -859,6 +864,36 @@ function ParcoursSection() {
               strokeWidth="1.5"
               opacity={dotOpacity * 0.2}
             />
+
+            {/* Numéro d'étape dans la moitié droite visible */}
+            <text x="145" y="122" textAnchor="start" fill="#999" fontSize="10" fontWeight="100" fontFamily="sans-serif" letterSpacing="2" style={{ textTransform: "uppercase" }}>/</text>
+            <text x="149" y="124" textAnchor="start" fill="#999" fontSize="10" fontWeight="100" fontFamily="sans-serif" letterSpacing="2">{parcoursSteps.length}</text>
+            <defs>
+              <clipPath id="num-mask">
+                <rect x="100" y="75" width="60" height="50" />
+              </clipPath>
+            </defs>
+            <g clipPath="url(#num-mask)">
+              {parcoursSteps.map((_, i) => {
+                const isActive = activeIndex === i;
+                const isBefore = i < activeIndex;
+                let offsetY = 0;
+                if (!isActive) offsetY = isBefore ? 50 : -50;
+                return (
+                  <text
+                    key={`num-${i}`}
+                    x="130" y="115"
+                    textAnchor="middle" fill="#FF4A3E" fontSize="48" fontWeight="200" fontFamily="sans-serif"
+                    style={{
+                      transform: `translate(0, ${offsetY}px)`,
+                      transition: "transform 0.45s ease-out",
+                    }}
+                  >
+                    {i + 1}
+                  </text>
+                );
+              })}
+            </g>
           </svg>
         </div>
 
@@ -886,7 +921,7 @@ function ParcoursSection() {
                       pointerEvents: activeIndex === i ? "auto" : "none",
                     }}
                   >
-                    <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] mb-4">
+                    <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-4">
                       Votre parcours
                     </p>
                     <h2 className="font-serif text-[clamp(2.2rem,4.5vw,3.4rem)] tracking-[-0.02em] leading-[1.08] text-[#1A1A1A] mb-5">
@@ -927,46 +962,46 @@ function ParcoursSection() {
         {/* Mobile dots removed — mobile uses separate card layout above */}
 
         {/* ── Boutons navigation sections ── */}
-        <div className="absolute bottom-8 right-8 flex items-center gap-3 z-20">
-          <button
-            onClick={() => {
-              const el = document.getElementById("constat");
-              if (!el) return;
-              const top = el.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.15;
-              window.scrollTo({ top, behavior: "smooth" });
-            }}
-            className="w-11 h-11 rounded-full border border-neutral-300 bg-white/60 backdrop-blur-sm flex items-center justify-center text-neutral-500 hover:border-[#FF4A3E] hover:text-[#FF4A3E] transition-all"
-            aria-label="Section précédente"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
-            </svg>
-          </button>
-          <button
-            onClick={() => {
-              const el = document.getElementById("vendus");
-              if (!el) return;
-              const top = el.getBoundingClientRect().top + window.scrollY;
-              window.scrollTo({ top, behavior: "smooth" });
-            }}
-            className="w-11 h-11 rounded-full border border-neutral-300 bg-white/60 backdrop-blur-sm flex items-center justify-center text-neutral-500 hover:border-[#FF4A3E] hover:text-[#FF4A3E] transition-all"
-            aria-label="Section suivante"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
+        <div className="absolute bottom-8 right-8 flex flex-col items-center gap-2 z-20">
+          <span className="text-[11px] uppercase tracking-[0.15em] text-neutral-900 font-medium animate-[skip-bounce_2s_ease-in-out_infinite]">Skip</span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                const el = document.getElementById("constat");
+                if (!el) return;
+                const top = el.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.15;
+                window.scrollTo({ top, behavior: "smooth" });
+              }}
+              className="w-12 h-12 rounded-full bg-[#FF4A3E] flex items-center justify-center shadow-lg hover:bg-[#e8423a] hover:scale-105 transition-all"
+              aria-label="Section précédente"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+              </svg>
+            </button>
+            <button
+              onClick={() => {
+                const el = document.getElementById("vendus");
+                if (!el) return;
+                const top = el.getBoundingClientRect().top + window.scrollY;
+                window.scrollTo({ top, behavior: "smooth" });
+              }}
+              className="w-12 h-12 rounded-full bg-[#FF4A3E] flex items-center justify-center shadow-lg hover:bg-[#e8423a] hover:scale-105 transition-all"
+              aria-label="Section suivante"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
         </div>
+        <style>{`
+          @keyframes skip-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+          }
+        `}</style>
 
-        {/* Compteur */}
-        <div className="absolute bottom-8 left-6 flex items-baseline gap-2 z-20">
-          <span className="font-serif text-[1.8rem] text-[#FF4A3E]">
-            {String(activeIndex + 1).padStart(2, "0")}
-          </span>
-          <span className="text-[13px] text-neutral-400">
-            / {String(total).padStart(2, "0")}
-          </span>
-        </div>
       </div>
     </section>
     </>
@@ -1117,7 +1152,7 @@ function LivrablesSection() {
 
       {/* Contenu */}
       <div className="relative z-10">
-        <p className="text-[12px] uppercase tracking-[0.25em] text-white/50 mb-4">Nos livrables</p>
+        <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-white/60 font-semibold mb-4">Nos livrables</p>
         <h2 className="font-serif text-[clamp(1.8rem,8vw,2.6rem)] tracking-[-0.02em] leading-[1.1] text-white mb-3">
           Pas des promesses<span className="text-[#FF4A3E]">.</span><br />
           Des livrables concrets<span className="text-[#FF4A3E]">.</span>
@@ -1142,7 +1177,7 @@ function LivrablesSection() {
         </div>
 
         {/* Témoignages mobile */}
-        <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] mb-3">Témoignages</p>
+        <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-3">Témoignages</p>
         <h2 className="font-serif text-[clamp(1.6rem,7vw,2.2rem)] tracking-[-0.02em] leading-[1.1] text-white mb-6">
           Ce que disent nos clients<span className="text-[#FF4A3E]">.</span>
         </h2>
@@ -1167,6 +1202,7 @@ function LivrablesSection() {
     {/* ── Desktop : livrables scroll-driven ── */}
     <section
       ref={sectionRef}
+      id="livrables"
       className="relative hidden md:block"
       style={{ zIndex: 2, height: "550vh" }}
     >
@@ -1187,8 +1223,8 @@ function LivrablesSection() {
           className="absolute left-0 right-0 bottom-0 flex items-center justify-center z-10 pointer-events-none"
           style={{ opacity: titleOpacity, top: "var(--header-h, 72px)" }}
         >
-          <div className="text-center px-10 py-8 bg-white/85 backdrop-blur-sm">
-            <p className="text-[12px] uppercase tracking-[0.25em] text-neutral-500 mb-4">Nos livrables</p>
+          <div className="text-center px-10 py-8 bg-white/85 backdrop-blur-sm flex flex-col items-center">
+            <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-neutral-500 font-semibold mb-4">Nos livrables</p>
             <h2 className="font-serif text-[clamp(2.4rem,5.5vw,4.2rem)] text-[#1A1A1A] tracking-[-0.02em] leading-[1.08]">
               Pas des promesses<span className="text-[#FF4A3E]">.</span><br />
               Des livrables concrets<span className="text-[#FF4A3E]">.</span>
@@ -1196,7 +1232,29 @@ function LivrablesSection() {
             <p className="mt-4 text-[1rem] md:text-[1.1rem] text-neutral-500 leading-relaxed">
               Chaque étape produit un document ou un outil tangible.
             </p>
+
+            {/* Indicateur scroll */}
+            <div className="mt-8 flex flex-col items-center gap-2 animate-[scroll-hint_2.5s_ease-in-out_infinite]">
+              <span className="text-[15px] uppercase tracking-[0.2em] text-[#FF4A3E] font-medium">Découvrir</span>
+              <div className="w-[1px] h-8 bg-[#FF4A3E]/40 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-full bg-[#FF4A3E] animate-[scroll-line_2.5s_ease-in-out_infinite]" />
+              </div>
+              <svg className="w-7 h-7 text-[#FF4A3E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
+          <style>{`
+            @keyframes scroll-hint {
+              0%, 100% { transform: translateY(0); opacity: 1; }
+              50% { transform: translateY(6px); opacity: 0.7; }
+            }
+            @keyframes scroll-line {
+              0% { transform: translateY(-100%); }
+              50% { transform: translateY(0); }
+              100% { transform: translateY(100%); }
+            }
+          `}</style>
         </div>
 
         {/* Lignes de découpe */}
@@ -1291,7 +1349,7 @@ function LivrablesSection() {
           className="absolute left-0 right-0 z-50 text-center pointer-events-none"
           style={{ top: "18%", opacity: temoTitle }}
         >
-          <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] mb-3">Témoignages</p>
+          <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-3">Témoignages</p>
           <h2 className="font-serif text-[clamp(2rem,4.5vw,3rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A]">
             Ce que disent nos clients<span className="text-[#FF4A3E]">.</span>
           </h2>
@@ -1399,7 +1457,7 @@ function GenevaMapSection() {
     <>
     {/* ── Mobile : FAQ accordéon ── */}
     <section className="md:hidden relative bg-white py-14 px-5" style={{ zIndex: 2 }}>
-      <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] mb-3">
+      <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-3">
         Questions fréquentes
       </p>
       <h2 className="font-serif text-[clamp(1.8rem,8vw,2.4rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-2">
@@ -1451,7 +1509,7 @@ function GenevaMapSection() {
     {/* ── Desktop : carte interactive ── */}
     <section className="relative bg-white hidden md:block">
       <div className="relative z-10 text-center pt-20 -mb-40 px-4">
-        <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] mb-3">
+        <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-3">
           Questions fréquentes
         </p>
         <h2 className="font-serif text-[clamp(2rem,4.5vw,3rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A]">
@@ -1610,11 +1668,11 @@ function FAQSection() {
   const [openIdx, setOpenIdx] = useState(null);
 
   return (
-    <section className="relative bg-white py-20 md:py-28">
+    <section id="faq" className="relative bg-white py-20 md:py-28">
       <div className="max-w-[1100px] mx-auto px-5 md:px-8 grid md:grid-cols-[1fr_1.2fr] gap-12 md:gap-20 items-start">
         {/* Colonne gauche — titre sticky */}
         <div className="md:sticky md:top-32">
-          <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] mb-3">
+          <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-3">
             Questions fréquentes
           </p>
           <h2 className="font-serif text-[clamp(2rem,4.5vw,3.2rem)] tracking-[-0.02em] leading-[1.05] text-[#1A1A1A] mb-5">
@@ -1697,7 +1755,7 @@ function VendusSection({ vendus }) {
             transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
           }}
         >
-          <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] mb-3">
+          <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-3">
             Résultats
           </p>
           <h2 className="font-serif text-2xl tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-2">
@@ -1724,7 +1782,7 @@ function VendusSection({ vendus }) {
             transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
           }}
         >
-          <p className="text-[12px] uppercase tracking-[0.25em] text-[#FF4A3E] mb-4">
+          <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-4">
             Résultats
           </p>
           <h2 className="font-serif text-[clamp(2rem,5vw,3.2rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-3">
@@ -1794,7 +1852,7 @@ function EquipeSection() {
   ];
 
   return (
-    <section ref={ref} className="relative bg-white overflow-hidden" style={{ zIndex: 2 }}>
+    <section ref={ref} id="equipe" className="relative bg-white overflow-hidden" style={{ zIndex: 2 }}>
       {/* Photo d'équipe — entière, pas coupée */}
       <div
         className="w-full"
@@ -1817,7 +1875,7 @@ function EquipeSection() {
           {/* Colonne gauche — texte */}
           <div>
             <p
-              className="text-[12px] uppercase tracking-[0.3em] text-[#FF4A3E] mb-5"
+              className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-5"
               style={{
                 opacity: visible ? 1 : 0,
                 transform: visible ? "translateY(0)" : "translateY(12px)",
@@ -1937,7 +1995,7 @@ function CTAFinalSection() {
               transition: "opacity 0.7s ease, transform 0.7s ease",
             }}
           >
-            <p className="text-[12px] uppercase tracking-[0.3em] text-[#FF4A3E] mb-5">
+            <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-5">
               Prochaine étape
             </p>
             <h2 className="font-serif text-[clamp(2rem,5vw,4.2rem)] tracking-[-0.03em] leading-[1.05] text-white mb-6 md:whitespace-nowrap">
@@ -2120,6 +2178,21 @@ function ConnectLine() {
 /* ─── Page principale ─── */
 export default function Sell() {
   const { data } = useProperties();
+  const { hash } = useLocation();
+
+  // Scroll vers l'ancre quand on arrive via le dropdown header
+  useEffect(() => {
+    if (!hash) return;
+    const headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h') || '72', 10);
+    const t = setTimeout(() => {
+      const el = document.querySelector(hash);
+      if (el) {
+        const y = el.getBoundingClientRect().top + window.scrollY - headerH - 20;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }
+    }, 300);
+    return () => clearTimeout(t);
+  }, [hash]);
 
   const vendus = useMemo(
     () => data.filter((d) => hasTag(d, /vendu/i) || d.vendu),

@@ -1,6 +1,6 @@
 // src/pages/ListingDetail.jsx
 import React, { useEffect, useState, useMemo, useRef, useCallback } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import useProperties from "../hooks/useProperties.js";
 import TileToggleButton from "../components/TileToggleButton.jsx";
 
@@ -51,6 +51,7 @@ function useThumbVisible() {
 
 export default function ListingDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { data, loading, error } = useProperties();
   const item = pickByIdOrSlug(data, id);
 
@@ -245,8 +246,9 @@ export default function ListingDetail() {
 
   return (
     <main className="page-bg text-text">
-      <Link
-        to="/acheter"
+      <button
+        type="button"
+        onClick={() => navigate(-1)}
         className="close-back-btn"
         aria-label="Revenir aux annonces"
         title="Revenir aux annonces"
@@ -254,7 +256,7 @@ export default function ListingDetail() {
         <svg className="close-back-icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
         </svg>
-      </Link>
+      </button>
 
       <style>{`
         .proj-serif {
