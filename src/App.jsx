@@ -13,6 +13,7 @@ const BuyIntro = React.lazy(() => import('./pages/BuyIntro.jsx'));
 const ListingDetail = React.lazy(() => import('./pages/ListingDetail.jsx'));
 const Sell = React.lazy(() => import('./pages/Sell.jsx'));
 const EstimationLanding = React.lazy(() => import('./pages/EstimationLanding.jsx'));
+const EstimationConfirmationPreview = React.lazy(() => import('./pages/EstimationConfirmationPreview.jsx'));
 const About = React.lazy(() => import('./pages/About.jsx'));
 const Contact = React.lazy(() => import('./pages/Contact.jsx'));
 const TeamMemberDetail = React.lazy(() => import('./pages/TeamMemberDetail.jsx'));
@@ -26,7 +27,7 @@ const NotFound = React.lazy(() => import('./pages/NotFound.jsx'));
 
 export default function App() {
   const location = useLocation();
-  const isEstimer = location.pathname === "/estimer";
+  const isEstimer = location.pathname.startsWith("/estimer");
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -63,6 +64,7 @@ export default function App() {
             <Route path="/annonce/:id" element={<ListingDetail />} />
             <Route path="/vendre" element={<Sell />} />
             <Route path="/estimer" element={<EstimationLanding />} />
+            <Route path="/estimer/confirmation" element={<EstimationConfirmationPreview />} />
             <Route path="/a-propos" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/equipe/:slug" element={<TeamMemberDetail />} />

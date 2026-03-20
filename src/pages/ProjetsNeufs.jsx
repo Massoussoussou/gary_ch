@@ -46,6 +46,30 @@ export default function ProjetNeuf() {
     return () => io.disconnect();
   }, [slides.length]);
 
+  // Restaurer le slide sauvegardé au retour
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const savedIdx = sessionStorage.getItem("projets-neufs-slide");
+    if (savedIdx == null) return;
+    const idx = parseInt(savedIdx, 10);
+    // Attendre que les slides soient chargées (plus que juste intro + coming)
+    if (idx >= slides.length) return; // pas encore prêt, on relancera quand slides.length change
+    sessionStorage.removeItem("projets-neufs-slide");
+    if (idx > 0) {
+      const restore = () => {
+        el.style.scrollSnapType = "none";
+        el.scrollTop = idx * el.clientHeight;
+        idxRef.current = idx;
+        requestAnimationFrame(() => { el.style.scrollSnapType = ""; });
+      };
+      restore();
+      setTimeout(restore, 100);
+      setTimeout(restore, 300);
+      setTimeout(restore, 600);
+    }
+  }, [slides.length]);
+
   // Scroll piloté : molette + clavier en JS, touch = CSS scroll-snap natif
   useEffect(() => {
     const el = wrapRef.current;
@@ -132,6 +156,8 @@ export default function ProjetNeuf() {
 
 const handleKnowMore = (projectId) => {
   if (!wrapRef.current) return;
+  // Sauvegarder le slide actuel pour restaurer au retour
+  sessionStorage.setItem("projets-neufs-slide", String(idxRef.current));
 
   // 1) Anim inverse sur les textes visibles
   const current = wrapRef.current.querySelectorAll(

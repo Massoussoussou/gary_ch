@@ -185,6 +185,13 @@ export default function Listings(){
         />
       </div>
 
+      {/* Bandeau compteur */}
+      <div className="w-full max-w-[1500px] 2xl:max-w-[1600px] mx-auto px-4 lg:px-6 pt-12 pb-4">
+        <h2 className="text-7xl md:text-8xl lg:text-[10rem] font-black uppercase leading-none tracking-tighter text-neutral-900">
+          {filtered.length} BIEN{filtered.length > 1 ? "S" : ""} DISPONIBLE{filtered.length > 1 ? "S" : ""}
+        </h2>
+      </div>
+
       <SortMenu value={sort} onChange={setSort} />
 
       <ListingGrid items={filtered} isFiltered={isFiltered} />

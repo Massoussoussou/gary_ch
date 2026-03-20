@@ -39,16 +39,19 @@
 }
 .landing-estimation .form-title {
   font-family: var(--font-serif, "Playfair Display", serif); font-size: 22px;
-  font-weight: 700; color: var(--le-text); margin-bottom: 4px;
+  font-weight: 700; color: var(--le-text); margin-bottom: 6px;
+  line-height: 1.2;
 }
 .landing-estimation .form-sub {
-  font-size: 13px; color: var(--le-muted); margin-bottom: 24px;
+  font-size: 13px; color: var(--le-muted); margin-bottom: 20px;
+  padding-bottom: 16px; border-bottom: 1px solid var(--le-line);
 }
 .landing-estimation .form-group { margin-bottom: 14px; }
 .landing-estimation .form-group label {
   display: block; font-size: 11px; font-weight: 600;
   letter-spacing: 0.5px; text-transform: uppercase;
-  color: var(--le-muted); margin-bottom: 5px;
+  color: var(--le-muted); margin-bottom: 6px;
+  line-height: 1;
 }
 .landing-estimation .form-group input,
 .landing-estimation .form-group select {
@@ -184,7 +187,7 @@
 
 .landing-estimation .checkbox-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .landing-estimation .checkbox-label {
-  display: inline-flex; align-items: center; gap: 10px;
+  display: inline-flex; align-items: center; gap: 8px;
   padding: 10px 14px; background: var(--le-bg-alt);
   border: 1px solid var(--le-line); cursor: pointer;
   transition: all 0.2s ease; font-size: 13px; font-weight: 500;
@@ -226,189 +229,336 @@
   background: rgba(255,74,62,0.06); color: var(--le-text);
 }
 
-/* CONFIRMATION — reste sombre */
-.landing-estimation .confirmation-page {
-  min-height: 100vh; background: var(--ink); color: white;
+/* =============================================
+   CONFIRMATION — Layout 2 colonnes, calendrier
+   ============================================= */
+.landing-estimation .conf {
+  min-height: 100vh;
+  background: var(--le-bg-alt);
+  color: var(--le-text);
   padding: 120px 48px 80px;
   animation: le-confIn 0.6s ease;
 }
-@keyframes le-confIn { from { opacity: 0; } to { opacity: 1; } }
-.landing-estimation .conf-inner { max-width: 800px; margin: 0 auto; }
-.landing-estimation .conf-header { text-align: center; margin-bottom: 56px; }
-.landing-estimation .conf-check-circle {
-  width: 72px; height: 72px; margin: 0 auto 24px;
-  border: 2px solid var(--orange); border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
+@keyframes le-confIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.landing-estimation .conf-wrap {
+  max-width: 1200px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: start;
+}
+
+/* ---------- LEFT COLUMN ---------- */
+.landing-estimation .conf-left {
+  padding-top: 16px;
+}
+
+/* Header */
+.landing-estimation .conf-header {
+  margin-bottom: 48px;
+}
+.landing-estimation .conf-eyebrow {
+  font-size: 12px; font-weight: 600; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--orange);
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.landing-estimation .conf-eyebrow::before {
+  content: ''; display: block; width: 24px; height: 2px;
+  background: var(--orange);
 }
 .landing-estimation .conf-title {
   font-family: var(--font-serif, "Playfair Display", serif);
-  font-size: clamp(28px, 3.5vw, 42px); font-weight: 700;
-  margin-bottom: 12px;
-}
-.landing-estimation .conf-title span { color: var(--orange); }
-.landing-estimation .conf-sub {
-  font-size: 17px; color: rgba(255,255,255,0.45);
-  max-width: 500px; margin: 0 auto;
-}
-.landing-estimation .conf-timeline {
-  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0;
-  margin-bottom: 56px; position: relative;
-}
-.landing-estimation .conf-timeline::before {
-  content: ''; position: absolute; top: 24px;
-  left: 16.66%; right: 16.66%; height: 1px;
-  background: rgba(255,74,62,0.25);
-}
-.landing-estimation .conf-timeline-step {
-  text-align: center; position: relative; z-index: 1; padding: 0 16px;
-}
-.landing-estimation .conf-timeline-dot {
-  width: 48px; height: 48px; margin: 0 auto 16px;
-  border: 1.5px solid rgba(255,74,62,0.4); border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-serif, "Playfair Display", serif); font-size: 18px;
-  font-weight: 700; color: var(--orange); background: var(--ink);
-}
-.landing-estimation .conf-timeline-title {
-  font-size: 15px; font-weight: 600; color: white; margin-bottom: 4px;
-}
-.landing-estimation .conf-timeline-time {
-  font-size: 12px; font-weight: 600; color: var(--orange);
-  letter-spacing: 0.5px; margin-bottom: 8px;
-}
-.landing-estimation .conf-timeline-desc {
-  font-size: 13px; color: rgba(255,255,255,0.35); line-height: 1.5;
-}
-.landing-estimation .conf-booking { margin-bottom: 48px; }
-.landing-estimation .conf-booking-inner {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 20px; background: var(--orange); padding: 24px 32px;
-}
-.landing-estimation .conf-booking-left {
-  display: flex; align-items: center; gap: 16px;
-}
-.landing-estimation .conf-booking-icon {
-  width: 52px; height: 52px; background: rgba(255,255,255,0.2);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; border-radius: 50%;
-}
-.landing-estimation .conf-booking-title {
-  font-size: 17px; font-weight: 700; color: white;
-}
-.landing-estimation .conf-booking-sub {
-  font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 2px;
-}
-.landing-estimation .conf-booking-btn {
-  display: inline-block; padding: 14px 28px;
-  background: var(--ink); color: white;
-  font-family: var(--font-sans, "Inter", sans-serif); font-size: 13px;
-  font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  text-decoration: none; white-space: nowrap;
-  transition: all 0.2s ease; flex-shrink: 0;
-}
-.landing-estimation .conf-booking-btn:hover {
-  background: var(--ink-light); transform: translateY(-1px);
-}
-.landing-estimation .conf-booking-alt {
-  text-align: center; font-size: 13px;
-  color: rgba(255,255,255,0.3); padding: 12px 0 0;
-}
-.landing-estimation .conf-bottom {
-  display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px;
-}
-.landing-estimation .conf-rdv-preview {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08); padding: 32px;
-}
-.landing-estimation .conf-rdv-label {
-  font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
-  text-transform: uppercase; color: var(--orange); margin-bottom: 20px;
-}
-.landing-estimation .conf-rdv-item {
-  display: flex; align-items: center; gap: 14px;
-  padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
-}
-.landing-estimation .conf-rdv-item:last-child { border-bottom: none; }
-.landing-estimation .conf-rdv-icon {
-  width: 36px; height: 36px; background: rgba(255,74,62,0.1);
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.landing-estimation .conf-rdv-text {
-  font-size: 14px; color: rgba(255,255,255,0.6);
-}
-.landing-estimation .conf-meanwhile {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08); padding: 32px;
-  display: flex; flex-direction: column;
-}
-.landing-estimation .conf-meanwhile-label {
-  font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
-  text-transform: uppercase; color: rgba(255,255,255,0.3);
+  font-size: clamp(36px, 4vw, 52px); font-weight: 700;
+  color: var(--le-text); line-height: 1.1;
   margin-bottom: 20px;
 }
-.landing-estimation .conf-link {
-  display: flex; align-items: center; gap: 14px;
-  padding: 16px; background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06); text-decoration: none;
-  transition: all 0.2s ease; margin-bottom: 12px; cursor: pointer;
-}
-.landing-estimation .conf-link:last-child { margin-bottom: 0; }
-.landing-estimation .conf-link:hover {
-  background: rgba(255,255,255,0.06); border-color: rgba(255,74,62,0.3);
-}
-.landing-estimation .conf-link:hover .conf-link-text { color: var(--orange); }
-.landing-estimation .conf-link-text {
-  font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.6);
+.landing-estimation .conf-title span { color: var(--orange); }
+.landing-estimation .conf-desc {
+  font-size: 16px; color: var(--le-muted); line-height: 1.75;
+  max-width: 480px;
 }
 
-/* Contact block */
-.landing-estimation .conf-contact-block {
-  display: flex; align-items: flex-start; gap: 14px;
-  padding: 16px; background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
+/* Section labels */
+.landing-estimation .conf-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--le-muted);
+  margin-bottom: 16px;
 }
-.landing-estimation .conf-contact-info { flex: 1; }
-.landing-estimation .conf-contact-actions {
-  display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;
+
+/* Expect list */
+.landing-estimation .conf-expect {
+  margin-bottom: 40px;
 }
-.landing-estimation .conf-action-btn {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 7px 14px; font-family: var(--font-sans, "Inter", sans-serif);
-  font-size: 12px; font-weight: 600; text-decoration: none;
-  transition: all 0.2s ease; border: none; cursor: pointer;
+.landing-estimation .conf-expect-list {
+  display: flex; flex-direction: column; gap: 0;
 }
-.landing-estimation a.conf-action-btn[href^="tel"] {
-  background: rgba(255,74,62,0.1); color: var(--orange);
-  border: 1px solid rgba(255,74,62,0.2);
+.landing-estimation .conf-expect-item {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--le-line);
 }
-.landing-estimation a.conf-action-btn[href^="tel"]:hover {
-  background: rgba(255,74,62,0.2);
+.landing-estimation .conf-expect-item:last-child { border-bottom: none; }
+.landing-estimation .conf-expect-icon {
+  width: 36px; height: 36px;
+  background: rgba(255,74,62,0.06);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 2px;
 }
-.landing-estimation .conf-action-btn.email-copy {
-  background: rgba(255,74,62,0.1); color: var(--orange);
-  border: 1px solid rgba(255,74,62,0.2);
+.landing-estimation .conf-expect-item strong {
+  font-size: 14px; font-weight: 600; color: var(--le-text);
+  display: block; margin-bottom: 2px;
+}
+.landing-estimation .conf-expect-item p {
+  font-size: 13px; color: var(--le-muted); line-height: 1.5;
+  margin: 0;
+}
+
+/* Secondary links */
+.landing-estimation .conf-links {
+  margin-bottom: 0;
+}
+.landing-estimation .conf-link-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px; margin-bottom: 8px;
+  background: var(--white);
+  border: 1px solid var(--le-line);
+  text-decoration: none; cursor: pointer;
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-size: 14px; font-weight: 500; color: var(--le-text);
+  transition: all 0.2s ease;
+}
+.landing-estimation .conf-link-item:hover {
+  border-color: rgba(255,74,62,0.3);
+  color: var(--orange);
+}
+.landing-estimation .conf-link-ico {
+  width: 32px; height: 32px;
+  background: rgba(255,74,62,0.06);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ---------- RIGHT COLUMN ---------- */
+.landing-estimation .conf-right {
+  position: sticky; top: 100px;
+}
+
+/* Calendar card */
+.landing-estimation .conf-calendar {
+  background: var(--white);
+  border: 1px solid var(--le-line);
+  padding: 36px;
+  box-shadow: 0 12px 48px -16px rgba(0,0,0,0.1);
+  margin-bottom: 16px;
+}
+.landing-estimation .conf-calendar-title {
+  font-family: var(--font-serif, "Playfair Display", serif);
+  font-size: 24px; font-weight: 700; color: var(--le-text);
+  margin-bottom: 6px;
+}
+.landing-estimation .conf-calendar-sub {
+  font-size: 13px; color: var(--le-muted);
+  margin-bottom: 28px;
+}
+
+/* Calendar Picker component */
+.landing-estimation .cal-picker {
+  user-select: none;
+}
+.landing-estimation .cal-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.landing-estimation .cal-nav-label {
+  font-family: var(--font-serif, "Playfair Display", serif);
+  font-size: 16px; font-weight: 600; color: var(--le-text);
+}
+.landing-estimation .cal-nav-arrow {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: 1px solid var(--le-line);
+  font-size: 20px; color: var(--le-text);
+  cursor: pointer; transition: all 0.15s ease;
   font-family: var(--font-sans, "Inter", sans-serif);
 }
-.landing-estimation .conf-action-btn.email-copy:hover {
-  background: rgba(255,74,62,0.2);
+.landing-estimation .cal-nav-arrow:hover:not(:disabled) {
+  border-color: var(--orange); color: var(--orange);
 }
-.landing-estimation .conf-action-btn.email-copy.copied {
-  background: rgba(45,138,78,0.15); color: var(--success);
-  border-color: rgba(45,138,78,0.3);
+.landing-estimation .cal-nav-arrow:disabled {
+  opacity: 0.3; cursor: default;
 }
 
-/* eBook modal — reste sombre */
+/* Day grid */
+.landing-estimation .cal-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 4px; margin-bottom: 4px;
+}
+.landing-estimation .cal-head {
+  text-align: center; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--le-muted); padding: 8px 0;
+}
+.landing-estimation .cal-cell {
+  aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-size: 14px; font-weight: 500; color: var(--le-text);
+  background: none; border: 1px solid transparent;
+  cursor: pointer; transition: all 0.15s ease;
+}
+.landing-estimation .cal-cell:hover:not(:disabled):not(.empty) {
+  background: rgba(255,74,62,0.06);
+  border-color: rgba(255,74,62,0.2);
+}
+.landing-estimation .cal-cell.selected {
+  background: var(--orange); color: white;
+  border-color: var(--orange); font-weight: 700;
+}
+.landing-estimation .cal-cell.disabled {
+  color: var(--le-line); cursor: default;
+}
+.landing-estimation .cal-cell.empty {
+  cursor: default;
+}
+
+/* Time slots */
+.landing-estimation .cal-times {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--le-line);
+  animation: le-calSlide 0.3s ease;
+}
+@keyframes le-calSlide {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.landing-estimation .cal-times-label {
+  font-size: 12px; font-weight: 600; color: var(--le-muted);
+  margin-bottom: 12px;
+}
+.landing-estimation .cal-times-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.landing-estimation .cal-slot {
+  padding: 10px 4px;
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-size: 13px; font-weight: 500;
+  color: var(--le-text); background: var(--le-bg-alt);
+  border: 1px solid var(--le-line);
+  cursor: pointer; transition: all 0.15s ease;
+  text-align: center;
+}
+.landing-estimation .cal-slot:hover {
+  border-color: rgba(255,74,62,0.3);
+  background: rgba(255,74,62,0.04);
+}
+.landing-estimation .cal-slot.selected {
+  background: var(--orange); color: white;
+  border-color: var(--orange); font-weight: 700;
+}
+
+/* Confirm button */
+.landing-estimation .cal-book-btn {
+  width: 100%; margin-top: 16px; padding: 16px;
+  background: var(--orange); color: white;
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-size: 14px; font-weight: 700; letter-spacing: 0.5px;
+  border: none; cursor: pointer;
+  transition: all 0.25s ease;
+  text-transform: uppercase;
+}
+.landing-estimation .cal-book-btn:hover {
+  background: var(--orange-light);
+  box-shadow: 0 6px 20px rgba(255,74,62,0.25);
+}
+
+/* Confirmed state */
+.landing-estimation .cal-confirmed {
+  text-align: center; padding: 16px 0;
+}
+.landing-estimation .cal-confirmed-icon {
+  width: 48px; height: 48px; margin: 0 auto 16px;
+  background: rgba(45,138,78,0.1);
+  color: var(--success);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 700;
+}
+.landing-estimation .cal-confirmed-title {
+  font-family: var(--font-serif, "Playfair Display", serif);
+  font-size: 20px; font-weight: 700; color: var(--le-text);
+  margin-bottom: 8px;
+}
+.landing-estimation .cal-confirmed-detail {
+  font-size: 16px; font-weight: 600; color: var(--orange);
+  margin-bottom: 16px; text-transform: capitalize;
+}
+.landing-estimation .cal-confirmed-note {
+  font-size: 14px; color: var(--le-muted); line-height: 1.6;
+  margin-bottom: 20px;
+}
+.landing-estimation .cal-confirmed-note a {
+  color: var(--orange); text-decoration: none; font-weight: 600;
+}
+.landing-estimation .cal-change-btn {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-size: 13px; font-weight: 600; color: var(--le-muted);
+  text-decoration: underline; text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+.landing-estimation .cal-change-btn:hover { color: var(--orange); }
+
+/* Contact bar */
+.landing-estimation .conf-contact-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 16px 20px;
+  background: var(--white);
+  border: 1px solid var(--le-line);
+}
+.landing-estimation .conf-contact-text {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--le-muted); white-space: nowrap;
+  margin: 0;
+}
+.landing-estimation .conf-contact-actions {
+  display: flex; gap: 6px;
+}
+.landing-estimation .conf-contact-btn {
+  padding: 8px 14px;
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-size: 12px; font-weight: 600;
+  color: var(--orange);
+  background: rgba(255,74,62,0.06);
+  border: 1px solid rgba(255,74,62,0.12);
+  text-decoration: none; cursor: pointer;
+  transition: all 0.15s ease;
+}
+.landing-estimation .conf-contact-btn:hover {
+  background: rgba(255,74,62,0.12);
+}
+.landing-estimation .conf-contact-btn.copied {
+  background: rgba(45,138,78,0.08); color: var(--success);
+  border-color: rgba(45,138,78,0.15);
+}
+
+/* eBook modal — fond clair */
 .landing-estimation .ebook-overlay {
   position: fixed; inset: 0; z-index: 300;
-  background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+  background: rgba(0,0,0,0.4); backdrop-filter: blur(6px);
   display: flex; align-items: center; justify-content: center;
   animation: le-fadeIn 0.3s ease;
 }
 @keyframes le-fadeIn { from { opacity: 0; } to { opacity: 1; } }
 .landing-estimation .ebook-modal {
-  background: var(--ink); border: 1px solid rgba(255,255,255,0.1);
+  background: white; border: 1px solid var(--le-line);
   max-width: 480px; width: 90%; padding: 40px;
   position: relative; text-align: center;
+  box-shadow: 0 20px 60px -20px rgba(0,0,0,0.25);
   animation: le-modalSlide 0.3s ease;
 }
 @keyframes le-modalSlide {
@@ -417,32 +567,32 @@
 }
 .landing-estimation .ebook-close {
   position: absolute; top: 16px; right: 16px;
-  background: none; border: none; color: rgba(255,255,255,0.3);
+  background: none; border: none; color: var(--le-muted);
   font-size: 24px; cursor: pointer; line-height: 1; padding: 4px;
   transition: color 0.2s;
 }
-.landing-estimation .ebook-close:hover { color: white; }
+.landing-estimation .ebook-close:hover { color: var(--le-text); }
 .landing-estimation .ebook-icon {
   width: 56px; height: 56px; margin: 0 auto 20px;
-  background: rgba(255,74,62,0.1);
-  border: 1px solid rgba(255,74,62,0.2); border-radius: 50%;
+  background: rgba(255,74,62,0.08);
+  border: 1px solid rgba(255,74,62,0.15); border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
 }
 .landing-estimation .ebook-title {
   font-family: var(--font-serif, "Playfair Display", serif); font-size: 22px;
-  font-weight: 700; color: white; margin-bottom: 10px;
+  font-weight: 700; color: var(--le-text); margin-bottom: 10px;
 }
 .landing-estimation .ebook-desc {
-  font-size: 14px; color: rgba(255,255,255,0.45);
+  font-size: 14px; color: var(--le-muted);
   line-height: 1.6; margin-bottom: 24px;
 }
 .landing-estimation .ebook-desc strong {
-  color: rgba(255,255,255,0.7); font-weight: 600;
+  color: var(--le-text); font-weight: 600;
 }
 .landing-estimation .ebook-list { text-align: left; margin-bottom: 28px; }
 .landing-estimation .ebook-list-item {
   display: flex; align-items: flex-start; gap: 10px;
-  padding: 8px 0; font-size: 13px; color: rgba(255,255,255,0.55);
+  padding: 8px 0; font-size: 13px; color: var(--le-muted);
 }
 .landing-estimation .ebook-list-item svg { flex-shrink: 0; margin-top: 1px; }
 .landing-estimation .ebook-confirm-btn {
@@ -457,10 +607,14 @@
   opacity: 0.6; pointer-events: none;
 }
 .landing-estimation .ebook-confirm-btn.secondary {
-  background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6);
+  background: var(--le-bg-alt); color: var(--le-muted);
+  border: 1px solid var(--le-line);
+}
+.landing-estimation .ebook-confirm-btn.secondary:hover {
+  background: var(--le-line); color: var(--le-text);
 }
 .landing-estimation .ebook-note {
-  font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 12px;
+  font-size: 11px; color: var(--le-muted); margin-top: 12px;
 }
 
 /* METHOD — fond clair, fonts GARY */
@@ -886,13 +1040,17 @@
   .landing-estimation .form-row-3 { grid-template-columns: 1fr; }
   .landing-estimation .checkbox-row { flex-direction: column; }
   .landing-estimation .toggle-row { flex-direction: column; }
-  .landing-estimation .confirmation-page { padding: 100px 24px 60px; }
-  .landing-estimation .conf-timeline { grid-template-columns: 1fr; gap: 32px; }
-  .landing-estimation .conf-timeline::before { display: none; }
-  .landing-estimation .conf-bottom { grid-template-columns: 1fr; }
-  .landing-estimation .conf-booking-inner {
-    flex-direction: column; text-align: center;
+  .landing-estimation .conf { padding: 100px 16px 60px; }
+  .landing-estimation .conf-wrap {
+    grid-template-columns: 1fr; gap: 32px;
   }
-  .landing-estimation .conf-booking-left { flex-direction: column; }
-  .landing-estimation .conf-booking-btn { width: 100%; text-align: center; }
+  .landing-estimation .conf-right { position: static; }
+  .landing-estimation .conf-calendar { padding: 24px; }
+  .landing-estimation .cal-times-grid { grid-template-columns: repeat(3, 1fr); }
+  .landing-estimation .conf-contact-bar {
+    flex-direction: column; align-items: stretch; text-align: center;
+  }
+  .landing-estimation .conf-contact-actions {
+    justify-content: center;
+  }
 }

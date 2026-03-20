@@ -326,6 +326,8 @@ export default function FiltersBar({
   resultCount = 0,
   onChange,
   initialFilters = {},
+  sortValue,
+  onSortChange,
 }) {
   const [openKey, setOpenKey] = useState(null); // 'ville' | 'type' | 'budget' | 'chambres' | 'surface'
   const [advancedOpen, setAdvancedOpen] = useState(false);
@@ -965,10 +967,39 @@ export default function FiltersBar({
                 />
               </button>
 
-              <span className="text-sm text-text/70">|</span>
-              <span className="text-sm text-text/70">
-                {resultCount} annonce{resultCount > 1 ? "s" : ""}
-              </span>
+              {onSortChange && (
+                <div className="relative">
+                  <TinyButton
+                    active={openKey === "tri"}
+                    onClick={() => setOpenKey((k) => (k === "tri" ? null : "tri"))}
+                  >
+                    Trier
+                  </TinyButton>
+                  <Popover open={openKey === "tri"} onClose={() => setOpenKey(null)}>
+                    <div className="flex flex-col gap-1 min-w-[180px]">
+                      {[
+                        { value: "recent", label: "Plus récentes" },
+                        { value: "prix-asc", label: "Prix croissant" },
+                        { value: "prix-desc", label: "Prix décroissant" },
+                        { value: "surface", label: "Surface" },
+                      ].map((opt) => (
+                        <button
+                          type="button"
+                          key={opt.value}
+                          onClick={() => { onSortChange(opt.value); setOpenKey(null); }}
+                          className={`text-left px-3 py-2 text-sm ${
+                            sortValue === opt.value
+                              ? "border border-primary/60 bg-primary/5 text-primary"
+                              : "border border-transparent hover:bg-bgAlt"
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </Popover>
+                </div>
+              )}
 
               <button
                 type="button"

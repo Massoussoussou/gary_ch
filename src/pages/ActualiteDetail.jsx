@@ -18,10 +18,7 @@ export default function ActualiteDetail() {
   // Trouver l'article par ID
   const article = actualites.find((a) => a.id === parseInt(id));
 
-  // Scroll to top on mount
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [id]);
+  // scroll to top géré par ScrollToTop.jsx
 
   if (!article) {
     return (
@@ -109,8 +106,9 @@ export default function ActualiteDetail() {
   return (
     <div className="min-h-screen bg-white">
       {/* Close button */}
-      <Link
-        to={article.category === "Presse" ? "/presse" : "/actualites"}
+      <button
+        type="button"
+        onClick={() => navigate(-1)}
         className="close-back-btn"
         aria-label={article.category === "Presse" ? "Revenir à la presse" : "Revenir aux actualités"}
         title={article.category === "Presse" ? "Revenir à la presse" : "Revenir aux actualités"}
@@ -118,7 +116,7 @@ export default function ActualiteDetail() {
         <svg className="close-back-icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
         </svg>
-      </Link>
+      </button>
 
       {/* Hero banner (1400x467 si disponible, sinon image par défaut) */}
       <div className="w-full overflow-hidden bg-neutral-100" style={{ aspectRatio: "1400 / 467" }}>
