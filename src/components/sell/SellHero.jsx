@@ -68,6 +68,28 @@ function SellHeroContent() {
 /* ─── Export principal ─── */
 export default function SellHero() {
   const [ready, setReady] = useState(false);
+  const sectionRef = useRef(null);
+  const videoRef = useRef(null);
+
+  // Pause la vidéo quand le hero n'est plus visible (scrollé au-delà)
+  useEffect(() => {
+    const section = sectionRef.current;
+    const video = videoRef.current;
+    if (!section || !video) return;
+
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0 }
+    );
+    obs.observe(section);
+    return () => obs.disconnect();
+  }, []);
 
   return (
     <>
@@ -88,6 +110,7 @@ export default function SellHero() {
         />
 
         <video
+          ref={videoRef}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
             ready ? "opacity-100" : "opacity-0"
           }`}
@@ -95,10 +118,10 @@ export default function SellHero() {
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
           poster="/media/sell/hero12.webp"
-          onLoadedData={() => setReady(true)}
-          onCanPlay={() => setReady(true)}
+          onCanPlayThrough={() => setReady(true)}
+          onPlaying={() => setReady(true)}
           aria-hidden="true"
         >
           <source src="/media/sell/hero12.webm" type="video/webm" />
@@ -112,6 +135,7 @@ export default function SellHero() {
 
       {/* Hero avec parallax */}
       <section
+        ref={sectionRef}
         className="relative min-h-[100svh] flex items-center overflow-hidden"
         style={{ zIndex: 1 }}
       >

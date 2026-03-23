@@ -335,36 +335,58 @@ function CounterBanner({ count }) {
     return () => obs.disconnect();
   }, []);
 
+  const ease = "cubic-bezier(0.22, 1, 0.36, 1)";
+
   return (
     <div ref={ref} className="w-full max-w-[1500px] 2xl:max-w-[1600px] mx-auto px-4 lg:px-6 pt-10 pb-2 flex justify-center">
       <div className="relative inline-flex items-baseline justify-center gap-3 md:gap-6 lg:gap-10 px-8 md:px-14 lg:px-20 py-5 md:py-8">
-        {/* Rectangle SVG animé */}
-        <svg
-          className="absolute inset-0 w-full h-full"
-          viewBox="0 0 100 100"
-          preserveAspectRatio="none"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <rect
-            x="0.5" y="0.5" width="99" height="99"
-            stroke="#FF4A3E"
-            strokeWidth="0.8"
-            vectorEffect="non-scaling-stroke"
-            pathLength="100"
-            strokeDasharray="100"
-            strokeDashoffset={visible ? "0" : "100"}
-            style={{ transition: "stroke-dashoffset 1.6s cubic-bezier(0.22, 1, 0.36, 1)" }}
-          />
-        </svg>
 
-        <span className="relative text-4xl md:text-6xl lg:text-8xl uppercase leading-none tracking-wide text-[#FF4A3E] font-medium">
+        {/* L haut-gauche : grandit depuis le coin */}
+        <span
+          className="absolute top-0 left-0 pointer-events-none"
+          style={{
+            width: "33%",
+            height: "40%",
+            borderTop: "1px solid #FF4A3E",
+            borderLeft: "1px solid #FF4A3E",
+            transformOrigin: "top left",
+            transform: visible ? "scale(1)" : "scale(0)",
+            transition: `transform 1.2s ${ease}`,
+          }}
+        />
+        {/* L haut-droit : grandit depuis le coin */}
+        <span
+          className="absolute top-0 right-0 pointer-events-none"
+          style={{
+            width: "33%",
+            height: "40%",
+            borderTop: "1px solid #FF4A3E",
+            borderRight: "1px solid #FF4A3E",
+            transformOrigin: "top right",
+            transform: visible ? "scale(1)" : "scale(0)",
+            transition: `transform 1.2s ${ease} 0.15s`,
+          }}
+        />
+        {/* Trait bas centre : s'étend depuis le centre */}
+        <span
+          className="absolute bottom-0 left-1/2 pointer-events-none"
+          style={{
+            width: "50%",
+            height: 0,
+            borderBottom: "1px solid #FF4A3E",
+            transformOrigin: "center",
+            transform: visible ? "translateX(-50%) scaleX(1)" : "translateX(-50%) scaleX(0)",
+            transition: `transform 1s ${ease} 0.3s`,
+          }}
+        />
+
+        <span className="relative text-3xl md:text-4xl lg:text-5xl uppercase leading-none tracking-wide text-[#FF4A3E] font-medium">
           {count}
         </span>
-        <span className="relative text-4xl md:text-6xl lg:text-8xl uppercase leading-none tracking-wide text-neutral-900 font-serif font-light">
+        <span className="relative text-3xl md:text-4xl lg:text-5xl uppercase leading-none tracking-wide text-neutral-900 font-serif font-light">
           BIEN{count > 1 ? "S" : ""}
         </span>
-        <span className="relative text-4xl md:text-6xl lg:text-8xl uppercase leading-none tracking-wide text-neutral-900 font-serif font-light">
+        <span className="relative text-3xl md:text-4xl lg:text-5xl uppercase leading-none tracking-wide text-neutral-900 font-serif font-light">
           DISPONIBLE{count > 1 ? "S" : ""}
         </span>
       </div>

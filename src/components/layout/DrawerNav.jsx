@@ -17,6 +17,7 @@ export default function DrawerNav({ open, onClose }) {
 
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    document.body.setAttribute("data-drawer-open", "");
 
     const t = setTimeout(() => firstLinkRef.current?.focus?.(), 60);
 
@@ -27,6 +28,7 @@ export default function DrawerNav({ open, onClose }) {
 
     return () => {
       document.body.style.overflow = prevOverflow;
+      document.body.removeAttribute("data-drawer-open");
       clearTimeout(t);
       window.removeEventListener("keydown", onKeyDown);
     };
@@ -67,7 +69,7 @@ export default function DrawerNav({ open, onClose }) {
   const navItems = [
     { to: "/acheter", label: "ACHETER", sub: "Découvrir nos biens" },
     { to: "/estimer", label: "ESTIMER", sub: "Estimation et stratégie" },
-    { to: "/projets-neufs", label: "PROJETS NEUFS", sub: "Nos projets neufs" },
+    { to: "/projets-neufs", label: "PROJETS NEUFS", sub: "Les projets neufs" },
   ];
 
   const vendreSubs = [

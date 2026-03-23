@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import navigateBackFn from "../utils/navigateBack.js";
 import { usePromotionDetail } from "../hooks/usePromotions.js";
 import team from "../data/team.json";
 
@@ -214,7 +215,7 @@ export default function ProjetNeufDetail() {
         {/* Bouton retour vers Projets Neufs */}
 <button
   type="button"
-  onClick={() => navigate(-1)}
+  onClick={() => navigateBackFn(navigate)}
   className="close-back-btn"
   aria-label="Revenir à la page Projets Neufs"
   title="Revenir aux projets neufs"

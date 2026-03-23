@@ -684,7 +684,7 @@ export default function FiltersBar({
       {!mobileOpen && createPortal(
         <div
           className={`
-            lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] pointer-events-auto
+            filters-sticky-btn lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] pointer-events-auto
             transition-all duration-300 ease-out
             ${showStickyBtn && !reachedBottom
               ? "opacity-100 translate-y-0"
