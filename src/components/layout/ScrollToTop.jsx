@@ -1,103 +1,129 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useLocation, useNavigationType } from "react-router-dom";
-
-function getScroll() {
-  if (window.__lenis) return window.__lenis.scroll || window.__lenis.animatedScroll || 0;
-  return window.scrollY || document.documentElement.scrollTop || 0;
-}
-
-function forceScroll(y) {
-  if (window.__lenis) {
-    window.__lenis.stop();
-    window.__lenis.scrollTo(y, { immediate: true, force: true });
-  }
-  window.scrollTo(0, y);
-  document.documentElement.scrollTop = y;
-  document.body.scrollTop = y;
-}
-
-function reenableLenis(y) {
-  if (window.__lenis) {
-    window.__lenis.scrollTo(y, { immediate: true, force: true });
-    window.__lenis.start();
-    // Force une seconde fois après le premier raf pour écraser toute valeur interne
-    requestAnimationFrame(() => {
-      if (window.__lenis) {
-        window.__lenis.scrollTo(y, { immediate: true, force: true });
-      }
-    });
-  }
-}
+import { markNavigation } from "../../utils/navigateBack.js";
 
 const STORAGE_KEY = "gary_scroll_positions";
-function loadPositions() {
+
+function readMap() {
   try { return JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "{}"); } catch { return {}; }
 }
-function savePositions(map) {
+function writeMap(map) {
   try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(map)); } catch {}
 }
 
-// Flag global pour bloquer la sauvegarde pendant la restauration
-let restoring = false;
+/**
+ * Force le scroll à `target`, retente jusqu'à ce que ça marche
+ * ou timeout de 2.5s. Gère Lenis.
+ */
+function restoreScroll(target, onDone) {
+  const doScroll = () => {
+    window.scrollTo(0, target);
+    if (window.__lenis) {
+      window.__lenis.scrollTo(target, { immediate: true, force: true });
+    }
+  };
+
+  if (target <= 0) {
+    doScroll();
+    if (window.__lenis) window.__lenis.start();
+    if (onDone) setTimeout(onDone, 80);
+    return () => {};
+  }
+
+  let timer;
+  let attempts = 0;
+
+  const tryScroll = () => {
+    doScroll();
+    attempts++;
+
+    const reached = Math.abs(window.scrollY - target) < 15;
+
+    if (reached || attempts >= 40) {
+      // Réussi ou timeout (40 × 50ms = 2s max)
+      doScroll();
+      if (window.__lenis) window.__lenis.start();
+      if (onDone) setTimeout(onDone, 300);
+      return;
+    }
+
+    // Page pas assez haute encore → réessayer
+    timer = setTimeout(tryScroll, 50);
+  };
+
+  timer = setTimeout(tryScroll, 30);
+
+  return () => clearTimeout(timer);
+}
+
+/** Retire l'overlay noir en fade-out */
+function fadeOverlay() {
+  const overlay = document.querySelector(".transition-overlay");
+  if (!overlay) return;
+  overlay.classList.remove("is-on");
+  setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 250);
+}
 
 export default function ScrollToTop() {
   const { pathname } = useLocation();
   const navigationType = useNavigationType();
-  const prevPathname = useRef(pathname);
-  const isFirstRender = useRef(true);
-  const restoreTimers = useRef([]);
+  const prevPath = useRef(pathname);
+  const cleanup = useRef(null);
 
-  // Sauvegarder la position en continu (sauf pendant une restauration)
+  // Sauvegarder la position scroll AVANT chaque navigation
+  // On écoute en capture pour sauver avant que navigate() ne change le pathname
   useEffect(() => {
     const save = () => {
-      if (restoring) return;
-      const map = loadPositions();
-      map[prevPathname.current] = getScroll();
-      savePositions(map);
+      const y = window.__lenis
+        ? (window.__lenis.scroll ?? window.__lenis.animatedScroll ?? window.scrollY)
+        : window.scrollY;
+      if (y > 0) {
+        const map = readMap();
+        map[pathname] = y;
+        writeMap(map);
+      }
     };
-    window.addEventListener("scroll", save, { passive: true });
-    return () => window.removeEventListener("scroll", save);
-  }, []);
 
-  useLayoutEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
+    // Sauvegarder sur clic ET sur beforeunload (cas refresh)
+    document.addEventListener("click", save, true);
+    window.addEventListener("beforeunload", save);
 
-    // Annuler les restaurations précédentes
-    restoreTimers.current.forEach(clearTimeout);
-    restoreTimers.current = [];
+    return () => {
+      document.removeEventListener("click", save, true);
+      window.removeEventListener("beforeunload", save);
+    };
+  }, [pathname]);
 
-    // Sauvegarder la position de la page qu'on quitte
-    const map = loadPositions();
-    map[prevPathname.current] = getScroll();
-    savePositions(map);
+  useEffect(() => {
+    if (prevPath.current === pathname) return;
+
+    // Nettoyer les timers précédents
+    if (cleanup.current) cleanup.current();
 
     if (navigationType === "POP") {
+      // Retour arrière → restaurer le scroll
+      const map = readMap();
       const saved = map[pathname] || 0;
-      restoring = true;
 
-      forceScroll(saved);
+      // Bloquer Lenis pendant la restauration
+      if (window.__lenis) window.__lenis.stop();
+      window.scrollTo(0, saved);
 
-      restoreTimers.current = [
-        setTimeout(() => { forceScroll(saved); }, 50),
-        setTimeout(() => { forceScroll(saved); }, 150),
-        setTimeout(() => { forceScroll(saved); reenableLenis(saved); }, 350),
-        setTimeout(() => { forceScroll(saved); reenableLenis(saved); }, 600),
-        setTimeout(() => {
-          forceScroll(saved);
-          reenableLenis(saved);
-          // Fin de la restauration — réactiver la sauvegarde
-          restoring = false;
-        }, 1200),
-      ];
+      cleanup.current = restoreScroll(saved, fadeOverlay);
     } else {
-      forceScroll(0);
-      setTimeout(() => reenableLenis(0), 50);
+      // Navigation avant (PUSH/REPLACE) → scroll en haut + marquer la navigation
+      markNavigation(prevPath.current);
+
+      if (window.__lenis) {
+        window.__lenis.scrollTo(0, { immediate: true, force: true });
+      }
+      window.scrollTo(0, 0);
+
+      // Retirer l'overlay s'il existe (cas fallback navigateBack → PUSH)
+      requestAnimationFrame(fadeOverlay);
     }
 
-    prevPathname.current = pathname;
+    prevPath.current = pathname;
   }, [pathname, navigationType]);
 
   return null;

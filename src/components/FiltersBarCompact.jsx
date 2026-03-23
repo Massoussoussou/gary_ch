@@ -133,7 +133,7 @@ function PortalPop({ open, anchorRef, onClose, children, className = "" }) {
         left: pos.left,
         width: pos.maxWidth,
         minWidth: pos.minWidth,
-        zIndex: 10000,
+        zIndex: 200,
       }}
       className={
         "pointer-events-auto rounded-md border border-zinc-200 bg-white p-3 shadow-2xl " +
@@ -172,7 +172,7 @@ function MobileSheet({ open, onClose, title = "Filtres", children }) {
   if (!open) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[10050] sm:hidden">
+    <div className="fixed inset-0 z-[250] sm:hidden">
       {/* overlay */}
       <button
         type="button"
@@ -304,7 +304,7 @@ function CityAutosuggest({
       </div>
 
       {open && (
-        <div className="absolute z-[9999] mt-2 w-full rounded-xl border border-zinc-200 bg-white shadow-md max-h-64 overflow-auto text-sm">
+        <div className="absolute z-[210] mt-2 w-full rounded-xl border border-zinc-200 bg-white shadow-md max-h-64 overflow-auto text-sm">
           {list.length === 0 ? (
             <div className="px-4 py-3 text-zinc-500">Aucune ville trouvée</div>
           ) : (

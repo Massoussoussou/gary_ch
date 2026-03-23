@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
+import navigateBackFn, { fadeOutOverlay } from "../utils/navigateBack.js";
 import team from '../data/team.json';
 import { Linkedin } from "lucide-react";
 
@@ -8,6 +9,7 @@ import "../styles/projet.css";
 export default function Member() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  React.useEffect(() => fadeOutOverlay(), []);
   const member = team.find(m => m.slug === slug);
 
   if (!member) {
@@ -26,7 +28,7 @@ export default function Member() {
       {/* Bouton croix animé (style ProjetNeufDetail) */}
       <button
         type="button"
-        onClick={() => navigate(-1)}
+        onClick={() => navigateBackFn(navigate)}
         className="close-back-btn close-back-btn--inverted"
         aria-label="Retour à l'équipe"
         title="Retour à l'équipe"

@@ -2,6 +2,7 @@
 import { useMemo, useRef, useEffect, useState, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+import TeamPhotoInteractive from "../components/TeamPhotoInteractive.jsx";
 import ListingCardSold from "../components/cards/ListingCardSold.jsx";
 import AlreadyOwner from "../components/AlreadyOwner.jsx";
 import useProperties from "../hooks/useProperties.js";
@@ -430,9 +431,9 @@ function ConstatSection() {
               <g className="hidden lg:block">
               {(() => {
                 const dots = [
-                  { angle: 150, midX: 5, midY: 195, endX: -75, endY: 195 },
-                  { angle: 30, midX: 195, midY: 195, endX: 275, endY: 195 },
                   { angle: -90, midX: 70, midY: -15, endX: -10, endY: -15 },
+                  { angle: 30, midX: 195, midY: 195, endX: 275, endY: 195 },
+                  { angle: 150, midX: 5, midY: 195, endX: -75, endY: 195 },
                 ];
                 return dots.map(({ angle, midX, midY, endX, endY }, i) => {
                   const rad = (angle * Math.PI) / 180;
@@ -490,7 +491,7 @@ function ConstatSection() {
                 className="w-full block"
               />
               <p className="text-center text-white py-3 text-[14px] font-medium uppercase tracking-[0.12em]">
-                Lire le guide
+                Lire le guide complet
                 <span className="inline-block ml-2 transition-transform duration-300 group-hover/ebook:translate-x-1">→</span>
               </p>
             </Link>
@@ -499,20 +500,23 @@ function ConstatSection() {
             {[
               {
                 card: constatCards[0],
-                style: { bottom: "6%", left: "-14%", transform: "translateX(-100%)" },
-                align: "text-left items-start",
-              },
-              {
-                card: constatCards[2],
-                style: { bottom: "6%", right: "-14%", transform: "translateX(100%)" },
+                num: 1,
+                style: { top: "-4%", left: "5%", transform: "translateX(-100%)" },
                 align: "text-left items-start",
               },
               {
                 card: constatCards[1],
-                style: { top: "-4%", left: "5%", transform: "translateX(-100%)" },
+                num: 2,
+                style: { bottom: "6%", right: "-14%", transform: "translateX(100%)" },
                 align: "text-left items-start",
               },
-            ].map(({ card, style, align }, i) => (
+              {
+                card: constatCards[2],
+                num: 3,
+                style: { bottom: "6%", left: "-14%", transform: "translateX(-100%)" },
+                align: "text-left items-start",
+              },
+            ].map(({ card, num, style, align }, i) => (
               <div
                 key={`label-${i}`}
                 className={`absolute hidden lg:flex flex-col max-w-[360px] 2xl:max-w-[420px] ${align} bg-white p-5 md:p-6`}
@@ -523,7 +527,7 @@ function ConstatSection() {
                 }}
               >
                 <h3 className="font-serif text-[1.5rem] md:text-[1.9rem] leading-tight text-[#1A1A1A] mb-2">
-                  <span className="text-[#FF4A3E] font-semibold">{i === 0 ? "1" : i === 1 ? "3" : "2"}.</span> {card.title}
+                  <span className="text-[#FF4A3E] font-semibold">{num}.</span> {card.title}
                 </h3>
                 <p className="text-[17px] md:text-[19px] text-neutral-600 leading-relaxed">
                   {card.desc}
@@ -1853,7 +1857,7 @@ function EquipeSection() {
 
   return (
     <section ref={ref} id="equipe" className="relative bg-white overflow-hidden" style={{ zIndex: 2 }}>
-      {/* Photo d'équipe — entière, pas coupée */}
+      {/* Photo d'équipe avec points interactifs */}
       <div
         className="w-full"
         style={{
@@ -1861,12 +1865,7 @@ function EquipeSection() {
           transition: "opacity 1s ease",
         }}
       >
-        <img
-          src="/team-photo.jpg"
-          alt="L'équipe GARY"
-          className="w-full h-auto object-contain"
-          loading="lazy"
-        />
+        <TeamPhotoInteractive />
       </div>
 
       {/* Texte en dessous */}

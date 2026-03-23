@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import team from "../data/team.json";
 import CTAFuturaGlow, { PhoneIcon } from "../components/cta/CTAFuturaGlow.jsx";
+import TeamPhotoInteractive from "../components/TeamPhotoInteractive.jsx";
 import GoogleReviews from "../components/GoogleReviews.jsx";
 
 /* ========== Hook : détecte mobile (< 768px) ========== */
@@ -536,8 +537,16 @@ function HeroCirclesSection() {
   return (
     <div ref={wrapperRef} className="relative" style={{ height: "200vh" }}>
       <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center bg-neutral-200">
-        {/* Vidéo de fond */}
-        <video autoPlay muted loop playsInline disablePictureInPicture
+        {/* Vidéo de fond — pause quand hors écran */}
+        <video ref={(el) => {
+          if (!el) return;
+          const obs = new IntersectionObserver(
+            ([e]) => { e.isIntersecting ? el.play().catch(() => {}) : el.pause(); },
+            { threshold: 0 }
+          );
+          obs.observe(el);
+          el._obs = obs;
+        }} autoPlay muted loop playsInline disablePictureInPicture
           controlsList="nodownload noplaybackrate noremoteplayback nofullscreen"
           className="absolute inset-0 w-full h-full object-cover pointer-events-none"
           style={{ zIndex: 0 }}
@@ -568,7 +577,7 @@ function HeroCirclesSection() {
           style={{
             top: "45%",
             transform: "translate(-50%, -50%)",
-            width: winW < 768 ? "280px" : winW < 1024 ? "380px" : "480px",
+            width: winW < 768 ? "320px" : winW < 1024 ? "440px" : "580px",
             opacity: loaded ? (phase >= 1 ? 0 : 1) : 0,
             transition: "opacity 0.5s ease-out",
             zIndex: 8,
@@ -594,7 +603,7 @@ function HeroCirclesSection() {
             opacity: phase >= 3 ? 1 : 0, transition: "opacity 0.6s ease-out",
           }}>
             <div className="text-center pt-8 md:pt-12 px-6 md:px-10 w-full flex-1 flex flex-col justify-center">
-              <p className="text-[11px] uppercase tracking-[0.3em] text-neutral-500 mb-6" style={{ opacity: phase >= 4 ? 1 : 0, transform: phase >= 4 ? "translateY(0)" : "translateY(8px)", transition: "all 0.5s ease-out" }}>GARY, la dualité entre&nbsp;:</p>
+              <p className="uppercase tracking-[0.25em] text-neutral-500 mb-6 text-[13px] md:text-[15px]" style={{ opacity: phase >= 4 ? 1 : 0, transform: phase >= 4 ? "translateY(0)" : "translateY(8px)", transition: "all 0.5s ease-out" }}><span className="text-[#FF4A3E] font-medium tracking-[0.3em] text-[16px] md:text-[20px]">GARY</span>, la dualité entre&nbsp;:</p>
               <div className="flex flex-col md:flex-row items-center md:items-stretch">
                 <div className="flex-1 text-center px-4 md:px-8" style={{ opacity: phase >= 4 ? 1 : 0, transform: phase >= 4 ? "translateX(0)" : "translateX(-20px)", transition: "all 0.7s ease-out 0.1s" }}>
                   <h3 className="font-serif text-[clamp(1.8rem,5.5vw,3.8rem)] text-neutral-900 leading-[1.08]"><span className="text-[#FF4A3E]">{VR.label}</span><br />{VR.sub}</h3>
@@ -1490,41 +1499,7 @@ function TeamMemberZone({ member, dotX, dotY, zoneX, zoneY, zoneW, zoneH, index 
 function TeamPhotoSection() {
   return (
     <section className="relative z-10 overflow-hidden">
-      <style>{`
-        @keyframes teamDotPulse {
-          0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
-          50% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
-        }
-      `}</style>
-      <div className="relative w-full">
-        {/* Desktop : bandeau panoramique avec points interactifs */}
-        <img
-          src="/team-photo.png"
-          alt="L'équipe GARY Real Estate"
-          className="hidden md:block w-full h-auto"
-          loading="lazy"
-        />
-        {/* Mobile : photo originale complète sans points */}
-        <img
-          src="/team-photo.jpg"
-          alt="L'équipe GARY Real Estate"
-          className="md:hidden w-full h-auto"
-          loading="lazy"
-        />
-
-        {/* Zones cliquables + points interactifs — desktop uniquement */}
-        <div className="hidden md:block">
-          {TEAM_DOTS.map((dot, i) => {
-            const member = team.find((m) => m.slug === dot.slug);
-            return (
-              <TeamMemberZone key={dot.slug} member={member} index={i} {...dot} />
-            );
-          })}
-        </div>
-
-        {/* Overlay dégradé bas léger */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
-      </div>
+      <TeamPhotoInteractive />
     </section>
   );
 }

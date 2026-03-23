@@ -1,6 +1,7 @@
 // src/pages/ListingDetail.jsx
 import React, { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import navigateBackFn, { fadeOutOverlay } from "../utils/navigateBack.js";
 import useProperties from "../hooks/useProperties.js";
 import TileToggleButton from "../components/TileToggleButton.jsx";
 
@@ -65,6 +66,8 @@ export default function ListingDetail() {
   const [slideDir, setSlideDir] = useState("next");
   const [tileOffset, setTileOffset] = useState(0);
   const tileRef = useRef(null);
+
+  useEffect(() => fadeOutOverlay(), []);
 
   const TRANSITION_MS = 700;
 
@@ -248,7 +251,7 @@ export default function ListingDetail() {
     <main className="page-bg text-text">
       <button
         type="button"
-        onClick={() => navigate(-1)}
+        onClick={() => navigateBackFn(navigate)}
         className="close-back-btn"
         aria-label="Revenir aux annonces"
         title="Revenir aux annonces"

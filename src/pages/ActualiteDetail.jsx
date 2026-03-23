@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { ArrowLeft, Calendar, Tag } from "lucide-react";
 import actualites from "../data/actualites.json";
 import "../styles/projet.css";
+import navigateBackFn, { fadeOutOverlay } from "../utils/navigateBack.js";
 
 const categoryColors = {
   Article: "bg-black/80 text-white",
@@ -18,7 +19,7 @@ export default function ActualiteDetail() {
   // Trouver l'article par ID
   const article = actualites.find((a) => a.id === parseInt(id));
 
-  // scroll to top géré par ScrollToTop.jsx
+  useEffect(() => fadeOutOverlay(), []);
 
   if (!article) {
     return (
@@ -108,7 +109,7 @@ export default function ActualiteDetail() {
       {/* Close button */}
       <button
         type="button"
-        onClick={() => navigate(-1)}
+        onClick={() => navigateBackFn(navigate)}
         className="close-back-btn"
         aria-label={article.category === "Presse" ? "Revenir à la presse" : "Revenir aux actualités"}
         title={article.category === "Presse" ? "Revenir à la presse" : "Revenir aux actualités"}
