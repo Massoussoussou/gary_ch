@@ -1001,14 +1001,6 @@ export default function ListingDetail() {
             </div>
           </div>
 
-          {/* Logo GARY sous la fiche vendeur */}
-          <div className="detail-agent-logo">
-            <img
-              src="/Logo/logo-gary-orange.png"
-              alt="Logo GARY"
-              loading="lazy"
-            />
-          </div>
         </aside>
       </section>
 
