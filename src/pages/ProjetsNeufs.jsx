@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePromotionsList } from "../hooks/usePromotions.js";
+import { useLocale } from "../hooks/useLocale.js";
 import "../styles/projet.css";
 import CTAFuturaGlow, { VillaIcon, InfoIcon } from "../components/cta/CTAFuturaGlow.jsx";
 import CTAWhiteSweep from "../components/cta/CTAWhiteSweep.jsx";
@@ -14,13 +15,14 @@ export default function ProjetNeuf() {
   const idxRef = useRef(0);
   const lockRef = useRef(false);
   const navigate = useNavigate();
+  const { t, link } = useLocale();
   const { data, loading } = usePromotionsList();
 
   const slides = useMemo(() => {
     const intro = {
       id: "__intro__",
-      name: "Découvrez nos projets",
-      tagline: "Des lieux d'exception, une signature GARY.",
+      name: t("projects.discover_our_projects"),
+      tagline: t("projects.tagline"),
       cover:
         "/img/gary/ExtBlv-9.webp",
     };
@@ -92,10 +94,10 @@ export default function ProjetNeuf() {
       const endTop = target * vh();
 
       const step = (now) => {
-        const t = Math.min(1, (now - start) / dur);
-        const k = easeOutQuint(t);
+        const progress = Math.min(1, (now - start) / dur);
+        const k = easeOutQuint(progress);
         el.scrollTo(0, startTop + (endTop - startTop) * k);
-        if (t < 1) requestAnimationFrame(step);
+        if (progress < 1) requestAnimationFrame(step);
         else {
           idxRef.current = target;
           lockRef.current = false;
@@ -177,7 +179,7 @@ const handleKnowMore = (projectId) => {
 
   // 3) Navigue rapidement
   setTimeout(() => {
-    navigate(`/projets-neufs/${projectId}`);
+    navigate(link("newProjectDetail", { id: projectId }));
   }, 120);
 
   // 4) Filet de sécurité: si pour une raison X la navigation ne part pas, on retire l'overlay
@@ -222,7 +224,7 @@ function CTAEnrollButton(){
     <>
       <button
         type="button"
-        aria-label="Je m’inscris"
+        aria-label={t("projects.enroll")}
         ref={btnRef}
         onMouseMove={onMove}
         onMouseLeave={onLeave}
@@ -246,7 +248,7 @@ function CTAEnrollButton(){
                          transform:"skewX(-18deg)" }} />
         </span>
         <span className="relative z-10 inline-flex items-center gap-3">
-          Je m’inscris
+          {t("projects.enroll")}
           <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M5 12h14" />
             <path d="M13 5l7 7-7 7" />
@@ -308,29 +310,29 @@ function CTAEnrollButton(){
       {/* Contenu */}
       <div className="relative z-10 text-center text-black">
         <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-neutral-600 mb-3">
-          Découvrez nos projets
+          {t("projects.discover_our_projects")}
         </p>
 
         <h1 className="font-serif tracking-[-0.03em] leading-[0.9] text-[clamp(3.2rem,8.8vw,7.2rem)]">
-          <span className="block">Des lieux</span>
-          d’exception<span className="text-[#FF4A3E]">,</span>
-          <span className="block">signés GARY.</span>
+          <span className="block">{t("projects.hero_line1")}</span>
+          {t("projects.hero_line2")}<span className="text-[#FF4A3E]">,</span>
+          <span className="block">{t("projects.hero_line3")}</span>
         </h1>
         <p className="mt-5 text-[clamp(1.1rem,2.1vw,1.4rem)] text-neutral-900/90 max-w-[52ch] mx-auto">
-          Projets résidentiels développés et commercialisés par notre équipe.
+          {t("projects.hero_subtitle")}
         </p>
 
     {/* Boutons */}
     <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
  
 <CTAFuturaGlow
-  label="Parcourir les Projets"
+  label={t("projects.browse_projects")}
   Icon={VillaIcon}
   onClick={nudgeScroll}
 />
           <CTAWhiteSweep
-        to="/contact"
-        label="S'inscrire"
+        to={link("contact")}
+        label={t("projects.sign_up")}
       />
     </div>
     </div>
@@ -369,7 +371,7 @@ function CTAEnrollButton(){
                   className="btn-ghost"
                   onClick={() => handleKnowMore(p.id)}
                   >
-                    En savoir plus
+                    {t("projects.learn_more")}
                   </button>
                 </div>
               </div>
@@ -414,7 +416,7 @@ function CTAEnrollButton(){
 
             <div className="relative z-10 text-center text-black">
               <p className="text-[11px] md:text-[13px] uppercase tracking-[0.2em] text-neutral-600 mb-1 md:mb-3">
-                Projets à venir
+                {t("projects.coming_label")}
               </p>
 
               <h2 className="font-serif tracking-[-0.03em] leading-[0.9] text-[clamp(2.4rem,7vw,4.8rem)]">
@@ -422,33 +424,32 @@ function CTAEnrollButton(){
               </h2>
 
               <p className="mt-2 md:mt-4 text-[clamp(0.85rem,1.8vw,1.2rem)] text-neutral-900/80 max-w-[46ch] mx-auto">
-                Inscrivez-vous pour recevoir en avant-première les
-                informations sur nos futurs programmes neufs.
+                {t("projects.coming_description")}
               </p>
 
               <form className="cta-coming-form mt-4 md:mt-7">
                 <div className="field">
-                  <label>Prénom</label>
-                  <input type="text" placeholder="Votre prénom" />
+                  <label>{t("projects.form.first_name")}</label>
+                  <input type="text" placeholder={t("projects.form.first_name_placeholder")} />
                 </div>
                 <div className="field">
-                  <label>Nom</label>
-                  <input type="text" placeholder="Votre nom" />
+                  <label>{t("projects.form.last_name")}</label>
+                  <input type="text" placeholder={t("projects.form.last_name_placeholder")} />
                 </div>
                 <div className="field">
-                  <label>Adresse e-mail</label>
+                  <label>{t("projects.form.email")}</label>
                   <input type="email" placeholder="prenom.nom@email.com" />
                 </div>
                 <div className="field">
-                  <label>Téléphone</label>
+                  <label>{t("projects.form.phone")}</label>
                   <input type="tel" placeholder="+41 79 123 45 67" />
                 </div>
                 <div className="field field--full">
-                  <label>Je suis intéressé par</label>
+                  <label>{t("projects.form.interested_in")}</label>
                   <select defaultValue="maison">
-                    <option value="maison">Maison</option>
-                    <option value="appartement">Appartement</option>
-                    <option value="autre">Autre</option>
+                    <option value="maison">{t("projects.form.house")}</option>
+                    <option value="appartement">{t("projects.form.apartment")}</option>
+                    <option value="autre">{t("projects.form.other")}</option>
                   </select>
                 </div>
 

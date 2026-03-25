@@ -4,6 +4,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import navigateBackFn, { fadeOutOverlay } from "../utils/navigateBack.js";
 import useProperties from "../hooks/useProperties.js";
 import TileToggleButton from "../components/TileToggleButton.jsx";
+import { useLocale } from "../hooks/useLocale.js";
 
 import team from "../data/team.json";
 import "../styles/projet.css";
@@ -51,6 +52,7 @@ function useThumbVisible() {
 
 
 export default function ListingDetail() {
+  const { t, link } = useLocale();
   const { id } = useParams();
   const navigate = useNavigate();
   const { data, loading, error } = useProperties();
@@ -231,7 +233,7 @@ export default function ListingDetail() {
   if (loading) {
     return (
       <main className="page-bg min-h-screen text-text flex items-center justify-center">
-        <p className="text-sm text-neutral-500 animate-pulse">Chargement…</p>
+        <p className="text-sm text-neutral-500 animate-pulse">{t("loading")}</p>
       </main>
     );
   }
@@ -240,7 +242,7 @@ export default function ListingDetail() {
     return (
       <main className="page-bg min-h-screen text-text flex items-center justify-center">
         <p className="text-sm md:text-base text-neutral-600">
-          Annonce introuvable.
+          {t("listing.not_found")}
         </p>
       </main>
     );
@@ -253,8 +255,8 @@ export default function ListingDetail() {
         type="button"
         onClick={() => navigateBackFn(navigate)}
         className="close-back-btn"
-        aria-label="Revenir aux annonces"
-        title="Revenir aux annonces"
+        aria-label={t("listing.aria_back_to_listings")}
+        title={t("listing.aria_back_to_listings")}
       >
         <svg className="close-back-icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
@@ -663,7 +665,7 @@ export default function ListingDetail() {
                 onClick={handlePrev}
                 disabled={trackIndex <= 0}
                 className="listing-hero__nav-btn absolute z-20 left-4 md:left-6 top-1/2 -translate-y-1/2"
-                aria-label="Image précédente"
+                aria-label={t("listing.aria_prev_image")}
               >
                 <span className="listing-hero__nav-icon listing-hero__nav-icon--prev">‹</span>
               </button>
@@ -672,7 +674,7 @@ export default function ListingDetail() {
                 onClick={handleNext}
                 disabled={trackIndex >= totalImages - 1}
                 className="listing-hero__nav-btn absolute z-20 right-4 md:right-6 top-1/2 -translate-y-1/2"
-                aria-label="Image suivante"
+                aria-label={t("listing.aria_next_image")}
               >
                 <span className="listing-hero__nav-icon listing-hero__nav-icon--next">›</span>
               </button>
@@ -682,7 +684,7 @@ export default function ListingDetail() {
           {/* Petit texte + flèche animée "Détails du bien" */}
           <div className="absolute inset-x-0 bottom-10 flex flex-col items-center justify-center pointer-events-none">
             <span className="mb-2 text-[11px] md:text-[12px] uppercase tracking-[0.25em] text-white/80">
-              Détails du bien
+              {t("listing.property_details")}
             </span>
             <svg
               viewBox="0 0 64 36"
@@ -757,11 +759,11 @@ export default function ListingDetail() {
                       onClick={() => goToImage(thumb.idx)}
                       className={`listing-thumb ${thumb.idx === currentImageIndex ? "listing-thumb--active" : ""}`}
                       style={{ transitionDelay: isTileVisible ? `${i * 0.07}s` : `${(thumbCarousel.items.length - 1 - i) * 0.05}s` }}
-                      aria-label={`Photo ${thumb.idx + 1}`}
+                      aria-label={t("listing.aria_photo", { num: thumb.idx + 1 })}
                     >
                       <img
                         src={thumb.src}
-                        alt={`Miniature ${thumb.idx + 1}`}
+                        alt={t("listing.thumbnail_alt", { num: thumb.idx + 1 })}
                         className="listing-thumb__img"
                         loading="lazy"
                       />
@@ -820,9 +822,9 @@ export default function ListingDetail() {
                       setTrackIndex(idx);
                     }}
                     className={`listing-mobile-thumb ${idx === currentImageIndex ? "listing-mobile-thumb--active" : ""}`}
-                    aria-label={`Photo ${idx + 1}`}
+                    aria-label={t("listing.aria_photo", { num: idx + 1 })}
                   >
-                    <img src={src} alt={`Miniature ${idx + 1}`} loading="lazy" />
+                    <img src={src} alt={t("listing.thumbnail_alt", { num: idx + 1 })} loading="lazy" />
                   </button>
                 ))}
               </div>
@@ -873,7 +875,7 @@ export default function ListingDetail() {
           "
         >
           <div>
-            <strong>Localisation :</strong>{" "}
+            <strong>{t("listing.spec_location")} :</strong>{" "}
             {item.ville}
             {item.canton ? `, ${item.canton}` : ""}
             {item.pays ? `, ${item.pays}` : ""}
@@ -881,37 +883,37 @@ export default function ListingDetail() {
 
           {item.type && (
             <div>
-              <strong>Type :</strong> {item.type}
+              <strong>{t("listing.spec_type")} :</strong> {item.type}
             </div>
           )}
 
           {item.surface_m2 != null && (
             <div>
-              <strong>Surface :</strong> {item.surface_m2} m²
+              <strong>{t("listing.spec_surface")} :</strong> {item.surface_m2} m²
             </div>
           )}
 
           {item.pieces != null && (
             <div>
-              <strong>Pièces :</strong> {item.pieces}
+              <strong>{t("listing.spec_rooms")} :</strong> {item.pieces}
             </div>
           )}
 
           {item.chambres != null && (
             <div>
-              <strong>Chambres :</strong> {item.chambres}
+              <strong>{t("listing.spec_bedrooms")} :</strong> {item.chambres}
             </div>
           )}
 
           {item.sdb != null && (
             <div>
-              <strong>Salles de bain :</strong> {item.sdb}
+              <strong>{t("listing.spec_bathrooms")} :</strong> {item.sdb}
             </div>
           )}
 
           {item.prix != null && (
             <div>
-              <strong>Prix :</strong> {fmtPrice(item.prix, item.devise)}
+              <strong>{t("listing.spec_price")} :</strong> {fmtPrice(item.prix, item.devise)}
             </div>
           )}
         </div>
@@ -979,12 +981,12 @@ export default function ListingDetail() {
                 <button
                   type="button"
                   onClick={() => {
-                    window.location.href = "/contact";
+                    window.location.href = link("contact");
                   }}
                   className="group inline-flex items-center justify-center gap-2 px-5 md:px-6 py-2.5 rounded-xl text-[15px] text-white shadow-lg transition hover:shadow-xl"
                   style={{ backgroundColor: "#FF4A3E" }}
                 >
-                  Contacter
+                  {t("listing.contact_agent")}
                   <span
                     aria-hidden
                     className="inline-block translate-x-0 transition-transform duration-200 ease-out group-hover:translate-x-1"

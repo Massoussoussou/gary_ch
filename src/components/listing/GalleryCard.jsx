@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
+import { useLocale } from "../../hooks/useLocale.js";
 
 function Arrow({ dir = "left", ...props }) {
   return (
@@ -11,6 +12,7 @@ function Arrow({ dir = "left", ...props }) {
 }
 
 export default function GalleryCard({ images = [], widthPx, onImageLoad, item }) {
+  const { t } = useLocale();
   const pics = useMemo(() => images.filter(Boolean), [images]);
   const [i, setI] = useState(0);
   const [open, setOpen] = useState(false);
@@ -22,13 +24,13 @@ export default function GalleryCard({ images = [], widthPx, onImageLoad, item })
 
   const ville = [item?.ville, item?.canton].filter(Boolean).join(", ");
   const spec  = [
-    item?.pieces ? `${item.pieces} pièces` : null,
+    item?.pieces ? `${item.pieces} ${t("listing.spec_rooms").toLowerCase()}` : null,
     item?.surface_m2 ? `${item.surface_m2} m²` : null,
     item?.sdb ? `${item.sdb} sdb` : null,
   ].filter(Boolean).join(" • ");
   const prix  = typeof item?.prix === "number"
     ? "CHF " + item.prix.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'")
-    : "Prix sur demande";
+    : t("listing.price_on_request");
 
   // Keyboard + scroll lock quand le popup est ouvert
   useEffect(() => {
@@ -43,8 +45,8 @@ export default function GalleryCard({ images = [], widthPx, onImageLoad, item })
     const prevPadRight = document.body.style.paddingRight;
     const sb = window.innerWidth - document.documentElement.clientWidth; // largeur scrollbar
     document.body.style.overflow = "hidden";
-    if (sb > 0) document.body.style.paddingRight = `${sb}px`; // évite le “saut”
-    
+    if (sb > 0) document.body.style.paddingRight = `${sb}px`; // évite le "saut"
+
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prevOverflow;
@@ -67,7 +69,7 @@ export default function GalleryCard({ images = [], widthPx, onImageLoad, item })
   type="button"
   onClick={() => setOpen(true)}
   className="group relative overflow-hidden cursor-zoom-in"
-  aria-label="Agrandir la galerie"
+  aria-label={t("listing.expand_gallery")}
 >
   <img
     src={pics[i]}
@@ -108,7 +110,7 @@ export default function GalleryCard({ images = [], widthPx, onImageLoad, item })
           className="absolute top-[45%] -translate-y-1/2 left-2 md:left-3 h-9 w-9 grid place-items-center
                      bg-white/85 hover:bg-white text-neutral-900 ring-1 ring-black/10 shadow-md
                      rounded-none transition disabled:opacity-30"
-          aria-label="Image précédente"
+          aria-label={t("listing.aria_prev_image")}
         >
           <Arrow dir="left" />
         </button>
@@ -118,7 +120,7 @@ export default function GalleryCard({ images = [], widthPx, onImageLoad, item })
           className="absolute top-[45%] -translate-y-1/2 right-2 md:right-3 h-9 w-9 grid place-items-center
                      bg-white/85 hover:bg-white text-neutral-900 ring-1 ring-black/10 shadow-md
                      rounded-none transition disabled:opacity-30"
-          aria-label="Image suivante"
+          aria-label={t("listing.aria_next_image")}
         >
           <Arrow dir="right" />
         </button>
@@ -147,7 +149,7 @@ export default function GalleryCard({ images = [], widthPx, onImageLoad, item })
             {/* Croix de fermeture */}
             <button
               onClick={() => setOpen(false)}
-              aria-label="Fermer"
+              aria-label={t("aria.close")}
               className="absolute top-4 right-4 h-10 w-10 grid place-items-center
                          rounded-full bg-white/90 hover:bg-white text-neutral-900
                          ring-1 ring-black/10 shadow"
@@ -164,7 +166,7 @@ export default function GalleryCard({ images = [], widthPx, onImageLoad, item })
               className="absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 grid place-items-center
                          bg-white/90 hover:bg-white text-neutral-900 ring-1 ring-black/10 shadow
                          rounded-full transition disabled:opacity-30"
-              aria-label="Image précédente"
+              aria-label={t("listing.aria_prev_image")}
             >
               <Arrow dir="left" />
             </button>
@@ -174,7 +176,7 @@ export default function GalleryCard({ images = [], widthPx, onImageLoad, item })
               className="absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 grid place-items-center
                          bg-white/90 hover:bg-white text-neutral-900 ring-1 ring-black/10 shadow
                          rounded-full transition disabled:opacity-30"
-              aria-label="Image suivante"
+              aria-label={t("listing.aria_next_image")}
             >
               <Arrow dir="right" />
             </button>

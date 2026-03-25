@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import { useLocale } from "../../hooks/useLocale.js";
 
 export default function SmsCodeInput({
   visible,
@@ -77,11 +78,13 @@ export default function SmsCodeInput({
     if (paste.length === 4) onComplete(paste);
   };
 
+  const { t } = useLocale();
+
   if (!visible) return null;
 
   return (
     <div className={`sms-code-section${visible ? " show" : ""}`}>
-      <label className="sms-code-label">Code reçu par SMS</label>
+      <label className="sms-code-label">{t("estimate.sms.label")}</label>
       <div className="sms-code-row">
         {[0, 1, 2, 3].map((idx) => (
           <input
@@ -96,7 +99,7 @@ export default function SmsCodeInput({
             onKeyDown={(e) => handleKeyDown(e, idx)}
             onPaste={handlePaste}
             readOnly={status === "verified"}
-            aria-label={`Chiffre ${idx + 1} du code`}
+            aria-label={t("estimate.sms.digit_aria", { num: idx + 1 })}
           />
         ))}
       </div>
@@ -108,7 +111,7 @@ export default function SmsCodeInput({
           disabled={countdown > 0}
           onClick={onResend}
         >
-          {countdown > 0 ? `Renvoyer (${countdown}s)` : "Renvoyer le code"}
+          {countdown > 0 ? t("estimate.sms.resend_countdown", { seconds: countdown }) : t("estimate.sms.resend")}
         </button>
       </div>
     </div>

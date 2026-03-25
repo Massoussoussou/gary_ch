@@ -1,7 +1,8 @@
 // src/pages/Sell.jsx
-import { useMemo, useRef, useEffect, useState, useCallback } from "react";
+import React, { useMemo, useRef, useEffect, useState, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useLocale } from "../hooks/useLocale.js";
 import TeamPhotoInteractive from "../components/TeamPhotoInteractive.jsx";
 import ListingCardSold from "../components/cards/ListingCardSold.jsx";
 import AlreadyOwner from "../components/AlreadyOwner.jsx";
@@ -34,12 +35,13 @@ function useCountUp(target, duration = 2200, start = false) {
 
 /* ─── Section Proof — chiffres + texte + CTA ─── */
 const PROOF_STATS = [
-  { value: 50, suffix: "%", label: "vendus avant publication" },
-  { value: 8, suffix: " sem.", label: "délai moyen de vente" },
-  { value: 500, suffix: "K", label: "portée mensuelle disponible" },
+  { value: 50, suffix: "%", labelKey: "sell.proof_stat_sold" },
+  { value: 8, suffix: " sem.", labelKey: "sell.proof_stat_delay" },
+  { value: 500, suffix: "K", labelKey: "sell.proof_stat_reach" },
 ];
 
 function ProofSection() {
+  const { t, link } = useLocale();
   const sectionRef = useRef(null);
   const [seen, setSeen] = useState(false);
 
@@ -81,10 +83,10 @@ function ProofSection() {
             transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
           }}
         >
-          La moitié de nos biens trouvent acquéreur{" "}
-          <span className="text-[#FF4A3E]">avant même d'être publiés</span>.
-          Et quand une diffusion plus large est nécessaire, notre réseau génère
-          plus de <span className="text-[#FF4A3E]">500&nbsp;000 vues par mois</span>.
+          {t("sell.proof_text_1")}{" "}
+          <span className="text-[#FF4A3E]">{t("sell.proof_text_highlight1")}</span>.
+          {" "}{t("sell.proof_text_2")}{" "}
+          <span className="text-[#FF4A3E]">{t("sell.proof_text_highlight2")}</span>.
         </p>
 
         {/* 3 stats */}
@@ -115,7 +117,7 @@ function ProofSection() {
                     transition: `opacity 0.6s ease-out ${delay + 0.4}s`,
                   }}
                 >
-                  {stat.label}
+                  {t(stat.labelKey)}
                 </p>
               </div>
             );
@@ -132,10 +134,10 @@ function ProofSection() {
           }}
         >
           <Link
-            to="/estimer"
+            to={link("estimate")}
             className="group inline-flex items-center gap-3 bg-[#FF4A3E] text-white px-14 py-5 text-[15px] font-medium uppercase tracking-[0.15em] transition-all duration-300 hover:brightness-110 hover:shadow-lg hover:shadow-[#FF4A3E]/25"
           >
-            Estimer mon bien
+            {t("sell.cta_estimate")}
             <svg
               className="w-4 h-4 group-hover:translate-x-1 transition-transform"
               fill="none"
@@ -147,7 +149,7 @@ function ProofSection() {
             </svg>
           </Link>
           <p className="mt-3 text-[13px] text-neutral-900 tracking-wide">
-            Sans engagement — résultat sous 48h
+            {t("sell.cta_estimate_sub")}
           </p>
         </div>
       </div>
@@ -155,135 +157,77 @@ function ProofSection() {
   );
 }
 
-/* ─── Données des sections ─── */
+/* ─── Helper : texte riche depuis les traductions ─── */
+/* Convertit **texte** en <span rouge> et \n en <br/> */
+function richText(text) {
+  if (!text) return text;
+  const segments = text.split(/\*\*(.*?)\*\*/g);
+  return segments.map((seg, i) => {
+    if (i % 2 === 1) return <span key={i} className="text-[#FF4A3E]">{seg}</span>;
+    const lines = seg.split("\n");
+    return lines.map((line, j) => (
+      <React.Fragment key={`${i}-${j}`}>{j > 0 && <br />}{line}</React.Fragment>
+    ));
+  });
+}
 
-const constatCards = [
-  {
-    title: "Surexposition immédiate",
-    desc: <>Votre bien est vu par tout le monde en 48h.<br/>Passé ce pic, il est <span className="text-[#FF4A3E]">perçu comme invendu</span>.<br/>Les acquéreurs négocient à la baisse.</>,
-    img: "/img/gary/extcbg1.webp",
-  },
-  {
-    title: "Prix mal positionné",
-    desc: <>Sans analyse des comparables récents,<br/>le prix est souvent trop haut puis <span className="text-[#FF4A3E]">baissé publiquement</span>,<br/>ce qui affaiblit votre position.</>,
-    img: "/img/gary/extcbg21.webp",
-  },
-  {
-    title: "Aucune stratégie de diffusion",
-    desc: <>Publier partout en même temps<br/>n'est pas une stratégie. Résultat :<br/>des <span className="text-[#FF4A3E]">visites non qualifiées</span> et un bien qui stagne.</>,
-    img: "/img/gary/exther9.webp",
-  },
-];
+/* ─── Données des sections (i18n) ─── */
 
-const philosophiePoints = [
-  {
-    text: <><span className="text-[#FF4A3E]">Estimations</span> factuelles</>,
-    desc: <>Pas un chiffre sorti d'un algorithme. Une <span className="text-[#FF4A3E]">analyse des ventes récentes</span> dans votre quartier, un positionnement prix argumenté, et un <span className="text-[#FF4A3E]">dossier complet</span> que vous pouvez partager avec votre notaire ou conseiller financier.</>,
-    img: "/img/gary/ExtBlv-8.webp",
-  },
-  {
-    text: <>Diffusion <span className="text-[#FF4A3E]">contrôlée</span></>,
-    desc: <>Votre bien est présenté d'abord à un <span className="text-[#FF4A3E]">cercle restreint</span> d'acquéreurs qualifiés, puis élargi progressivement aux portails. Chaque étape est validée avec vous. C'est cette séquence qui <span className="text-[#FF4A3E]">protège votre prix</span>.</>,
-    img: "/img/gary/ExtVer-6.webp",
-  },
-  {
-    text: <>Accès <span className="text-[#FF4A3E]">discret</span> aux bons acquéreurs</>,
-    desc: <>Nous ne publions pas pour attirer la masse. Nous activons notre <span className="text-[#FF4A3E]">réseau d'acquéreurs qualifiés</span> qui cherchent exactement votre type de bien. <span className="text-[#FF4A3E]">Discrétion garantie</span>.</>,
-    img: "/img/gary/maison35.webp",
-  },
-];
+function getConstatCards(t) {
+  return [
+    { title: t("sell.constat_card_1_title"), desc: richText(t("sell.constat_card_1_desc")), img: "/img/gary/extcbg1.webp" },
+    { title: t("sell.constat_card_2_title"), desc: richText(t("sell.constat_card_2_desc")), img: "/img/gary/extcbg21.webp" },
+    { title: t("sell.constat_card_3_title"), desc: richText(t("sell.constat_card_3_desc")), img: "/img/gary/exther9.webp" },
+  ];
+}
 
-const parcoursSteps = [
-  {
-    num: 1,
-    title: "La rencontre",
-    tag: "Sans engagement",
-    desc: "Nous visitons votre bien et écoutons votre situation : délais, attentes, contraintes. Pas de pitch commercial, pas d'engagement. Juste une conversation honnête pour comprendre ce que vous cherchez vraiment.",
-    img: "/img/gary/garymontalegre03.jpg",
-  },
-  {
-    num: 2,
-    title: "L'estimation",
-    tag: "Dossier complet remis",
-    desc: "Analyse des ventes récentes dans votre quartier, évaluation des points forts et axes d'amélioration. Vous recevez un dossier complet avec une fourchette de prix argumentée.",
-    img: "/img/gary/garymontalegre29.jpg",
-  },
-  {
-    num: 3,
-    title: "La stratégie",
-    tag: "Plan de diffusion sur mesure",
-    desc: "Nous définissons ensemble à qui montrer votre bien en premier, à quel prix, et dans quel ordre. C'est cette séquence qui protège votre prix.",
-    img: "/img/gary/intver25.jpg",
-  },
-  {
-    num: 4,
-    title: "La mise en marché",
-    tag: "Diffusion progressive et contrôlée",
-    desc: "Photographie professionnelle, microsite dédié, brochure de présentation. Votre bien est d'abord proposé en exclusivité, puis élargi progressivement. Chaque étape est validée avec vous.",
-    img: "/img/gary/extver5.jpg",
-  },
-  {
-    num: 5,
-    title: "La vente et au-delà",
-    tag: "Accompagnement complet",
-    desc: "Négociation des offres, coordination avec le notaire, accompagnement jusqu'à la remise des clés. Nous restons votre interlocuteur unique du premier appel au dernier acte.",
-    img: "/img/gary/intgvac4.jpg",
-  },
-];
+function getPhilosophiePoints(t) {
+  return [
+    { text: richText(t("sell.diff_point_1_title")), desc: richText(t("sell.diff_point_1_desc")), img: "/img/gary/ExtBlv-8.webp" },
+    { text: richText(t("sell.diff_point_2_title")), desc: richText(t("sell.diff_point_2_desc")), img: "/img/gary/ExtVer-6.webp" },
+    { text: richText(t("sell.diff_point_3_title")), desc: richText(t("sell.diff_point_3_desc")), img: "/img/gary/maison35.webp" },
+  ];
+}
 
-const livrables = [
-  { title: "Dossier d'estimation", desc: "Comparables récents, positionnement prix, analyse du quartier. Un document que vous pouvez partager avec votre notaire." },
-  { title: "Microsite dédié", desc: "Une page web élégante consacrée à votre bien. Photos HD, plan, situation — partageable en un lien." },
-  { title: "Photographie pro", desc: "Shooting professionnel. Chaque image valorise les volumes, la lumière, les vues." },
-  { title: "Brochure de présentation", desc: "Document imprimé et numérique de qualité pour les acquéreurs qualifiés." },
-  { title: "Marketing & vidéo", desc: "Réseaux sociaux, vidéo lifestyle professionnelle, buzz ciblé. Votre bien est mis en scène pour toucher les bons acquéreurs, au bon moment." },
-  { title: "Accompagnement notarial", desc: "De la promesse à l'acte authentique, nous coordonnons chaque étape avec votre notaire." },
-];
+function getParcoursSteps(t) {
+  return [
+    { num: 1, title: t("sell.journey_step_1_title"), tag: t("sell.journey_step_1_tag"), desc: t("sell.journey_step_1_desc"), img: "/img/gary/garymontalegre03.jpg" },
+    { num: 2, title: t("sell.journey_step_2_title"), tag: t("sell.journey_step_2_tag"), desc: t("sell.journey_step_2_desc"), img: "/img/gary/garymontalegre29.jpg" },
+    { num: 3, title: t("sell.journey_step_3_title"), tag: t("sell.journey_step_3_tag"), desc: t("sell.journey_step_3_desc"), img: "/img/gary/intver25.jpg" },
+    { num: 4, title: t("sell.journey_step_4_title"), tag: t("sell.journey_step_4_tag"), desc: t("sell.journey_step_4_desc"), img: "/img/gary/extver5.jpg" },
+    { num: 5, title: t("sell.journey_step_5_title"), tag: t("sell.journey_step_5_tag"), desc: t("sell.journey_step_5_desc"), img: "/img/gary/intgvac4.jpg" },
+  ];
+}
 
-const temoignages = [
-  {
-    name: "Sophie M.",
-    text: "GARY a vendu notre appartement en 3 semaines, au-dessus du prix estimé. Un accompagnement irréprochable du début à la fin.",
-    stars: 5,
-  },
-  {
-    name: "Laurent D.",
-    text: "Professionnalisme et discrétion. Notre villa a été présentée uniquement à des acquéreurs qualifiés. Résultat : une vente rapide sans négociation.",
-    stars: 5,
-  },
-  {
-    name: "Marie-Claire B.",
-    text: "Le dossier d'estimation était d'une qualité remarquable. Nous avons pu prendre notre décision en toute confiance.",
-    stars: 5,
-  },
-];
+function getLivrables(t) {
+  return [
+    { title: t("sell.deliverable_1_title"), desc: t("sell.deliverable_1_desc") },
+    { title: t("sell.deliverable_2_title"), desc: t("sell.deliverable_2_desc") },
+    { title: t("sell.deliverable_3_title"), desc: t("sell.deliverable_3_desc") },
+    { title: t("sell.deliverable_4_title"), desc: t("sell.deliverable_4_desc") },
+    { title: t("sell.deliverable_5_title"), desc: t("sell.deliverable_5_desc") },
+    { title: t("sell.deliverable_6_title"), desc: t("sell.deliverable_6_desc") },
+  ];
+}
 
-const faqItems = [
-  {
-    q: "Combien coûte une estimation ?",
-    a: "L'estimation est gratuite et sans engagement. Nous vous remettons un dossier complet avec analyse des comparables, positionnement prix et recommandations. Vous décidez ensuite librement si vous souhaitez poursuivre avec nous.",
-  },
-  {
-    q: "En combien de temps se vend un bien ?",
-    a: "En moyenne, nos mandats se vendent en 8 semaines. Mais chaque situation est différente. La moitié de nos biens trouvent acquéreur avant même d'être publiés sur les portails, grâce à notre réseau d'acquéreurs qualifiés.",
-  },
-  {
-    q: "Quelle est votre commission ?",
-    a: "Nous pratiquons une commission alignée avec le marché suisse du prestige. Le taux exact est discuté lors de notre première rencontre et dépend du type de mandat et de la stratégie retenue. Pas de frais cachés, pas de surprise.",
-  },
-  {
-    q: "Dois-je faire des travaux avant de vendre ?",
-    a: "Pas nécessairement. Lors de notre visite, nous identifions les améliorations à fort impact (et celles qui ne valent pas l'investissement). Parfois un home staging léger suffit. Nous vous conseillons honnêtement sur ce qui a un vrai retour.",
-  },
-  {
-    q: "Quelle différence avec une grande agence ?",
-    a: "Dans une grande agence, votre bien est un dossier parmi des centaines. Chez GARY, chaque courtier accompagne un nombre limité de mandats à la fois. Vous avez un interlocuteur unique, joignable, qui connaît votre bien comme s'il était le sien.",
-  },
-  {
-    q: "Puis-je vendre sans publier sur les portails ?",
-    a: "Absolument. Certains de nos biens se vendent exclusivement via notre réseau d'acquéreurs qualifiés, sans jamais apparaître en ligne. C'est ce qu'on appelle une vente off-market. Si la discrétion est importante pour vous, c'est une option que nous maîtrisons parfaitement.",
-  },
-];
+function getTemoignages(t) {
+  return [
+    { name: t("sell.testimonial_1_name"), text: t("sell.testimonial_1_text"), stars: 5 },
+    { name: t("sell.testimonial_2_name"), text: t("sell.testimonial_2_text"), stars: 5 },
+    { name: t("sell.testimonial_3_name"), text: t("sell.testimonial_3_text"), stars: 5 },
+  ];
+}
+
+function getFaqItems(t) {
+  return [
+    { q: t("sell.faq_q_1"), a: t("sell.faq_a_1") },
+    { q: t("sell.faq_q_2"), a: t("sell.faq_a_2") },
+    { q: t("sell.faq_q_3"), a: t("sell.faq_a_3") },
+    { q: t("sell.faq_q_4"), a: t("sell.faq_a_4") },
+    { q: t("sell.faq_q_5"), a: t("sell.faq_a_5") },
+    { q: t("sell.faq_q_6"), a: t("sell.faq_a_6") },
+  ];
+}
 
 /* ─── Variantes d'animation ─── */
 const fadeUp = {
@@ -297,6 +241,8 @@ const fadeUp = {
 
 /* ─── Sous-composant : Section Constat — cercle "tourner en rond" ─── */
 function ConstatSection() {
+  const { t, link } = useLocale();
+  const constatCards = getConstatCards(t);
   const sectionRef = useRef(null);
   const circleRef = useRef(null);
   const [seen, setSeen] = useState(false);
@@ -342,14 +288,14 @@ function ConstatSection() {
     >
       <div className="max-w-[900px] mx-auto px-6 md:px-10 text-center">
         <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-5">
-          Le constat
+          {t("sell.constat_label")}
         </p>
         <h2 className="font-serif text-[clamp(2rem,5vw,3.2rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-5">
-          Ce qui fait perdre de l'argent aux vendeurs<span className="text-[#FF4A3E]">.</span>
+          {t("sell.constat_title")}<span className="text-[#FF4A3E]">.</span>
         </h2>
         <p className="text-[1rem] md:text-[1.1rem] text-neutral-500 leading-relaxed max-w-[580px] mx-auto">
-          La plupart des agences publient votre bien sur tous les portails dès le premier jour. C'est la méthode standard.{" "}
-          <span className="text-[#FF4A3E]">C'est aussi celle qui vous coûte le plus cher.</span>
+          {t("sell.constat_subtitle")}{" "}
+          <span className="text-[#FF4A3E]">{t("sell.constat_subtitle_highlight")}</span>
         </p>
       </div>
     </section>
@@ -371,7 +317,7 @@ function ConstatSection() {
       <div className="relative max-w-[900px] mx-auto px-6 md:px-10 text-center">
         <div>
         <h3 className="font-serif text-[clamp(2rem,5vw,3.6rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-14 md:mb-20 -mt-6 md:-mt-10">
-          Les <span className="text-[#FF4A3E]">3 erreurs</span> les plus courantes<span className="text-[#FF4A3E]">.</span>
+          {t("sell.errors_title_prefix")} <span className="text-[#FF4A3E]">{t("sell.errors_title_highlight")}</span> {t("sell.errors_title_suffix")}<span className="text-[#FF4A3E]">.</span>
         </h3>
         <div className="flex justify-center">
           <div className="lg:scale-[0.65] xl:scale-[0.8] 2xl:scale-100 origin-center">
@@ -422,10 +368,10 @@ function ConstatSection() {
               >73%</text>
               <text x="100" y="113" textAnchor="middle" fill="#1A1A1A" fontSize="6.5" fontFamily="sans-serif"
                 style={{ opacity: seen ? 1 : 0, transition: "opacity 0.6s ease-out 0.6s" }}
-              >des biens au-delà de 90 jours</text>
+              >{t("sell.circle_stat_line1")}</text>
               <text x="100" y="122" textAnchor="middle" fill="#FF4A3E" fontSize="6.5" fontWeight="400" fontFamily="sans-serif"
                 style={{ opacity: seen ? 1 : 0, transition: "opacity 0.6s ease-out 0.6s" }}
-              >subissent une décote</text>
+              >{t("sell.circle_stat_line2")}</text>
 
               {/* Traits + points — desktop uniquement */}
               <g className="hidden lg:block">
@@ -476,7 +422,7 @@ function ConstatSection() {
 
             {/* Encart eBook — haut droite (desktop only) */}
             <Link
-              to="/ressources"
+              to={link("resources")}
               className="group/ebook absolute top-[-2%] right-[-65%] hidden lg:block w-[320px] shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 origin-center"
               style={{
                 opacity: seen ? 1 : 0,
@@ -491,7 +437,7 @@ function ConstatSection() {
                 className="w-full block"
               />
               <p className="text-center text-white py-3 text-[14px] font-medium uppercase tracking-[0.12em]">
-                Lire le guide complet
+                {t("sell.ebook_cta")}
                 <span className="inline-block ml-2 transition-transform duration-300 group-hover/ebook:translate-x-1">→</span>
               </p>
             </Link>
@@ -575,6 +521,8 @@ function ConstatSection() {
 
 /* ─── Sous-composant : Section "Notre différence" — sticky title + parallax images ─── */
 function PhilosophieSection() {
+  const { t } = useLocale();
+  const philosophiePoints = getPhilosophiePoints(t);
   const sectionRef = useRef(null);
   const imgColRef = useRef(null);
 
@@ -607,13 +555,13 @@ function PhilosophieSection() {
           <div className="pr-6 lg:pr-10 pt-20 lg:pt-28 pb-24 lg:pb-32">
             <div className="sticky top-[var(--header-h,72px)] z-10 bg-[#F5F2ED] pt-6 pb-6">
               <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-5">
-                Notre différence
+                {t("sell.diff_label")}
               </p>
               <h2 className="font-serif text-[clamp(2.2rem,4.5vw,3.4rem)] tracking-[-0.02em] leading-[1.08] text-[#1A1A1A]">
-                Ce que d'autres promettent, <span className="text-[#FF4A3E]">nous le livrons.</span>
+                {t("sell.diff_title_prefix")} <span className="text-[#FF4A3E]">{t("sell.diff_title_highlight")}</span>
               </h2>
               <p className="mt-5 text-[1.1rem] text-neutral-500 leading-relaxed">
-                Trois engagements concrets qui changent le résultat de votre vente.
+                {t("sell.diff_subtitle")}
               </p>
             </div>
 
@@ -657,14 +605,14 @@ function PhilosophieSection() {
         {/* ── Mobile : empilé ── */}
         <div className="md:hidden py-16">
           <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-4">
-            Notre différence
+            {t("sell.diff_label")}
           </p>
           <h2 className="font-serif text-[clamp(1.8rem,8vw,2.6rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-4">
-            Ce que d'autres promettent,<br/>
-            <span className="text-[#FF4A3E]">nous le livrons.</span>
+            {t("sell.diff_title_prefix")}<br/>
+            <span className="text-[#FF4A3E]">{t("sell.diff_title_highlight")}</span>
           </h2>
           <p className="text-[1rem] text-neutral-500 leading-relaxed mb-12">
-            Trois engagements concrets qui changent le résultat de votre vente.
+            {t("sell.diff_subtitle")}
           </p>
 
           {philosophiePoints.map((point, i) => (
@@ -697,6 +645,8 @@ function PhilosophieSection() {
 
 /* ─── Sous-composant : Parcours — Demi-cercle + point voyageur ─── */
 function ParcoursSection() {
+  const { t } = useLocale();
+  const parcoursSteps = getParcoursSteps(t);
   const sectionRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [stepProgress, setStepProgress] = useState(0.5);
@@ -767,10 +717,10 @@ function ParcoursSection() {
     {/* ── Mobile : parcours en cartes verticales ── */}
     <section id="parcours" className="md:hidden relative bg-[#F5F2ED] py-14 px-5" style={{ zIndex: 2 }}>
       <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-4">
-        Votre parcours
+        {t("sell.journey_label")}
       </p>
       <h2 className="font-serif text-[clamp(1.8rem,8vw,2.6rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-10">
-        De la rencontre<br />à la remise des clés<span className="text-[#FF4A3E]">.</span>
+        {t("sell.journey_title_line1")}<br />{t("sell.journey_title_line2")}<span className="text-[#FF4A3E]">.</span>
       </h2>
 
       <div className="flex flex-col gap-8">
@@ -926,7 +876,7 @@ function ParcoursSection() {
                     }}
                   >
                     <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-4">
-                      Votre parcours
+                      {t("sell.journey_label")}
                     </p>
                     <h2 className="font-serif text-[clamp(2.2rem,4.5vw,3.4rem)] tracking-[-0.02em] leading-[1.08] text-[#1A1A1A] mb-5">
                       {step.title}
@@ -977,7 +927,7 @@ function ParcoursSection() {
                 window.scrollTo({ top, behavior: "smooth" });
               }}
               className="w-12 h-12 rounded-full bg-[#FF4A3E] flex items-center justify-center shadow-lg hover:bg-[#e8423a] hover:scale-105 transition-all"
-              aria-label="Section précédente"
+              aria-label={t("sell.aria_prev_section")}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
@@ -991,7 +941,7 @@ function ParcoursSection() {
                 window.scrollTo({ top, behavior: "smooth" });
               }}
               className="w-12 h-12 rounded-full bg-[#FF4A3E] flex items-center justify-center shadow-lg hover:bg-[#e8423a] hover:scale-105 transition-all"
-              aria-label="Section suivante"
+              aria-label={t("sell.aria_next_section")}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -1092,6 +1042,9 @@ function LivrableIcon({ index, small, color = "white" }) {
 
 /* ─── Sous-composant : Livrables + Témoignages — section combinée ─── */
 function LivrablesSection() {
+  const { t } = useLocale();
+  const livrables = getLivrables(t);
+  const temoignages = getTemoignages(t);
   const sectionRef = useRef(null);
   const [progress, setProgress] = useState(0);
 
@@ -1156,13 +1109,13 @@ function LivrablesSection() {
 
       {/* Contenu */}
       <div className="relative z-10">
-        <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-white/60 font-semibold mb-4">Nos livrables</p>
+        <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-white/60 font-semibold mb-4">{t("sell.deliverables_label")}</p>
         <h2 className="font-serif text-[clamp(1.8rem,8vw,2.6rem)] tracking-[-0.02em] leading-[1.1] text-white mb-3">
-          Pas des promesses<span className="text-[#FF4A3E]">.</span><br />
-          Des livrables concrets<span className="text-[#FF4A3E]">.</span>
+          {t("sell.deliverables_title_line1")}<span className="text-[#FF4A3E]">.</span><br />
+          {t("sell.deliverables_title_line2")}<span className="text-[#FF4A3E]">.</span>
         </h2>
         <p className="text-[0.95rem] text-white/60 leading-relaxed mb-8">
-          Chaque étape produit un document ou un outil tangible.
+          {t("sell.deliverables_subtitle")}
         </p>
 
         <div className="grid grid-cols-2 gap-3 mb-14">
@@ -1181,9 +1134,9 @@ function LivrablesSection() {
         </div>
 
         {/* Témoignages mobile */}
-        <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-3">Témoignages</p>
+        <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-3">{t("sell.testimonials_label")}</p>
         <h2 className="font-serif text-[clamp(1.6rem,7vw,2.2rem)] tracking-[-0.02em] leading-[1.1] text-white mb-6">
-          Ce que disent nos clients<span className="text-[#FF4A3E]">.</span>
+          {t("sell.testimonials_title")}<span className="text-[#FF4A3E]">.</span>
         </h2>
         <div className="flex flex-col gap-4">
           {temoignages.map((temo, i) => (
@@ -1228,18 +1181,18 @@ function LivrablesSection() {
           style={{ opacity: titleOpacity, top: "var(--header-h, 72px)" }}
         >
           <div className="text-center px-10 py-8 bg-white/85 backdrop-blur-sm flex flex-col items-center">
-            <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-neutral-500 font-semibold mb-4">Nos livrables</p>
+            <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-neutral-500 font-semibold mb-4">{t("sell.deliverables_label")}</p>
             <h2 className="font-serif text-[clamp(2.4rem,5.5vw,4.2rem)] text-[#1A1A1A] tracking-[-0.02em] leading-[1.08]">
-              Pas des promesses<span className="text-[#FF4A3E]">.</span><br />
-              Des livrables concrets<span className="text-[#FF4A3E]">.</span>
+              {t("sell.deliverables_title_line1")}<span className="text-[#FF4A3E]">.</span><br />
+              {t("sell.deliverables_title_line2")}<span className="text-[#FF4A3E]">.</span>
             </h2>
             <p className="mt-4 text-[1rem] md:text-[1.1rem] text-neutral-500 leading-relaxed">
-              Chaque étape produit un document ou un outil tangible.
+              {t("sell.deliverables_subtitle")}
             </p>
 
             {/* Indicateur scroll */}
             <div className="mt-8 flex flex-col items-center gap-2 animate-[scroll-hint_2.5s_ease-in-out_infinite]">
-              <span className="text-[15px] uppercase tracking-[0.2em] text-[#FF4A3E] font-medium">Découvrir</span>
+              <span className="text-[15px] uppercase tracking-[0.2em] text-[#FF4A3E] font-medium">{t("cta.discover")}</span>
               <div className="w-[1px] h-8 bg-[#FF4A3E]/40 relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full bg-[#FF4A3E] animate-[scroll-line_2.5s_ease-in-out_infinite]" />
               </div>
@@ -1353,9 +1306,9 @@ function LivrablesSection() {
           className="absolute left-0 right-0 z-50 text-center pointer-events-none"
           style={{ top: "18%", opacity: temoTitle }}
         >
-          <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-3">Témoignages</p>
+          <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-3">{t("sell.testimonials_label")}</p>
           <h2 className="font-serif text-[clamp(2rem,4.5vw,3rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A]">
-            Ce que disent nos clients<span className="text-[#FF4A3E]">.</span>
+            {t("sell.testimonials_title")}<span className="text-[#FF4A3E]">.</span>
           </h2>
         </div>
       </div>
@@ -1375,6 +1328,9 @@ const mapPoints = [
 ];
 
 function GenevaMapSection() {
+  const { t } = useLocale();
+  const faqItems = getFaqItems(t);
+  const livrables = getLivrables(t);
   const containerRef = useRef(null);
   const [nearIdx, setNearIdx] = useState(null);
   const [openIdx, setOpenIdx] = useState(null);
@@ -1462,13 +1418,13 @@ function GenevaMapSection() {
     {/* ── Mobile : FAQ accordéon ── */}
     <section className="md:hidden relative bg-white py-14 px-5" style={{ zIndex: 2 }}>
       <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-3">
-        Questions fréquentes
+        {t("sell.faq_label")}
       </p>
       <h2 className="font-serif text-[clamp(1.8rem,8vw,2.4rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-2">
-        Vous vous posez la question ?<br />Nous y répondons<span className="text-[#FF4A3E]">.</span>
+        {t("sell.faq_title_line1")}<br />{t("sell.faq_title_line2")}<span className="text-[#FF4A3E]">.</span>
       </h2>
       <p className="text-[0.9rem] text-neutral-500 leading-relaxed mb-8">
-        Les réponses directes aux questions que se posent tous les vendeurs.
+        {t("sell.faq_subtitle_mobile")}
       </p>
 
       <div className="flex flex-col">
@@ -1514,13 +1470,13 @@ function GenevaMapSection() {
     <section className="relative bg-white hidden md:block">
       <div className="relative z-10 text-center pt-20 -mb-40 px-4">
         <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-3">
-          Questions fréquentes
+          {t("sell.faq_label")}
         </p>
         <h2 className="font-serif text-[clamp(2rem,4.5vw,3rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A]">
-          Vous vous posez la question ?<br />Nous y répondons<span className="text-[#FF4A3E]">.</span>
+          {t("sell.faq_title_line1")}<br />{t("sell.faq_title_line2")}<span className="text-[#FF4A3E]">.</span>
         </h2>
         <p className="mt-4 text-[0.95rem] text-neutral-500 max-w-[50ch] mx-auto">
-          Les réponses directes aux questions que se posent tous les vendeurs avant de se lancer.
+          {t("sell.faq_subtitle")}
         </p>
       </div>
 
@@ -1655,7 +1611,7 @@ function GenevaMapSection() {
                     transition: "font-size 0.2s ease",
                   }}
                 >
-                  {isHovered && !isOpen ? "Voir →" : "?"}
+                  {isHovered && !isOpen ? `${t("sell.map_see")} →` : "?"}
                 </span>
               </button>
             </div>
@@ -1669,6 +1625,8 @@ function GenevaMapSection() {
 
 /* ─── FAQ Section ─── */
 function FAQSection() {
+  const { t } = useLocale();
+  const faqItems = getFaqItems(t);
   const [openIdx, setOpenIdx] = useState(null);
 
   return (
@@ -1677,14 +1635,14 @@ function FAQSection() {
         {/* Colonne gauche — titre sticky */}
         <div className="md:sticky md:top-32">
           <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-3">
-            Questions fréquentes
+            {t("sell.faq_label")}
           </p>
           <h2 className="font-serif text-[clamp(2rem,4.5vw,3.2rem)] tracking-[-0.02em] leading-[1.05] text-[#1A1A1A] mb-5">
-            Vous vous posez la question ?
-            <br />Nous y répondons<span className="text-[#FF4A3E]">.</span>
+            {t("sell.faq_title_line1")}
+            <br />{t("sell.faq_title_line2")}<span className="text-[#FF4A3E]">.</span>
           </h2>
           <p className="text-[0.95rem] text-neutral-500 leading-relaxed max-w-[38ch]">
-            Les réponses directes aux questions que se posent tous les vendeurs avant de se lancer.
+            {t("sell.faq_subtitle")}
           </p>
         </div>
 
@@ -1733,6 +1691,7 @@ function FAQSection() {
 
 /* ─── Section Vendus — animation d'entrée au scroll ─── */
 function VendusSection({ vendus }) {
+  const { t } = useLocale();
   const ref = useRef(null);
   const [seen, setSeen] = useState(false);
 
@@ -1760,13 +1719,13 @@ function VendusSection({ vendus }) {
           }}
         >
           <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-3">
-            Résultats
+            {t("sell.results_label")}
           </p>
           <h2 className="font-serif text-2xl tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-2">
-            Vendus récemment<span className="text-[#FF4A3E]">.</span>
+            {t("sell.results_title")}<span className="text-[#FF4A3E]">.</span>
           </h2>
           <p className="text-[0.9rem] text-neutral-500 leading-relaxed">
-            Des résultats concrets, pas des promesses.
+            {t("sell.results_subtitle")}
           </p>
         </div>
         <BandCarousel
@@ -1787,13 +1746,13 @@ function VendusSection({ vendus }) {
           }}
         >
           <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-4">
-            Résultats
+            {t("sell.results_label")}
           </p>
           <h2 className="font-serif text-[clamp(2rem,5vw,3.2rem)] tracking-[-0.02em] leading-[1.1] text-[#1A1A1A] mb-3">
-            Vendus récemment<span className="text-[#FF4A3E]">.</span>
+            {t("sell.results_title")}<span className="text-[#FF4A3E]">.</span>
           </h2>
           <p className="text-[1.1rem] text-neutral-500 leading-relaxed">
-            Des résultats concrets, pas des promesses.
+            {t("sell.results_subtitle")}
           </p>
         </div>
         <div
@@ -1834,6 +1793,7 @@ function CountNumber({ value, active }) {
 
 /* ─── Section Équipe ─── */
 function EquipeSection() {
+  const { t } = useLocale();
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
   const [countUp, setCountUp] = useState(false);
@@ -1850,9 +1810,9 @@ function EquipeSection() {
   }, []);
 
   const stats = [
-    { value: 50, suffix: "%", label: "vendus avant publication" },
-    { value: 8, suffix: " sem.", label: "délai moyen de vente" },
-    { value: 500, suffix: "K", label: "portée mensuelle" },
+    { value: 50, suffix: "%", labelKey: "sell.proof_stat_sold" },
+    { value: 8, suffix: " sem.", labelKey: "sell.proof_stat_delay" },
+    { value: 500, suffix: "K", labelKey: "sell.equipe_stat_reach" },
   ];
 
   return (
@@ -1881,7 +1841,7 @@ function EquipeSection() {
                 transition: "opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s",
               }}
             >
-              L'équipe
+              {t("sell.team_label")}
             </p>
             <h2
               className="font-serif text-[clamp(2.4rem,5vw,4rem)] tracking-[-0.03em] leading-[1] text-[#1A1A1A] mb-6"
@@ -1891,7 +1851,7 @@ function EquipeSection() {
                 transition: "opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s",
               }}
             >
-              Des courtiers,<br />pas des commerciaux<span className="text-[#FF4A3E]">.</span>
+              {t("sell.team_title_line1")}<br />{t("sell.team_title_line2")}<span className="text-[#FF4A3E]">.</span>
             </h2>
             <p
               className="text-[1.05rem] text-neutral-600 leading-relaxed mb-8 max-w-[48ch]"
@@ -1901,7 +1861,7 @@ function EquipeSection() {
                 transition: "opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s",
               }}
             >
-              GARY est une agence à taille humaine, basée à Genève. Chaque courtier connaît son marché par cœur et accompagne un nombre limité de mandats à la fois. Votre bien n'est pas un dossier parmi d'autres — c'est une mission.
+              {t("sell.team_description")}
             </p>
 
             {/* Citation */}
@@ -1914,7 +1874,7 @@ function EquipeSection() {
               }}
             >
               <p className="text-[0.95rem] italic text-neutral-500 leading-relaxed">
-                « Dans notre métier, la confiance ne se décrète pas. Elle se démontre, bien par bien, étape par étape. »
+                {t("sell.team_quote")}
               </p>
             </div>
           </div>
@@ -1933,7 +1893,7 @@ function EquipeSection() {
                 <p className="font-serif text-[clamp(1.6rem,4.5vw,3.4rem)] text-[#1A1A1A] leading-none mb-1">
                   <CountNumber value={s.value} active={countUp} />{s.suffix}
                 </p>
-                <p className="text-[0.65rem] md:text-[0.75rem] uppercase tracking-[0.12em] text-neutral-400">{s.label}</p>
+                <p className="text-[0.65rem] md:text-[0.75rem] uppercase tracking-[0.12em] text-neutral-400">{t(s.labelKey)}</p>
               </div>
             ))}
           </div>
@@ -1945,6 +1905,7 @@ function EquipeSection() {
 
 /* ─── Section CTA Final ─── */
 function CTAFinalSection() {
+  const { t, link } = useLocale();
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
   const [phone, setPhone] = useState("");
@@ -1963,7 +1924,7 @@ function CTAFinalSection() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (phone.trim()) {
-      window.location.href = `/contact?phone=${encodeURIComponent(phone)}`;
+      window.location.href = `${link("contact")}?phone=${encodeURIComponent(phone)}`;
     }
   };
 
@@ -1995,13 +1956,13 @@ function CTAFinalSection() {
             }}
           >
             <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-5">
-              Prochaine étape
+              {t("sell.cta_final_label")}
             </p>
             <h2 className="font-serif text-[clamp(2rem,5vw,4.2rem)] tracking-[-0.03em] leading-[1.05] text-white mb-6 md:whitespace-nowrap">
-              Parlons de votre bien<span className="text-[#FF4A3E]">.</span>
+              {t("sell.cta_final_title")}<span className="text-[#FF4A3E]">.</span>
             </h2>
             <p className="text-[0.95rem] md:text-[1.1rem] text-white/60 leading-relaxed md:whitespace-nowrap">
-              Un courtier de votre secteur vous rappelle sous 24h — sans engagement, sans pression.
+              {t("sell.cta_final_subtitle")}
             </p>
           </div>
 
@@ -2016,13 +1977,13 @@ function CTAFinalSection() {
           >
             <div className="bg-white/[0.07] backdrop-blur-md border border-white/[0.12] p-8 md:p-10">
               <p className="text-[0.85rem] text-white/80 mb-6 leading-relaxed">
-                Laissez-nous votre numéro, un courtier expert de votre quartier vous contacte pour une première discussion confidentielle.
+                {t("sell.cta_final_form_text")}
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label htmlFor="phone-final" className="block text-[0.75rem] uppercase tracking-[0.15em] text-white/35 mb-2">
-                    Téléphone
+                    {t("sell.cta_final_phone_label")}
                   </label>
                   <input
                     id="phone-final"
@@ -2037,7 +1998,7 @@ function CTAFinalSection() {
                   type="submit"
                   className="w-full py-4 bg-[#FF4A3E] text-white text-[0.9rem] font-medium uppercase tracking-[0.12em] hover:bg-[#e5382d] transition-all flex items-center justify-center gap-3"
                 >
-                  Être rappelé sous 24h
+                  {t("sell.cta_final_submit")}
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
@@ -2045,7 +2006,7 @@ function CTAFinalSection() {
               </form>
 
               <p className="text-[0.7rem] text-white/20 mt-4 text-center">
-                Gratuit · Sans engagement · Confidentiel
+                {t("sell.cta_final_disclaimer")}
               </p>
             </div>
           </div>

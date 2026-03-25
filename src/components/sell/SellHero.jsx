@@ -2,9 +2,11 @@
 import { useState, useRef, useEffect } from "react";
 import CTAFuturaGlow, { KeyIcon } from "../cta/CTAFuturaGlow.jsx";
 import CTAWhiteSweep from "../cta/CTAWhiteSweep.jsx";
+import { useLocale } from "../../hooks/useLocale.js";
 
 /* ─── Contenu Hero — tuile glassmorphique centrée ─── */
 function SellHeroContent() {
+  const { t, link } = useLocale();
   const ref = useRef(null);
   const [offset, setOffset] = useState(0);
 
@@ -40,23 +42,23 @@ function SellHeroContent() {
 
           <div className="relative z-10 text-center px-3 sm:px-0 py-5 sm:py-0">
             <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-neutral-600 mb-3">
-              Vendre avec GARY
+              {t("sell.hero_label")}
             </p>
 
             <h1 className="font-serif tracking-[-0.03em] leading-[0.95] md:leading-[0.9] text-[clamp(2.6rem,11vw,4.2rem)] md:text-[clamp(4.2rem,10vw,7.6rem)]">
-              Votre bien mérite<br />
-              mieux qu'une mise en ligne
+              {t("sell.hero_title_line1")}<br />
+              {t("sell.hero_title_line2")}
               <span className="text-[#FF4A3E]">.</span>
             </h1>
 
             <p className="mt-5 text-[clamp(1.05rem,2.1vw,1.4rem)] text-neutral-900/90 max-w-[52ch] mx-auto">
-              Nous ne publions pas votre bien partout en espérant un acheteur.
-              Nous contrôlons qui le voit, quand, et à quel prix.
+              {t("sell.hero_subtitle_line1")}
+              {" "}{t("sell.hero_subtitle_line2")}
             </p>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-              <CTAFuturaGlow to="/estimer" label="Estimer mon bien" Icon={KeyIcon} />
-              <CTAWhiteSweep to="#parcours" label="Notre approche" />
+              <CTAFuturaGlow to={link("estimate")} label={t("sell.cta_estimate")} Icon={KeyIcon} />
+              <CTAWhiteSweep to="#parcours" label={t("sell.hero_cta_approach")} />
             </div>
           </div>
         </div>

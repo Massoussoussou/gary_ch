@@ -1,6 +1,8 @@
 // src/components/TrustStrip.jsx
 // Version "sans lignes" : aucune bordure ni séparateur, grands espacements.
 
+import { useLocale } from "../hooks/useLocale.js";
+
 export default function TrustStrip({
   rating = 4.9,
   reviewsCount = 75,
@@ -9,6 +11,7 @@ export default function TrustStrip({
   panel = false,   // NEW: affiche un voile/bloc blanc élégant
   size = "xl",     // NEW: plus grand par défaut
 }) {
+  const { t } = useLocale();
   const safeRating =
     typeof rating === "number" && rating >= 0 && rating <= 5 ? rating : 0;
 
@@ -23,7 +26,7 @@ export default function TrustStrip({
 
   return (
     <section
-      aria-label="Indices de confiance"
+      aria-label={t("trust.aria_label")}
       className={wrapCls}
     >
       <div className="w-full px-[min(6vw,72px)]">
@@ -42,47 +45,47 @@ export default function TrustStrip({
               </span>
               <span className={S.h1}>
                 {safeRating.toFixed(1)}
-                <span className="sr-only"> sur 5</span>
+                <span className="sr-only"> {t("trust.out_of_5")}</span>
               </span>
             </div>
             <div className="mt-3 text-xs md:text-sm uppercase tracking-wide text-zinc-600">
-              Note moyenne / 5
+              {t("trust.avg_rating")}
             </div>
             <div className="mt-1 text-[12px] text-zinc-500">
-              ({reviewsCount} avis)
+              ({reviewsCount} {t("trust.reviews")})
             </div>
           </li>
 
           {/* Bloc 2 : Courtier licencié */}
           <li className={`${S.py} text-center w-full`}>
             <div className={S.h2}>
-              Courtier
+              {t("trust.broker")}
             </div>
             <div className="mt-3 text-xs md:text-sm uppercase tracking-wide text-zinc-600">
-              licencié
+              {t("trust.licensed")}
             </div>
             <div className="mt-1 text-[12px] text-zinc-500">
-              Conformité & transparence
+              {t("trust.compliance")}
             </div>
           </li>
 
           {/* Bloc 3 : Dossiers complets */}
           <li className={`${S.py} text-center w-full`}>
             <div className={S.h2}>
-              Dossiers
+              {t("trust.files")}
             </div>
             <div className="mt-3 text-xs md:text-sm uppercase tracking-wide text-zinc-600">
-              complets
+              {t("trust.complete")}
             </div>
             <div className="mt-1 text-[12px] text-zinc-500">
-              Plans, diagnostics, historique
+              {t("trust.files_detail")}
             </div>
           </li>
 
           {/* Bloc 4 : Avis externes (RealAdvisor par défaut) */}
           <li className={`${S.py} text-center w-full`}>
             <div className={S.h2}>
-              Avis vérifiés
+              {t("trust.verified_reviews")}
             </div>
             <div className="mt-2 text-xs md:text-sm uppercase tracking-wide text-zinc-600">
               {reviewsLabel}
@@ -94,11 +97,11 @@ export default function TrustStrip({
                   href={reviewsUrl}
                   target="_blank"
                   rel="noopener noreferrer nofollow"
-                  title={`Voir les avis de GARY.ch sur ${reviewsLabel} (nouvel onglet)`}
-                  aria-label={`Voir les avis de GARY.ch sur ${reviewsLabel} (nouvel onglet)`}
+                  title={t("trust.see_reviews_on", { platform: reviewsLabel })}
+                  aria-label={t("trust.see_reviews_on", { platform: reviewsLabel })}
                   className="inline-flex items-center gap-2 underline underline-offset-4 decoration-zinc-300 hover:decoration-zinc-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E] focus-visible:ring-offset-2 focus-visible:ring-offset-white text-zinc-800"
                 >
-                  Voir les avis sur {reviewsLabel}
+                  {t("trust.see_reviews_link", { platform: reviewsLabel })}
                   <svg
                     aria-hidden="true"
                     className="h-4 w-4"
@@ -110,13 +113,13 @@ export default function TrustStrip({
                 </a>
               ) : (
                 <span className="text-zinc-500 text-sm">
-                  Lien d’avis indisponible
+                  {t("trust.reviews_link_unavailable")}
                 </span>
               )}
             </div>
 
             <div className="mt-1 text-[12px] text-zinc-500">
-              Indice indépendant, mis à jour par la plateforme
+              {t("trust.independent_index")}
             </div>
           </li>
         </ul>

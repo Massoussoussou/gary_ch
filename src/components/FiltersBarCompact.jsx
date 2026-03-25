@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
+import { useLocale } from "../hooks/useLocale";
 
 /* ---------- Utils ---------- */
 
@@ -148,7 +149,7 @@ function PortalPop({ open, anchorRef, onClose, children, className = "" }) {
 
 /* ---------- Bottom-sheet mobile (luxe) ---------- */
 
-function MobileSheet({ open, onClose, title = "Filtres", children }) {
+function MobileSheet({ open, onClose, title, children }) {
   const panelRef = useRef(null);
 
   useEffect(() => {
@@ -176,7 +177,7 @@ function MobileSheet({ open, onClose, title = "Filtres", children }) {
       {/* overlay */}
       <button
         type="button"
-        aria-label="Fermer"
+        aria-label={title}
         onClick={onClose}
         className="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
       />
@@ -214,7 +215,7 @@ function MobileSheet({ open, onClose, title = "Filtres", children }) {
               hover:bg-white hover:border-black/20
               focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/35
             "
-            aria-label="Fermer"
+            aria-label={title}
           >
             <X className="h-5 w-5" />
           </button>
@@ -235,8 +236,10 @@ function CityAutosuggest({
   options = [],
   value,
   onChange,
-  placeholder = "Ville",
+  placeholder,
   size = "md",
+  noCityLabel,
+  clearLabel,
 }) {
   const [q, setQ] = useState(value || "");
   const [open, setOpen] = useState(false);
@@ -295,8 +298,8 @@ function CityAutosuggest({
               setQ("");
               setOpen(false);
             }}
-            aria-label="Effacer"
-            title="Effacer"
+            aria-label={clearLabel}
+            title={clearLabel}
           >
             ×
           </button>
@@ -306,7 +309,7 @@ function CityAutosuggest({
       {open && (
         <div className="absolute z-[210] mt-2 w-full rounded-xl border border-zinc-200 bg-white shadow-md max-h-64 overflow-auto text-sm">
           {list.length === 0 ? (
-            <div className="px-4 py-3 text-zinc-500">Aucune ville trouvée</div>
+            <div className="px-4 py-3 text-zinc-500">{noCityLabel}</div>
           ) : (
             list.map((v) => (
               <button
@@ -359,7 +362,7 @@ function Button({ active, children, className = "", onToggle, size = "md", ...re
 
 /* ---------- Compteur ± ---------- */
 
-function Counter({ label, value = 0, onChange, min = 0, max = 10 }) {
+function Counter({ label, value = 0, onChange, min = 0, max = 10, decreaseLabel, increaseLabel }) {
   const v = Number.isFinite(+value) ? +value : 0;
   const set = (x) => onChange?.(Math.max(min, Math.min(max, x)));
 
@@ -371,7 +374,7 @@ function Counter({ label, value = 0, onChange, min = 0, max = 10 }) {
           type="button"
           onClick={() => set(v - 1)}
           className="h-10 w-10 flex items-center justify-center border border-zinc-200 rounded-lg text-lg leading-none"
-          aria-label={`Moins ${label}`}
+          aria-label={decreaseLabel || label}
         >
           −
         </button>
@@ -380,7 +383,7 @@ function Counter({ label, value = 0, onChange, min = 0, max = 10 }) {
           type="button"
           onClick={() => set(v + 1)}
           className="h-10 w-10 flex items-center justify-center border border-zinc-200 rounded-lg text-lg leading-none"
-          aria-label={`Plus ${label}`}
+          aria-label={increaseLabel || label}
         >
           +
         </button>
@@ -400,6 +403,7 @@ export default function FiltersBarCompact({
   resultCount,
   size = "md",
 }) {
+  const { t } = useLocale();
   const cities = citiesProp || facets.cities || [];
   const types = typesProp || facets.types || [];
   const TOK = SIZE_TOKENS[size] || SIZE_TOKENS.md;
@@ -460,7 +464,8 @@ export default function FiltersBarCompact({
   };
 
   const n = typeof resultCount === "number" ? resultCount : null;
-  const searchLabel = n === null ? "VOIR LES ANNONCES" : `VOIR LES ANNONCES (${n})`;
+  const seeListingsText = t("filters.see_listings").toUpperCase();
+  const searchLabel = n === null ? seeListingsText : `${seeListingsText} (${n})`;
   const searchDisabled = n === 0;
 
   /* =======================
@@ -482,13 +487,13 @@ export default function FiltersBarCompact({
           >
             <div className="min-w-0">
               <div className="text-[11px] uppercase tracking-[0.26em] text-zinc-500">
-                Recherche
+                {t("filters.search")}
               </div>
               <div className="mt-1 text-[15px] text-zinc-900 truncate">
-                {filters.city ? filters.city : "Choisir une ville"}{" "}
+                {filters.city ? filters.city : t("filters.choose_city")}{" "}
                 <span className="text-zinc-400">•</span>{" "}
                 <span className="text-zinc-500">
-                  {n === null ? "— annonces" : `${n} annonces`}
+                  {n === null ? `— ${t("filters.listings")}` : `${n} ${t("filters.listings")}`}
                 </span>
               </div>
             </div>
@@ -523,7 +528,7 @@ export default function FiltersBarCompact({
                 hover:bg-[#FF4A3E]
                 disabled:opacity-40
               "
-              title={searchDisabled ? "Aucun résultat" : "Voir les annonces"}
+              title={searchDisabled ? t("filters.no_results") : t("filters.see_listings")}
             >
               <Search className="h-4 w-4" aria-hidden="true" />
               {searchLabel}
@@ -532,14 +537,14 @@ export default function FiltersBarCompact({
         </div>
 
         {/* MOBILE SHEET */}
-        <MobileSheet open={mobileOpen} onClose={() => setMobileOpen(false)} title="Filtres">
+        <MobileSheet open={mobileOpen} onClose={() => setMobileOpen(false)} title={t("filters.title")}>
           {/* Compteur live */}
           <div className="mb-5 flex items-center justify-between">
             <div className="text-[11px] uppercase tracking-[0.26em] text-black/50">
-              Résultats
+              {t("filters.results")}
             </div>
             <div className="text-[13px] text-black/70">
-              {n === null ? "—" : `${n} annonce${n > 1 ? "s" : ""}`}
+              {n === null ? "—" : `${n} ${t("filters.listings")}`}
             </div>
           </div>
 
@@ -547,31 +552,33 @@ export default function FiltersBarCompact({
             {/* Ville */}
             <div>
               <div className="text-[11px] uppercase tracking-[0.26em] text-black/45 mb-2">
-                Ville
+                {t("filters.city")}
               </div>
               <CityAutosuggest
                 size="xl"
                 options={cities}
                 value={filters.city}
                 onChange={(v) => patch({ city: v })}
-                placeholder="Rechercher une ville"
+                placeholder={t("filters.search_city")}
+                noCityLabel={t("filters.no_city_found")}
+                clearLabel={t("filters.clear")}
               />
             </div>
 
             {/* Type */}
             <div>
               <div className="text-[11px] uppercase tracking-[0.26em] text-black/45 mb-2">
-                Type
+                {t("filters.type")}
               </div>
               <div className="grid grid-cols-2 gap-2">
                 {types.length > 0 ? (
-                  types.map((t) => {
-                    const active = t === filters.type;
+                  types.map((tp) => {
+                    const active = tp === filters.type;
                       return (
                         <button
-                          key={t}
+                          key={tp}
                           type="button"
-                          onClick={() => patch({ type: active ? "" : t })}
+                          onClick={() => patch({ type: active ? "" : tp })}
                           className={`
                             rounded-2xl border px-4 py-3 text-left
                             transition-all duration-200
@@ -580,13 +587,13 @@ export default function FiltersBarCompact({
                               : "bg-white border-zinc-200 text-zinc-900 hover:bg-zinc-50"}
                           `}
                         >
-                          <div className="text-[14px]">{t}</div>
+                          <div className="text-[14px]">{tp}</div>
                         </button>
                       );
 
                   })
                 ) : (
-                  <div className="text-sm text-zinc-500">Aucun type disponible</div>
+                  <div className="text-sm text-zinc-500">{t("filters.no_type_available")}</div>
                 )}
               </div>
             </div>
@@ -594,21 +601,21 @@ export default function FiltersBarCompact({
             {/* Budget */}
             <div>
               <div className="text-[11px] uppercase tracking-[0.26em] text-black/45 mb-2">
-                Budget
+                {t("filters.budget")}
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <input
                   inputMode="numeric"
                   value={filters.priceMin}
                   onChange={(e) => patch({ priceMin: e.target.value })}
-                  placeholder="Min CHF"
+                  placeholder={t("filters.min_chf")}
                   className="block h-14 w-full rounded-2xl border border-zinc-200 bg-white px-4 text-[15px]"
                 />
                 <input
                   inputMode="numeric"
                   value={filters.priceMax}
                   onChange={(e) => patch({ priceMax: e.target.value })}
-                  placeholder="Max CHF"
+                  placeholder={t("filters.max_chf")}
                   className="block h-14 w-full rounded-2xl border border-zinc-200 bg-white px-4 text-[15px]"
                 />
               </div>
@@ -617,22 +624,26 @@ export default function FiltersBarCompact({
             {/* Chambres / SDB */}
             <div>
               <div className="text-[11px] uppercase tracking-[0.26em] text-black/45 mb-2">
-                Chambres & SDB
+                {t("filters.bedrooms_bathrooms")}
               </div>
               <div className="grid gap-2">
                 <Counter
-                  label="Chambres"
+                  label={t("filters.bedrooms")}
                   value={filters.chambresMin}
                   onChange={(v) => patch({ chambresMin: v })}
                   min={0}
                   max={10}
+                  decreaseLabel={t("filters.decrease", { label: t("filters.bedrooms") })}
+                  increaseLabel={t("filters.increase", { label: t("filters.bedrooms") })}
                 />
                 <Counter
-                  label="Salles de bain"
+                  label={t("filters.bathrooms")}
                   value={filters.sdbMin}
                   onChange={(v) => patch({ sdbMin: v })}
                   min={0}
                   max={10}
+                  decreaseLabel={t("filters.decrease", { label: t("filters.bathrooms") })}
+                  increaseLabel={t("filters.increase", { label: t("filters.bathrooms") })}
                 />
               </div>
             </div>
@@ -640,21 +651,21 @@ export default function FiltersBarCompact({
             {/* Surface */}
             <div>
               <div className="text-[11px] uppercase tracking-[0.26em] text-black/45 mb-2">
-                Surface
+                {t("filters.surface")}
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <input
                   inputMode="numeric"
                   value={filters.surfaceMin}
                   onChange={(e) => patch({ surfaceMin: e.target.value })}
-                  placeholder="Min m²"
+                  placeholder={t("filters.min_sqm")}
                   className="block h-14 w-full rounded-2xl border border-zinc-200 bg-white px-4 text-[15px]"
                 />
                 <input
                   inputMode="numeric"
                   value={filters.surfaceMax}
                   onChange={(e) => patch({ surfaceMax: e.target.value })}
-                  placeholder="Max m²"
+                  placeholder={t("filters.max_sqm")}
                   className="block h-14 w-full rounded-2xl border border-zinc-200 bg-white px-4 text-[15px]"
                 />
               </div>
@@ -673,7 +684,7 @@ export default function FiltersBarCompact({
                   hover:bg-zinc-50
                 "
               >
-                Reset
+                {t("filters.reset")}
               </button>
 
               <button
@@ -691,12 +702,12 @@ export default function FiltersBarCompact({
                   disabled:opacity-40
                 "
               >
-                {n === null ? "Voir" : `Voir ${n}`}
+                {n === null ? t("filters.see") : `${t("filters.see")} ${n}`}
               </button>
             </div>
 
             <div className="text-center text-[12px] text-black/45 pt-1">
-              Mise à jour en temps réel selon vos filtres
+              {t("filters.realtime_update")}
             </div>
           </div>
         </MobileSheet>
@@ -724,7 +735,7 @@ export default function FiltersBarCompact({
               onToggle={() => toggle("ville")}
               className="w-full justify-between"
             >
-              {filters.city || "Ville"}
+              {filters.city || t("filters.city")}
             </Button>
             <PortalPop open={is("ville")} onClose={() => setOpen(null)} anchorRef={refVille}>
               <CityAutosuggest
@@ -732,7 +743,9 @@ export default function FiltersBarCompact({
                 options={cities}
                 value={filters.city}
                 onChange={(v) => patch({ city: v })}
-                placeholder="Rechercher une ville"
+                placeholder={t("filters.search_city")}
+                noCityLabel={t("filters.no_city_found")}
+                clearLabel={t("filters.clear")}
               />
             </PortalPop>
           </div>
@@ -745,30 +758,30 @@ export default function FiltersBarCompact({
               onToggle={() => toggle("type")}
               className="w-full justify-between"
             >
-              {filters.type || "Type"}
+              {filters.type || t("filters.type")}
             </Button>
             <PortalPop open={is("type")} onClose={() => setOpen(null)} anchorRef={refType}>
               <div className="grid grid-cols-2 gap-2">
                 {types.length > 0 ? (
-                  types.map((t) => (
+                  types.map((tp) => (
                     <button
-                      key={t}
+                      key={tp}
                       type="button"
                       onClick={() => {
-                        patch({ type: t === filters.type ? "" : t });
+                        patch({ type: tp === filters.type ? "" : tp });
                         setOpen(null);
                       }}
                       className={`rounded-md border px-3 py-2 text-sm text-left ${
-                        t === filters.type
+                        tp === filters.type
                           ? "border-zinc-900 bg-zinc-50"
                           : "border-zinc-200 hover:bg-zinc-50"
                       }`}
                     >
-                      {t}
+                      {tp}
                     </button>
                   ))
                 ) : (
-                  <div className="text-sm text-zinc-500">Aucun type disponible</div>
+                  <div className="text-sm text-zinc-500">{t("filters.no_type_available")}</div>
                 )}
               </div>
             </PortalPop>
@@ -782,7 +795,7 @@ export default function FiltersBarCompact({
               onToggle={() => toggle("budget")}
               className="w-full justify-between"
             >
-              Budget
+              {t("filters.budget")}
             </Button>
             <PortalPop open={is("budget")} onClose={() => setOpen(null)} anchorRef={refBudget}>
               <div className="grid grid-cols-2 gap-2">
@@ -790,17 +803,17 @@ export default function FiltersBarCompact({
                   inputMode="numeric"
                   value={filters.priceMin}
                   onChange={(e) => patch({ priceMin: e.target.value })}
-                  placeholder="Min CHF"
+                  placeholder={t("filters.min_chf")}
                   className="block h-12 w-full rounded-md border border-zinc-200 bg-white px-3"
-                  aria-label="Budget minimum en francs suisses"
+                  aria-label={t("filters.aria_budget_min")}
                 />
                 <input
                   inputMode="numeric"
                   value={filters.priceMax}
                   onChange={(e) => patch({ priceMax: e.target.value })}
-                  placeholder="Max CHF"
+                  placeholder={t("filters.max_chf")}
                   className="block h-12 w-full rounded-md border border-zinc-200 bg-white px-3"
-                  aria-label="Budget maximum en francs suisses"
+                  aria-label={t("filters.aria_budget_max")}
                 />
               </div>
             </PortalPop>
@@ -814,23 +827,27 @@ export default function FiltersBarCompact({
               onToggle={() => toggle("rooms")}
               className="w-full justify-between"
             >
-              Chambres &amp; SDB
+              {t("filters.bedrooms_bathrooms")}
             </Button>
             <PortalPop open={is("rooms")} onClose={() => setOpen(null)} anchorRef={refRooms}>
               <div className="grid grid-cols-1 gap-2">
                 <Counter
-                  label="Chambres"
+                  label={t("filters.bedrooms")}
                   value={filters.chambresMin}
                   onChange={(v) => patch({ chambresMin: v })}
                   min={0}
                   max={10}
+                  decreaseLabel={t("filters.decrease", { label: t("filters.bedrooms") })}
+                  increaseLabel={t("filters.increase", { label: t("filters.bedrooms") })}
                 />
                 <Counter
-                  label="Salles de bain"
+                  label={t("filters.bathrooms")}
                   value={filters.sdbMin}
                   onChange={(v) => patch({ sdbMin: v })}
                   min={0}
                   max={10}
+                  decreaseLabel={t("filters.decrease", { label: t("filters.bathrooms") })}
+                  increaseLabel={t("filters.increase", { label: t("filters.bathrooms") })}
                 />
               </div>
             </PortalPop>
@@ -844,7 +861,7 @@ export default function FiltersBarCompact({
               onToggle={() => toggle("surf")}
               className="w-full justify-between"
             >
-              Surf.
+              {t("filters.surface_short")}
             </Button>
             <PortalPop open={is("surf")} onClose={() => setOpen(null)} anchorRef={refSurf}>
               <div className="grid grid-cols-2 gap-2">
@@ -852,17 +869,17 @@ export default function FiltersBarCompact({
                   inputMode="numeric"
                   value={filters.surfaceMin}
                   onChange={(e) => patch({ surfaceMin: e.target.value })}
-                  placeholder="Min m²"
+                  placeholder={t("filters.min_sqm")}
                   className="block h-12 w-full rounded-md border border-zinc-200 bg-white px-3"
-                  aria-label="Surface minimale"
+                  aria-label={t("filters.aria_surface_min")}
                 />
                 <input
                   inputMode="numeric"
                   value={filters.surfaceMax}
                   onChange={(e) => patch({ surfaceMax: e.target.value })}
-                  placeholder="Max m²"
+                  placeholder={t("filters.max_sqm")}
                   className="block h-12 w-full rounded-md border border-zinc-200 bg-white px-3"
-                  aria-label="Surface maximale"
+                  aria-label={t("filters.aria_surface_max")}
                 />
               </div>
             </PortalPop>
@@ -879,10 +896,10 @@ export default function FiltersBarCompact({
             className={`${TOK.search} w-full inline-flex items-center justify-center gap-2 font-semibold uppercase tracking-[0.08em] rounded-none bg-zinc-900 text-white transition-colors hover:bg-[#FF4A3E] disabled:opacity-40`}
             disabled={searchDisabled}
             aria-disabled={searchDisabled ? "true" : "false"}
-            title={searchDisabled ? "Aucun résultat" : "Lancer la recherche"}
+            title={searchDisabled ? t("filters.no_results") : t("filters.launch_search")}
           >
             <Search className="h-4 w-4" aria-hidden="true" />
-            <span>{n === null ? "RECHERCHER" : `RECHERCHER (${n})`}</span>
+            <span>{n === null ? t("filters.search_btn").toUpperCase() : `${t("filters.search_btn").toUpperCase()} (${n})`}</span>
           </button>
         </div>
       </div>

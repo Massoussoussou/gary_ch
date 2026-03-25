@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { useLocale } from "../hooks/useLocale.js";
 import "../styles/landing-estimation.css";
 
 import HeroSection from "../components/landing-estimation/HeroSection";
@@ -14,6 +15,7 @@ import StickyMobileCTA from "../components/landing-estimation/StickyMobileCTA";
 import EbookModal from "../components/landing-estimation/EbookModal";
 
 export default function EstimationLanding() {
+  const { t, link } = useLocale();
   const [submitted, setSubmitted] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [ebookOpen, setEbookOpen] = useState(false);
@@ -46,8 +48,8 @@ export default function EstimationLanding() {
 
   // Set page title
   useEffect(() => {
-    document.title = "GARY — Estimation Immobilière Gratuite à Genève";
-    return () => { document.title = "GARY — Maquette"; };
+    document.title = t("estimate.page_title");
+    return () => { document.title = "GARY"; };
   }, []);
 
   return (

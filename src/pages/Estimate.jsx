@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import CTAFuturaGlow, { CalculatorIcon } from "../components/cta/CTAFuturaGlow.jsx";
 import CTAWhiteSweep from "../components/cta/CTAWhiteSweep.jsx";
+import { useLocale } from "../hooks/useLocale.js";
 import DynamicBackground from "../components/common/DynamicBackground.jsx";
 
 import {
@@ -91,6 +92,7 @@ function canGoNext(step, form) {
 
 export default function Estimate() {
   const navigate = useNavigate();
+  const { t, link } = useLocale();
   const scrollRef = useRef(null);
 
   const [bgSrc, setBgSrc] = useState(HERO_BG);
@@ -180,7 +182,7 @@ export default function Estimate() {
                           splitDist="35px"
                           minWidth={360}
                         />
-                        <CTAWhiteSweep to="/contact" label="Contacter GARY" />
+                        <CTAWhiteSweep to={link("contact")} label={t("cta.contact_gary")} />
                       </div>
                     </div>
                   </div>

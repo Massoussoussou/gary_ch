@@ -3,8 +3,10 @@ import { useEffect, useRef, useState } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import ListingCardV1 from "./cards/ListingCardV1.jsx"
 import ListingCardSold from "./cards/ListingCardSold.jsx"
+import { useLocale } from "../hooks/useLocale.js"
 
 export default function BandCarousel({ title, items = [], cta, onCta, renderItem }) {
+  const { t } = useLocale()
   const wrapRef = useRef(null)
   const scroller = useRef(null)
 
@@ -33,9 +35,9 @@ export default function BandCarousel({ title, items = [], cta, onCta, renderItem
       const pl    = parseFloat(css.paddingLeft || "0")
       const pr    = parseFloat(css.paddingRight || "0")
 
-      // distance du bord de viewport jusqu’au bord intérieur du container
+      // distance du bord de viewport jusqu'au bord intérieur du container
       const leftGutter  = Math.max(0, rect.left + pl)
-      // distance du bord droit du viewport jusqu’au bord intérieur droit du container
+      // distance du bord droit du viewport jusqu'au bord intérieur droit du container
       const rightGutter = Math.max(0, window.innerWidth - rect.right + pr)
 
       setStartPad(leftGutter)
@@ -86,14 +88,14 @@ export default function BandCarousel({ title, items = [], cta, onCta, renderItem
           <h2 className="font-serif text-2xl md:text-5xl">{title}</h2>
           <div className="hidden md:flex items-center gap-2">
             <button
-              aria-label="Précédent"
+              aria-label={t("carousel.prev")}
               onClick={() => scrollBy(-Math.min(900, window.innerWidth * 0.8))}
               className="h-9 w-9 rounded-full bg-white shadow border border-zinc-200 flex items-center justify-center hover:bg-zinc-50"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
-              aria-label="Suivant"
+              aria-label={t("carousel.next")}
               onClick={() => scrollBy(Math.min(900, window.innerWidth * 0.8))}
               className="h-9 w-9 rounded-full bg-white shadow border border-zinc-200 flex items-center justify-center hover:bg-zinc-50"
             >

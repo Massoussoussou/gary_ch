@@ -2,18 +2,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Filter, X, ChevronDown, RotateCcw, Search, Plus, Minus, SlidersHorizontal } from "lucide-react";
+import { useLocale } from "../hooks/useLocale";
 
 /* ---------------------------- Constantes & utils --------------------------- */
 
-const ATOUTS_LIST = [
-  { key: "jardin", label: "Jardin" },
-  { key: "piscine", label: "Piscine" },
-  { key: "vue", label: "Vue d’exception" },
-  { key: "garage", label: "Garage" },
-  { key: "parkingInterieur", label: "Parking intérieur" },
-  { key: "parkingExterieur", label: "Parking extérieur" },
-  { key: "cave", label: "Cave" },
-  { key: "balconTerrasse", label: "Balcon / Terrasse" },
+const ATOUTS_KEYS = [
+  "jardin",
+  "piscine",
+  "vue",
+  "garage",
+  "parkingInterieur",
+  "parkingExterieur",
+  "cave",
+  "balconTerrasse",
 ];
 
 function norm(s = "") {
@@ -39,13 +40,13 @@ function useClickOutside(ref, handler) {
 
 /* ----------------------------- Composants UI ------------------------------ */
 
-function Chip({ children, onClear }) {
+function Chip({ children, onClear, clearTitle }) {
   return (
     <button
       type="button"
       onClick={onClear}
       className="group inline-flex items-center gap-1 rounded-full border border-line/60 bg-bgAlt px-3 py-1 text-xs text-text hover:bg-white"
-      title="Retirer ce filtre"
+      title={clearTitle}
     >
       <span>{children}</span>
       <X className="h-3.5 w-3.5 opacity-70 group-hover:opacity-100" />
@@ -74,7 +75,7 @@ function TinyButton({ active, children, className = "", ...rest }) {
   );
 }
 
-function Stepper({ value = 0, onChange, min = 0, max = 10, className = "", size = "md", label }) {
+function Stepper({ value = 0, onChange, min = 0, max = 10, className = "", size = "md", label, decreaseLabel, increaseLabel }) {
   const h = size === "sm" ? "h-10" : "h-12";
   const text = size === "sm" ? "text-sm" : "text-base";
   const v = Number.isFinite(+value) ? +value : 0;
@@ -89,7 +90,7 @@ function Stepper({ value = 0, onChange, min = 0, max = 10, className = "", size 
           onClick={() => set(v - 1)}
           disabled={v <= min}
           className="h-full aspect-square inline-grid place-items-center border-r border-line/60 disabled:opacity-40"
-          aria-label={`Diminuer ${label || ""}`}
+          aria-label={decreaseLabel || label || ""}
         >
           <Minus className="h-4 w-4" />
         </button>
@@ -99,7 +100,7 @@ function Stepper({ value = 0, onChange, min = 0, max = 10, className = "", size 
           onClick={() => set(v + 1)}
           disabled={v >= max}
           className="h-full aspect-square inline-grid place-items-center border-l border-line/60 disabled:opacity-40"
-          aria-label={`Augmenter ${label || ""}`}
+          aria-label={increaseLabel || label || ""}
         >
           <Plus className="h-4 w-4" />
         </button>
@@ -122,7 +123,7 @@ function Popover({ open, onClose, children, className = "" }) {
   );
 }
 
-function CityAutosuggest({ options = [], value, onChange, placeholder = "Ville" }) {
+function CityAutosuggest({ options = [], value, onChange, placeholder, noCityLabel, clearTitle, searchLabel }) {
   const [query, setQuery] = useState(value || "");
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
@@ -155,7 +156,7 @@ function CityAutosuggest({ options = [], value, onChange, placeholder = "Ville" 
           className="w-full outline-none text-[15px] md:text-[16px]"
           value={query}
           placeholder={placeholder}
-          aria-label="Rechercher une ville"
+          aria-label={searchLabel}
           onFocus={() => setOpen(true)}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -171,7 +172,7 @@ function CityAutosuggest({ options = [], value, onChange, placeholder = "Ville" 
               setOpen(false);
             }}
             className="text-xs text-text/60 hover:text-text"
-            title="Effacer"
+            title={clearTitle}
           >
             ×
           </button>
@@ -181,7 +182,7 @@ function CityAutosuggest({ options = [], value, onChange, placeholder = "Ville" 
       {open && (
         <div className="absolute z-30 mt-1 w-full border border-line/70 bg-white shadow-md">
           {noResult ? (
-            <div className="px-3 py-2 text-sm text-red-600">Cette ville n’est pas disponible</div>
+            <div className="px-3 py-2 text-sm text-red-600">{noCityLabel}</div>
           ) : (
             <ul className="max-h-56 overflow-auto text-sm">
               {list.map((v) => (
@@ -207,7 +208,7 @@ function CityAutosuggest({ options = [], value, onChange, placeholder = "Ville" 
 
 /* ---------------------- Modal pour les filtres avancés --------------------- */
 
-function AdvancedModal({ open, onClose, children, activeCount = 0, onReset }) {
+function AdvancedModal({ open, onClose, children, activeCount = 0, onReset, labels = {} }) {
   const panelRef = useRef(null);
   useClickOutside(panelRef, onClose);
 
@@ -255,16 +256,16 @@ function AdvancedModal({ open, onClose, children, activeCount = 0, onReset }) {
           {/* Header — fixe */}
           <div className="flex-shrink-0 flex items-center justify-between px-6 py-5 border-b border-neutral-100 rounded-t-2xl">
             <div>
-              <h2 className="text-xl font-bold tracking-tight text-neutral-900">Filtres <span className="text-[#FF4A3E]">avancés</span></h2>
+              <h2 className="text-xl font-bold tracking-tight text-neutral-900">{labels.title || "Filtres"} <span className="text-[#FF4A3E]">{labels.titleAccent || "avancés"}</span></h2>
               <p className="mt-1 text-sm text-neutral-400">
-                Affinez votre recherche parmi les biens disponibles
+                {labels.subtitle || ""}
               </p>
             </div>
             <button
               type="button"
               onClick={onClose}
               className="h-9 w-9 rounded-full border border-neutral-200 inline-flex items-center justify-center text-neutral-500 hover:bg-neutral-50 hover:text-neutral-700 transition-colors"
-              aria-label="Fermer les filtres avancés"
+              aria-label={labels.closeAdvanced || "Close"}
             >
               <X className="h-4 w-4" />
             </button>
@@ -282,10 +283,8 @@ function AdvancedModal({ open, onClose, children, activeCount = 0, onReset }) {
           <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-t border-neutral-100 bg-neutral-50/60 rounded-b-2xl">
             <span className="text-sm text-neutral-500">
               {activeCount > 0
-                ? `${activeCount} filtre${activeCount > 1 ? "s" : ""} actif${
-                    activeCount > 1 ? "s" : ""
-                  }`
-                : "Aucun filtre avancé actif"}
+                ? labels.activeFilters?.(activeCount) || `${activeCount} active`
+                : labels.noAdvancedFilter || ""}
             </span>
             <div className="flex items-center gap-2">
               {onReset && activeCount > 0 && (
@@ -296,7 +295,7 @@ function AdvancedModal({ open, onClose, children, activeCount = 0, onReset }) {
                 >
                   <span className="flex items-center gap-1.5">
                     <RotateCcw className="h-3.5 w-3.5" />
-                    Réinitialiser
+                    {labels.reset || "Reset"}
                   </span>
                 </button>
               )}
@@ -305,7 +304,7 @@ function AdvancedModal({ open, onClose, children, activeCount = 0, onReset }) {
                 onClick={onClose}
                 className="h-11 px-6 rounded-lg bg-neutral-900 text-white text-sm font-semibold hover:bg-[#FF4A3E] transition-colors"
               >
-                Appliquer
+                {labels.apply || "Apply"}
               </button>
             </div>
           </div>
@@ -329,6 +328,13 @@ export default function FiltersBar({
   sortValue,
   onSortChange,
 }) {
+  const { t } = useLocale();
+
+  const ATOUTS_LIST = useMemo(() => ATOUTS_KEYS.map((key) => ({
+    key,
+    label: t(`filters.atout_${key}`),
+  })), [t]);
+
   const [openKey, setOpenKey] = useState(null); // 'ville' | 'type' | 'budget' | 'chambres' | 'surface'
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [barRevealed, setBarRevealed] = useState(false);
@@ -401,7 +407,7 @@ export default function FiltersBar({
   const [dispoBefore, setDispoBefore] = useState(initialFilters.dispoBefore || "");
   const [terrainMin, setTerrainMin] = useState(initialFilters.terrainMin || "");
   const [atouts, setAtouts] = useState(() => {
-    const base = Object.fromEntries(ATOUTS_LIST.map((a) => [a.key, false]));
+    const base = Object.fromEntries(ATOUTS_KEYS.map((k) => [k, false]));
     if (initialFilters.atouts) Object.assign(base, initialFilters.atouts);
     return base;
   });
@@ -447,18 +453,18 @@ export default function FiltersBar({
   // Chips actifs
   const chips = useMemo(() => {
     const arr = [];
-    if (city) arr.push({ k: "city", label: `Ville: ${city}` });
-    if (type) arr.push({ k: "type", label: `Type: ${type}` });
+    if (city) arr.push({ k: "city", label: `${t("filters.city")}: ${city}` });
+    if (type) arr.push({ k: "type", label: `${t("filters.type")}: ${type}` });
     if (priceMin) arr.push({ k: "priceMin", label: `≥ ${priceMin} CHF` });
     if (priceMax) arr.push({ k: "priceMax", label: `≤ ${priceMax} CHF` });
     if (surfaceMin) arr.push({ k: "surfaceMin", label: `≥ ${surfaceMin} m²` });
     if (surfaceMax) arr.push({ k: "surfaceMax", label: `≤ ${surfaceMax} m²` });
-    if (chambresMin) arr.push({ k: "chambresMin", label: `≥ ${chambresMin} ch.` });
-    if (sdbMin) arr.push({ k: "sdbMin", label: `≥ ${sdbMin} sdb` });
-    if (canton) arr.push({ k: "canton", label: `Canton: ${canton}` });
-    if (terrainMin) arr.push({ k: "terrainMin", label: `Terrain ≥ ${terrainMin} m²` });
-    if (meuble) arr.push({ k: "meuble", label: "Meublé" });
-    if (dispoBefore) arr.push({ k: "dispoBefore", label: `Dispo avant: ${dispoBefore}` });
+    if (chambresMin) arr.push({ k: "chambresMin", label: `≥ ${chambresMin} ${t("filters.bedrooms_abbr")}` });
+    if (sdbMin) arr.push({ k: "sdbMin", label: `≥ ${sdbMin} ${t("filters.bathrooms_abbr")}` });
+    if (canton) arr.push({ k: "canton", label: `${t("filters.canton")}: ${canton}` });
+    if (terrainMin) arr.push({ k: "terrainMin", label: `${t("filters.land")} ≥ ${terrainMin} m²` });
+    if (meuble) arr.push({ k: "meuble", label: t("filters.furnished") });
+    if (dispoBefore) arr.push({ k: "dispoBefore", label: `${t("filters.available_before")}: ${dispoBefore}` });
     ATOUTS_LIST.forEach(
       ({ key, label }) => atouts[key] && arr.push({ k: `atout:${key}`, label })
     );
@@ -479,6 +485,8 @@ export default function FiltersBar({
     dispoBefore,
     atouts,
     extraFeatures,
+    t,
+    ATOUTS_LIST,
   ]);
 
   const advancedCount = useMemo(
@@ -503,7 +511,7 @@ export default function FiltersBar({
     setMeuble(false);
     setDispoBefore("");
     setTerrainMin("");
-    setAtouts(Object.fromEntries(ATOUTS_LIST.map((a) => [a.key, false])));
+    setAtouts(Object.fromEntries(ATOUTS_KEYS.map((k) => [k, false])));
     setExtraFeatures([]);
     setOpenKey(null);
   }
@@ -534,31 +542,34 @@ export default function FiltersBar({
     <div className="grid gap-5">
       {/* Ville */}
       <div>
-        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-2 block">Ville</label>
+        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-2 block">{t("filters.city")}</label>
         <CityAutosuggest
           options={cities}
           value={city}
           onChange={setCity}
-          placeholder="Rechercher une ville"
+          placeholder={t("filters.search_city")}
+          noCityLabel={t("filters.no_city_found")}
+          clearTitle={t("filters.clear")}
+          searchLabel={t("filters.search_city")}
         />
       </div>
 
       {/* Type de bien */}
       <div>
-        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-2 block">Type de bien</label>
+        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-2 block">{t("filters.property_type")}</label>
         <div className="grid grid-cols-2 gap-2">
-          {types.map((t) => (
+          {types.map((tp) => (
             <button
               type="button"
-              key={t}
-              onClick={() => setType((prev) => (t === prev ? "" : t))}
+              key={tp}
+              onClick={() => setType((prev) => (tp === prev ? "" : tp))}
               className={`border px-4 py-3 text-sm text-left transition-colors ${
-                t === type
+                tp === type
                   ? "border-[#FF4A3E] bg-[#FF4A3E]/5 text-[#FF4A3E]"
                   : "border-neutral-200 bg-white hover:bg-neutral-50"
               }`}
             >
-              {t}
+              {tp}
             </button>
           ))}
         </div>
@@ -566,20 +577,20 @@ export default function FiltersBar({
 
       {/* Budget */}
       <div>
-        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-2 block">Budget</label>
+        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-2 block">{t("filters.budget")}</label>
         <div className="grid grid-cols-2 gap-2">
           <input
             inputMode="numeric"
-            placeholder="Min CHF"
-            aria-label="Budget minimum en CHF"
+            placeholder={t("filters.min_chf")}
+            aria-label={t("filters.aria_budget_min")}
             value={priceMin}
             onChange={(e) => setPriceMin(e.target.value)}
             className="h-12 w-full border border-neutral-200 bg-white px-4 text-[15px]"
           />
           <input
             inputMode="numeric"
-            placeholder="Max CHF"
-            aria-label="Budget maximum en CHF"
+            placeholder={t("filters.max_chf")}
+            aria-label={t("filters.aria_budget_max")}
             value={priceMax}
             onChange={(e) => setPriceMax(e.target.value)}
             className="h-12 w-full border border-neutral-200 bg-white px-4 text-[15px]"
@@ -589,29 +600,29 @@ export default function FiltersBar({
 
       {/* Chambres & SDB */}
       <div>
-        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-4 block">Chambres & SDB</label>
+        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-4 block">{t("filters.bedrooms_bathrooms")}</label>
         <div className="grid gap-6">
-          <Stepper label="Chambres min" value={Number(chambresMin || 0)} onChange={(v) => setChambresMin(String(v))} min={0} max={10} />
-          <Stepper label="Salles de bain min" value={Number(sdbMin || 0)} onChange={(v) => setSdbMin(String(v))} min={0} max={10} />
+          <Stepper label={t("filters.bedrooms_min")} value={Number(chambresMin || 0)} onChange={(v) => setChambresMin(String(v))} min={0} max={10} />
+          <Stepper label={t("filters.bathrooms_min")} value={Number(sdbMin || 0)} onChange={(v) => setSdbMin(String(v))} min={0} max={10} />
         </div>
       </div>
 
       {/* Surface */}
       <div>
-        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-2 block">Surface</label>
+        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-2 block">{t("filters.surface")}</label>
         <div className="grid grid-cols-2 gap-2">
           <input
             inputMode="numeric"
-            placeholder="Min m²"
-            aria-label="Surface minimum en m²"
+            placeholder={t("filters.min_sqm")}
+            aria-label={t("filters.aria_surface_min")}
             value={surfaceMin}
             onChange={(e) => setSurfaceMin(e.target.value)}
             className="h-12 w-full border border-neutral-200 bg-white px-4 text-[15px]"
           />
           <input
             inputMode="numeric"
-            placeholder="Max m²"
-            aria-label="Surface maximum en m²"
+            placeholder={t("filters.max_sqm")}
+            aria-label={t("filters.aria_surface_max")}
             value={surfaceMax}
             onChange={(e) => setSurfaceMax(e.target.value)}
             className="h-12 w-full border border-neutral-200 bg-white px-4 text-[15px]"
@@ -621,20 +632,20 @@ export default function FiltersBar({
 
       {/* Canton */}
       <div>
-        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-2 block">Canton</label>
+        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-2 block">{t("filters.canton")}</label>
         <select
           value={canton}
           onChange={(e) => setCanton(e.target.value)}
           className="h-12 w-full border border-neutral-200 bg-white px-4 text-[15px]"
         >
-          <option value="">Tous</option>
+          <option value="">{t("filters.all")}</option>
           {cantons.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
       </div>
 
       {/* Atouts */}
       <div>
-        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-2 block">Atouts</label>
+        <label className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-2 block">{t("filters.amenities")}</label>
         <div className="flex flex-wrap gap-2">
           {ATOUTS_LIST.map((a) => {
             const active = !!atouts[a.key];
@@ -671,7 +682,7 @@ export default function FiltersBar({
           <div className="px-4 mb-3">
             <div className="flex items-center gap-2 flex-wrap">
               {chips.map((c) => (
-                <Chip key={c.k} onClear={() => clearChip(c.k)}>
+                <Chip key={c.k} onClear={() => clearChip(c.k)} clearTitle={t("filters.remove_filter")}>
                   {c.label}
                 </Chip>
               ))}
@@ -706,7 +717,7 @@ export default function FiltersBar({
           >
             <SlidersHorizontal className="h-5 w-5" />
             <span className="text-[13px] font-semibold uppercase tracking-[0.12em]">
-              Filtres
+              {t("filters.title")}
             </span>
             {chips.length > 0 && (
               <span className="bg-[#FF4A3E] text-white text-[11px] font-bold rounded-full h-5 min-w-[20px] inline-flex items-center justify-center px-1.5">
@@ -738,16 +749,16 @@ export default function FiltersBar({
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-200">
               <div>
-                <h2 className="text-base font-semibold tracking-tight">Filtres</h2>
+                <h2 className="text-base font-semibold tracking-tight">{t("filters.title")}</h2>
                 <p className="text-[12px] text-neutral-500 mt-0.5">
-                  {resultCount} annonce{resultCount > 1 ? "s" : ""} disponible{resultCount > 1 ? "s" : ""}
+                  {resultCount} {t("filters.listings")} {t("filters.available")}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={closeMobile}
                 className="h-10 w-10 rounded-full border border-neutral-200 inline-flex items-center justify-center hover:bg-neutral-50"
-                aria-label="Fermer les filtres"
+                aria-label={t("filters.close_filters")}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -765,14 +776,14 @@ export default function FiltersBar({
                 onClick={resetAll}
                 className="flex-1 h-14 border border-neutral-200 text-neutral-900 text-[13px] uppercase tracking-[0.12em] font-medium hover:bg-neutral-50 transition-colors"
               >
-                Réinitialiser
+                {t("filters.reset")}
               </button>
               <button
                 type="button"
                 onClick={closeMobile}
                 className="flex-[2] h-14 bg-neutral-900 text-white text-[13px] uppercase tracking-[0.12em] font-semibold hover:bg-[#FF4A3E] transition-colors"
               >
-                Voir {resultCount} annonce{resultCount > 1 ? "s" : ""}
+                {t("filters.see")} {resultCount} {t("filters.listings")}
               </button>
             </div>
           </div>
@@ -805,14 +816,17 @@ export default function FiltersBar({
                   onClick={() => setOpenKey((k) => (k === "ville" ? null : "ville"))}
                   className="max-w-[220px]"
                 >
-                  <span className="truncate">{city || "Ville"}</span>
+                  <span className="truncate">{city || t("filters.city")}</span>
                 </TinyButton>
                 <Popover open={openKey === "ville"} onClose={() => setOpenKey(null)}>
                   <CityAutosuggest
                     options={cities}
                     value={city}
                     onChange={setCity}
-                    placeholder="Rechercher une ville"
+                    placeholder={t("filters.search_city")}
+                    noCityLabel={t("filters.no_city_found")}
+                    clearTitle={t("filters.clear")}
+                    searchLabel={t("filters.search_city")}
                   />
                 </Popover>
               </div>
@@ -822,27 +836,27 @@ export default function FiltersBar({
                 <TinyButton
                   active={openKey === "type" || !!type}
                   onClick={() => setOpenKey((k) => (k === "type" ? null : "type"))}
-                  aria-label="Type de bien"
+                  aria-label={t("filters.property_type")}
                 >
-                  {type || "Type"}
+                  {type || t("filters.type")}
                 </TinyButton>
                 <Popover open={openKey === "type"} onClose={() => setOpenKey(null)}>
                   <div className="grid grid-cols-2 gap-2">
-                    {types.map((t) => (
+                    {types.map((tp) => (
                       <button
                         type="button"
-                        key={t}
+                        key={tp}
                         onClick={() => {
-                          setType((prev) => (t === prev ? "" : t));
+                          setType((prev) => (tp === prev ? "" : tp));
                           setOpenKey(null);
                         }}
                         className={`border px-3 py-2 text-sm text-left ${
-                          t === type
+                          tp === type
                             ? "border-primary/60 bg-primary/5 text-primary"
                             : "border-line/70 hover:bg-bgAlt"
                         }`}
                       >
-                        {t}
+                        {tp}
                       </button>
                     ))}
                   </div>
@@ -855,14 +869,14 @@ export default function FiltersBar({
                   active={openKey === "budget" || priceMin || priceMax}
                   onClick={() => setOpenKey((k) => (k === "budget" ? null : "budget"))}
                 >
-                  Budget
+                  {t("filters.budget")}
                 </TinyButton>
                 <Popover open={openKey === "budget"} onClose={() => setOpenKey(null)}>
                   <div className="grid grid-cols-2 gap-2">
                     <input
                       inputMode="numeric"
                       placeholder="Min"
-                      aria-label="Budget minimum"
+                      aria-label={t("filters.aria_budget_min")}
                       value={priceMin}
                       onChange={(e) => setPriceMin(e.target.value)}
                       className="h-12 w-full border border-line/70 bg-white px-3"
@@ -871,7 +885,7 @@ export default function FiltersBar({
                       <input
                         inputMode="numeric"
                         placeholder="Max"
-                        aria-label="Budget maximum"
+                        aria-label={t("filters.aria_budget_max")}
                         value={priceMax}
                         onChange={(e) => setPriceMax(e.target.value)}
                         className="h-12 w-full border border-line/70 bg-white px-3"
@@ -892,19 +906,19 @@ export default function FiltersBar({
                     setOpenKey((k) => (k === "chambres" ? null : "chambres"))
                   }
                 >
-                  Chambres &amp; SDB
+                  {t("filters.bedrooms_bathrooms")}
                 </TinyButton>
                 <Popover open={openKey === "chambres"} onClose={() => setOpenKey(null)}>
                   <div className="grid grid-cols-2 gap-3">
                     <Stepper
-                      label="Chambres min"
+                      label={t("filters.bedrooms_min")}
                       value={Number(chambresMin || 0)}
                       onChange={(v) => setChambresMin(String(v))}
                       min={0}
                       max={10}
                     />
                     <Stepper
-                      label="Salles de bain min"
+                      label={t("filters.bathrooms_min")}
                       value={Number(sdbMin || 0)}
                       onChange={(v) => setSdbMin(String(v))}
                       min={0}
@@ -920,22 +934,22 @@ export default function FiltersBar({
                   active={openKey === "surface" || surfaceMin || surfaceMax}
                   onClick={() => setOpenKey((k) => (k === "surface" ? null : "surface"))}
                 >
-                  Surf.
+                  {t("filters.surface_short")}
                 </TinyButton>
                 <Popover open={openKey === "surface"} onClose={() => setOpenKey(null)}>
                   <div className="grid grid-cols-2 gap-2">
                     <input
                       inputMode="numeric"
-                      placeholder="Min (m²)"
-                      aria-label="Surface minimum en m²"
+                      placeholder={`Min (m²)`}
+                      aria-label={t("filters.aria_surface_min")}
                       value={surfaceMin}
                       onChange={(e) => setSurfaceMin(e.target.value)}
                       className="h-12 w-full border border-line/70 bg-white px-3"
                     />
                     <input
                       inputMode="numeric"
-                      placeholder="Max (m²)"
-                      aria-label="Surface maximum en m²"
+                      placeholder={`Max (m²)`}
+                      aria-label={t("filters.aria_surface_max")}
                       value={surfaceMax}
                       onChange={(e) => setSurfaceMax(e.target.value)}
                       className="h-12 w-full border border-line/70 bg-white px-3"
@@ -954,7 +968,7 @@ export default function FiltersBar({
                 aria-expanded={advancedOpen}
               >
                 <Filter className="h-4 w-4" />
-                <span className="font-medium">Avancés</span>
+                <span className="font-medium">{t("filters.advanced")}</span>
                 {advancedCount > 0 && (
                   <span className="text-xs rounded-full bg-white/25 text-white px-2 py-0.5">
                     {advancedCount}
@@ -973,15 +987,15 @@ export default function FiltersBar({
                     active={openKey === "tri"}
                     onClick={() => setOpenKey((k) => (k === "tri" ? null : "tri"))}
                   >
-                    Trier
+                    {t("filters.sort")}
                   </TinyButton>
                   <Popover open={openKey === "tri"} onClose={() => setOpenKey(null)}>
                     <div className="flex flex-col gap-1 min-w-[180px]">
                       {[
-                        { value: "recent", label: "Plus récentes" },
-                        { value: "prix-asc", label: "Prix croissant" },
-                        { value: "prix-desc", label: "Prix décroissant" },
-                        { value: "surface", label: "Surface" },
+                        { value: "recent", label: t("filters.sort_recent") },
+                        { value: "prix-asc", label: t("filters.sort_price_asc") },
+                        { value: "prix-desc", label: t("filters.sort_price_desc") },
+                        { value: "surface", label: t("filters.surface") },
                       ].map((opt) => (
                         <button
                           type="button"
@@ -1005,7 +1019,7 @@ export default function FiltersBar({
                 type="button"
                 className="inline-flex h-16 md:h-[4.5rem] items-center justify-center gap-2 border border-[#FF4A3E]/30 bg-[#FF4A3E]/5 text-[#FF4A3E] px-5 md:px-6 text-[15px] md:text-base hover:bg-[#FF4A3E]/10 transition-colors"
                 onClick={resetAll}
-                title="Réinitialiser tous les filtres"
+                title={t("filters.reset_all")}
               >
                 <RotateCcw className="h-4 w-4" />
                 <span className="font-medium">Reset</span>
@@ -1019,7 +1033,7 @@ export default function FiltersBar({
           <div className="max-w-6xl mx-auto px-4 mt-2">
             <div className="flex items-center gap-2 flex-wrap">
               {chips.map((c) => (
-                <Chip key={c.k} onClear={() => clearChip(c.k)}>
+                <Chip key={c.k} onClear={() => clearChip(c.k)} clearTitle={t("filters.remove_filter")}>
                   {c.label}
                 </Chip>
               ))}
@@ -1034,29 +1048,39 @@ export default function FiltersBar({
         onClose={() => setAdvancedOpen(false)}
         activeCount={advancedCount}
         onReset={resetAll}
+        labels={{
+          title: t("filters.title"),
+          titleAccent: t("filters.advanced"),
+          subtitle: t("filters.advanced_subtitle"),
+          closeAdvanced: t("filters.close_advanced"),
+          noAdvancedFilter: t("filters.no_advanced_filter"),
+          activeFilters: (count) => t("filters.active_filters", { count }),
+          reset: t("filters.reset"),
+          apply: t("filters.apply"),
+        }}
       >
         <div className="space-y-6">
           {/* ── Section 1 : Localisation & Disponibilité ── */}
           <div>
             <h3 className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-4">
-              Localisation & Disponibilité
+              {t("filters.location_availability")}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-neutral-700">Canton</label>
+                <label className="text-sm font-medium text-neutral-700">{t("filters.canton")}</label>
                 <select
                   value={canton}
                   onChange={(e) => setCanton(e.target.value)}
                   className="h-12 w-full rounded-lg border border-neutral-200 bg-white px-3 text-[15px] text-neutral-800 focus:outline-none focus:ring-2 focus:ring-[#FF4A3E]/20 focus:border-[#FF4A3E]/40 transition-shadow"
                 >
-                  <option value="">Tous les cantons</option>
+                  <option value="">{t("filters.all_cantons")}</option>
                   {cantons.map((c) => (
                     <option key={c} value={c}>{c}</option>
                   ))}
                 </select>
               </div>
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-neutral-700">Disponible avant le</label>
+                <label className="text-sm font-medium text-neutral-700">{t("filters.available_before")}</label>
                 <input
                   type="date"
                   value={dispoBefore}
@@ -1072,13 +1096,13 @@ export default function FiltersBar({
           {/* ── Section 2 : Caractéristiques ── */}
           <div>
             <h3 className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-4">
-              Caractéristiques
+              {t("filters.characteristics")}
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div>
                 <Stepper
                   size="sm"
-                  label="Chambres min"
+                  label={t("filters.bedrooms_min")}
                   value={Number(chambresMin || 0)}
                   onChange={(v) => setChambresMin(String(v))}
                   min={0}
@@ -1088,7 +1112,7 @@ export default function FiltersBar({
               <div>
                 <Stepper
                   size="sm"
-                  label="Salles de bain min"
+                  label={t("filters.bathrooms_min")}
                   value={Number(sdbMin || 0)}
                   onChange={(v) => setSdbMin(String(v))}
                   min={0}
@@ -1096,7 +1120,7 @@ export default function FiltersBar({
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-neutral-700">Surface min (m²)</label>
+                <label className="text-sm font-medium text-neutral-700">{t("filters.surface_min_sqm")}</label>
                 <input
                   inputMode="numeric"
                   value={surfaceMin}
@@ -1106,7 +1130,7 @@ export default function FiltersBar({
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-neutral-700">Surface max (m²)</label>
+                <label className="text-sm font-medium text-neutral-700">{t("filters.surface_max_sqm")}</label>
                 <input
                   inputMode="numeric"
                   value={surfaceMax}
@@ -1118,7 +1142,7 @@ export default function FiltersBar({
             </div>
             <div className="grid grid-cols-2 gap-3 mt-3">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-neutral-700">Terrain min (m²)</label>
+                <label className="text-sm font-medium text-neutral-700">{t("filters.land_min_sqm")}</label>
                 <input
                   inputMode="numeric"
                   value={terrainMin}
@@ -1128,7 +1152,7 @@ export default function FiltersBar({
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-neutral-700">Meublé</label>
+                <label className="text-sm font-medium text-neutral-700">{t("filters.furnished")}</label>
                 <button
                   type="button"
                   onClick={() => setMeuble((m) => !m)}
@@ -1138,7 +1162,7 @@ export default function FiltersBar({
                       : "border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50"
                   }`}
                 >
-                  {meuble ? "Oui, meublé uniquement" : "Indifférent"}
+                  {meuble ? t("filters.furnished_only") : t("filters.indifferent")}
                 </button>
               </div>
             </div>
@@ -1149,16 +1173,16 @@ export default function FiltersBar({
           {/* ── Section 3 : Atouts & Équipements ── */}
           <div>
             <h3 className="text-[13px] uppercase tracking-[0.14em] font-semibold text-[#FF4A3E] mb-4">
-              Atouts & Équipements
+              {t("filters.amenities_equipment")}
             </h3>
 
             {/* Atouts */}
             <div className="mb-5">
               <div className="flex items-center justify-between mb-2.5">
-                <span className="text-sm font-medium text-neutral-700">Atouts</span>
+                <span className="text-sm font-medium text-neutral-700">{t("filters.amenities")}</span>
                 {Object.values(atouts).filter(Boolean).length > 0 && (
                   <span className="text-[13px] text-neutral-400">
-                    {Object.values(atouts).filter(Boolean).length} sélectionné{Object.values(atouts).filter(Boolean).length > 1 ? "s" : ""}
+                    {Object.values(atouts).filter(Boolean).length} {t("filters.selected")}
                   </span>
                 )}
               </div>
@@ -1189,10 +1213,10 @@ export default function FiltersBar({
             {features.length > 0 && (
               <div>
                 <div className="flex items-center justify-between mb-2.5">
-                  <span className="text-sm font-medium text-neutral-700">Équipements</span>
+                  <span className="text-sm font-medium text-neutral-700">{t("filters.equipment")}</span>
                   {extraFeatures.length > 0 && (
                     <span className="text-[13px] text-neutral-400">
-                      {extraFeatures.length} sélectionné{extraFeatures.length > 1 ? "s" : ""}
+                      {extraFeatures.length} {t("filters.selected")}
                     </span>
                   )}
                 </div>

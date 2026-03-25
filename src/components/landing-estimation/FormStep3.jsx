@@ -1,6 +1,7 @@
 import React from "react";
 import SmsCodeInput from "./SmsCodeInput";
 import { IconCheck, IconLock } from "./icons";
+import { useLocale } from "../../hooks/useLocale.js";
 
 export default function FormStep3({
   data,
@@ -10,6 +11,7 @@ export default function FormStep3({
   stepState,
   sms,
 }) {
+  const { t } = useLocale();
   const update = (field, value) => onChange({ ...data, [field]: value });
 
   const handleSendCode = () => {
@@ -24,8 +26,8 @@ export default function FormStep3({
 
   const verifyBtnText = () => {
     if (sms.status === "sending") return "...";
-    if (sms.status === "codeSent" || sms.status === "failed") return "Envoyé";
-    return "Vérifier";
+    if (sms.status === "codeSent" || sms.status === "failed") return t("estimate.form3.sent");
+    return t("estimate.form3.verify");
   };
 
   const verifyBtnClass = () => {
@@ -42,29 +44,29 @@ export default function FormStep3({
           3
         </div>
         <span className={`form-step-label ${stepState === "expanded" ? "active" : "pending"}`}>
-          Vos coordonnées
+          {t("estimate.form3.step_label")}
         </span>
         <div className="form-step-line" />
       </div>
 
       <div className="form-row">
         <div className={`form-group${!data.lastName && data._touched?.lastName ? " has-error" : ""}`}>
-          <label htmlFor="fieldNom">Nom</label>
+          <label htmlFor="fieldNom">{t("form.lastname")}</label>
           <input
             type="text"
             id="fieldNom"
-            placeholder="Votre nom"
+            placeholder={t("form.placeholder_lastname")}
             value={data.lastName}
             onChange={(e) => update("lastName", e.target.value)}
             onBlur={() => update("_touched", { ...data._touched, lastName: true })}
           />
         </div>
         <div className={`form-group${!data.firstName && data._touched?.firstName ? " has-error" : ""}`}>
-          <label htmlFor="fieldPrenom">Prénom</label>
+          <label htmlFor="fieldPrenom">{t("form.firstname")}</label>
           <input
             type="text"
             id="fieldPrenom"
-            placeholder="Votre prénom"
+            placeholder={t("form.placeholder_firstname")}
             value={data.firstName}
             onChange={(e) => update("firstName", e.target.value)}
             onBlur={() => update("_touched", { ...data._touched, firstName: true })}
@@ -73,7 +75,7 @@ export default function FormStep3({
       </div>
 
       <div className={`form-group${!data.phone && data._touched?.phone ? " has-error" : ""}`}>
-        <label htmlFor="fieldPhone">Téléphone</label>
+        <label htmlFor="fieldPhone">{t("form.phone")}</label>
         {sms.status !== "verified" ? (
           <div className="phone-verify-row">
             <input
@@ -104,7 +106,7 @@ export default function FormStep3({
               style={{ opacity: 0.5 }}
             />
             <div className="phone-verified show">
-              <IconCheck size={14} color="#2d8a4e" /> Numéro vérifié
+              <IconCheck size={14} color="#2d8a4e" /> {t("estimate.form3.phone_verified")}
             </div>
           </>
         )}
@@ -121,7 +123,7 @@ export default function FormStep3({
 
       <div className="form-group">
         <label htmlFor="fieldEmail">
-          Email <span className="form-optional">optionnel</span>
+          {t("form.email")} <span className="form-optional">{t("form.optional")}</span>
         </label>
         <input
           type="email"
@@ -138,14 +140,14 @@ export default function FormStep3({
         onClick={onSubmit}
         disabled={submitting}
       >
-        {submitting ? "Envoi en cours..." : "Recevoir mon estimation gratuite"}
+        {submitting ? t("estimate.form3.submitting") : t("estimate.form3.submit")}
       </button>
 
       <div className="form-trust">
-        <IconLock /> Vos données restent strictement confidentielles
+        <IconLock /> {t("estimate.form3.trust")}
       </div>
       <div className="form-note">
-        Estimation par un courtier expert de votre quartier · Sans engagement
+        {t("estimate.form3.note")}
       </div>
     </div>
   );

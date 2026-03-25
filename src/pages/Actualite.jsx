@@ -1,13 +1,12 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
-import articlesData from "../data/actualites.json";
+import { useTranslation } from "react-i18next";
+import { useArticles } from "../hooks/useArticles.js";
+import { useLocale } from "../hooks/useLocale.js";
 import CTAFuturaGlow from "../components/cta/CTAFuturaGlow.jsx";
 import CTAWhiteSweep from "../components/cta/CTAWhiteSweep.jsx";
 import { pickVideoSrcSimple } from "../utils/video.js";
-
-/* ========== Données réelles depuis GARY.ch (exclut les articles Presse) ========== */
-const articles = articlesData.filter((a) => a.category !== "Presse");
 
 const categoryColors = {
   Article: "bg-neutral-900 text-white",
@@ -51,7 +50,7 @@ function AnimatedDivider({ label }) {
 }
 
 /* ========== Article vedette (premier article) ========== */
-function FeaturedCard({ article }) {
+function FeaturedCard({ article, link, t }) {
   const imgRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: imgRef,
@@ -68,7 +67,7 @@ function FeaturedCard({ article }) {
       transition={{ duration: 0.8, ease: EASE_SMOOTH }}
     >
       <Link
-        to={`/actualites/${article.id}`}
+        to={link("newsDetail", { id: article.id })}
         className="group block md:grid md:grid-cols-12 md:gap-10 items-center"
       >
         {/* Image — reveal clip-path + parallax */}
@@ -117,7 +116,7 @@ function FeaturedCard({ article }) {
             {article.description}
           </p>
           <span className="inline-flex items-center gap-2 mt-6 text-[13px] uppercase tracking-[0.15em] text-neutral-900 group-hover:text-[#FF4A3E] transition-colors duration-300">
-            Lire l'article
+            {t("news.read_article")}
             <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
@@ -129,7 +128,7 @@ function FeaturedCard({ article }) {
 }
 
 /* ========== Carte article standard ========== */
-function ArticleCard({ article, index }) {
+function ArticleCard({ article, index, link, t }) {
   const stagger = (index % 3) * 0.1;
 
   return (
@@ -141,7 +140,7 @@ function ArticleCard({ article, index }) {
       className="group/card"
     >
       <Link
-        to={`/actualites/${article.id}`}
+        to={link("newsDetail", { id: article.id })}
         className="group block transition-transform duration-500 ease-out hover:-translate-y-1"
       >
         {/* Image — reveal clip-path + overlay hover */}
@@ -163,7 +162,7 @@ function ArticleCard({ article, index }) {
           {/* Overlay avec "Lire" */}
           <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/30 transition-all duration-500">
             <span className="text-white text-[13px] uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-500 flex items-center gap-2">
-              Lire
+              {t("news.read")}
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
@@ -194,7 +193,7 @@ function ArticleCard({ article, index }) {
 }
 
 /* ========== Hero content avec parallax ========== */
-function ActuHeroContent({ scrollToArticles }) {
+function ActuHeroContent({ scrollToArticles, t, link }) {
   const ref = useRef(null);
   const [offset, setOffset] = useState(0);
 
@@ -219,27 +218,26 @@ function ActuHeroContent({ scrollToArticles }) {
 
           <div className="relative text-center px-3 sm:px-0 py-5 sm:py-0">
             <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-neutral-600 mb-3">
-              Actualités
+              {t("news.label")}
             </p>
 
             <h1 className="font-serif tracking-[-0.03em] leading-[1.05] md:leading-[1] text-[clamp(2.6rem,11vw,4.2rem)] md:text-[clamp(4.2rem,10vw,7.6rem)]">
-              Analyses et insights<span className="text-[#FF4A3E]">,</span>
+              {t("news.hero_title_line1")}<span className="text-[#FF4A3E]">,</span>
               <br />
-              <span className="block">par GARY.</span>
+              <span className="block">{t("news.hero_title_line2")}</span>
             </h1>
 
             <p className="mt-5 text-[clamp(1.05rem,2.1vw,1.4rem)] text-neutral-900/90 max-w-[52ch] mx-auto">
-              Tendances du marché, conseils d'experts et coulisses de
-              l'immobilier en suisse romande.
+              {t("news.hero_subtitle")}
             </p>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <CTAFuturaGlow
-                label="Découvrir les articles"
+                label={t("news.cta_discover_articles")}
                 onClick={scrollToArticles}
                 minWidth={260}
               />
-              <CTAWhiteSweep to="/contact" label="Contacter GARY" />
+              <CTAWhiteSweep to={link("contact")} label={t("news.cta_contact_gary")} />
             </div>
           </div>
         </div>
@@ -250,6 +248,8 @@ function ActuHeroContent({ scrollToArticles }) {
 
 /* ========== Page Actualités ========== */
 export default function Actualite() {
+  const { t, link } = useLocale();
+  const articles = useArticles();
   const [ready, setReady] = useState(false);
   const src = useMemo(() => {
     try {
@@ -316,25 +316,25 @@ export default function Actualite() {
 
       {/* ====== 1) HERO — carré opaque avec parallax ====== */}
       <section className="relative min-h-[100svh] flex items-center overflow-x-clip" style={{ zIndex: 1 }}>
-        <ActuHeroContent scrollToArticles={scrollToArticles} />
+        <ActuHeroContent scrollToArticles={scrollToArticles} t={t} link={link} />
       </section>
 
       {/* ====== 2) ARTICLE VEDETTE ====== */}
       <section ref={articlesRef} className="relative bg-white pt-20 md:pt-28 pb-16 md:pb-20" style={{ zIndex: 2 }}>
         <div className="max-w-7xl mx-auto px-6 md:px-8">
-          <AnimatedDivider label="À la une" />
-          <FeaturedCard article={featured} />
+          <AnimatedDivider label={t("news.featured")} />
+          <FeaturedCard article={featured} link={link} t={t} />
         </div>
       </section>
 
       {/* ====== 3) GRILLE D'ARTICLES — fond légèrement teinté ====== */}
       <section className="relative bg-[#FAFAF8] py-20 md:py-28" style={{ zIndex: 2 }}>
         <div className="max-w-7xl mx-auto px-6 md:px-8">
-          <AnimatedDivider label="Tous les articles" />
+          <AnimatedDivider label={t("news.all_articles")} />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8 md:gap-y-10">
             {rest.map((article, i) => (
-              <ArticleCard key={article.id} article={article} index={i} />
+              <ArticleCard key={article.id} article={article} index={i} link={link} t={t} />
             ))}
           </div>
         </div>

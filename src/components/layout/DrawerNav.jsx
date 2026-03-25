@@ -1,16 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Link, useLocation } from "react-router-dom";
+import { useLocale } from "../../hooks/useLocale.js";
 
 export default function DrawerNav({ open, onClose }) {
   const { pathname } = useLocation();
+  const { t, link } = useLocale();
   const firstLinkRef = useRef(null);
   const aboutSubsRef = useRef(null);
   const vendreSubsRef = useRef(null);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [vendreOpen, setVendreOpen] = useState(false);
 
+  const homePath = link("home");
   const isPathActive = (to) =>
-    pathname === to || (to !== "/" && pathname.startsWith(to + "/"));
+    pathname === to || (to !== "/" && to !== "/en" && to !== homePath && pathname.startsWith(to + "/"));
 
   useEffect(() => {
     if (!open) return;
@@ -67,29 +70,30 @@ export default function DrawerNav({ open, onClose }) {
   }, [vendreOpen]);
 
   const navItems = [
-    { to: "/acheter", label: "ACHETER", sub: "Découvrir nos biens" },
-    { to: "/estimer", label: "ESTIMER", sub: "Estimation et stratégie" },
-    { to: "/projets-neufs", label: "PROJETS NEUFS", sub: "Les projets neufs" },
+    { to: link("buy"), label: t("drawer.buy"), sub: t("drawer.buy_sub") },
+    { to: link("estimate"), label: t("drawer.estimate"), sub: t("drawer.estimate_sub") },
+    { to: link("newProjects"), label: t("drawer.new_projects"), sub: t("drawer.new_projects_sub") },
   ];
 
   const vendreSubs = [
-    { to: "/vendre#constat",        label: "Le constat" },
-    { to: "/vendre#difference",     label: "Notre différence" },
-    { to: "/vendre#parcours",       label: "Votre parcours" },
-    { to: "/vendre#livrables",      label: "Nos livrables" },
-    { to: "/vendre#faq",            label: "Questions fréquentes" },
-    { to: "/vendre#vendus",         label: "Vendus récemment" },
-    { to: "/vendre#equipe",         label: "L'équipe" },
-    { to: "/vendre#cta-final-sell", label: "Contactez-nous" },
+    { to: link("sell") + "#constat",        label: t("nav.sell_sub.observation") },
+    { to: link("sell") + "#difference",     label: t("nav.sell_sub.difference") },
+    { to: link("sell") + "#parcours",       label: t("nav.sell_sub.journey") },
+    { to: link("sell") + "#livrables",      label: t("nav.sell_sub.deliverables") },
+    { to: link("sell") + "#faq",            label: t("nav.sell_sub.faq") },
+    { to: link("sell") + "#vendus",         label: t("nav.sell_sub.recently_sold") },
+    { to: link("sell") + "#equipe",         label: t("nav.sell_sub.team") },
+    { to: link("sell") + "#cta-final-sell", label: t("nav.sell_sub.contact_us") },
   ];
 
-  const vendreActive = pathname === "/vendre" || pathname.startsWith("/vendre/");
+  const sellPath = link("sell");
+  const vendreActive = pathname === sellPath || pathname.startsWith(sellPath + "/");
 
   const aboutSubs = [
-    { to: "/a-propos", label: "Qui est GARY" },
-    { to: "/actualites", label: "Articles" },
-    { to: "/presse", label: "Presse" },
-    { to: "/ressources", label: "Ressources" },
+    { to: link("about"), label: t("nav.about_sub.who_is_gary") },
+    { to: link("news"), label: t("nav.about_sub.articles") },
+    { to: link("press"), label: t("nav.about_sub.press") },
+    { to: link("resources"), label: t("nav.about_sub.resources") },
   ];
 
   const aboutActive = aboutSubs.some((s) => isPathActive(s.to));
@@ -109,7 +113,7 @@ export default function DrawerNav({ open, onClose }) {
       <button
         type="button"
         onClick={onClose}
-        aria-label="Fermer le menu"
+        aria-label={t("aria.close_menu")}
         className={`
           absolute inset-0
           bg-black/60 backdrop-blur-[2px]
@@ -135,16 +139,16 @@ export default function DrawerNav({ open, onClose }) {
             style={{ paddingTop: "max(18px, env(safe-area-inset-top))" }}
           >
             <Link
-              to="/"
+              to={link("home")}
               onClick={onClose}
               className="flex flex-col"
-              aria-label="Retour à l'accueil"
+              aria-label={t("aria.back_home")}
             >
               <span className="uppercase font-medium text-[13px] tracking-[0.34em] text-black">
-                GARY
+                {t("drawer.gary")}
               </span>
               <span className="mt-1 text-[11px] uppercase tracking-[0.22em] text-black/70">
-                Menu
+                {t("drawer.menu")}
               </span>
             </Link>
 
@@ -159,7 +163,7 @@ export default function DrawerNav({ open, onClose }) {
                 hover:bg-white hover:border-black/20
                 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/35
               "
-              aria-label="Fermer"
+              aria-label={t("aria.close")}
             >
               <span className="text-[18px] leading-none text-black/85">✕</span>
             </button>
@@ -172,20 +176,20 @@ export default function DrawerNav({ open, onClose }) {
               <li>
                 <NavLink
                   ref={firstLinkRef}
-                  to="/acheter"
+                  to={link("buy")}
                   onClick={onClose}
                   className={`
                     group relative block rounded-2xl px-5 py-3.5 overflow-hidden border
                     transition-all duration-200
                     focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/30
-                    ${!aboutOpen && !vendreOpen && isPathActive("/acheter")
+                    ${!aboutOpen && !vendreOpen && isPathActive(link("buy"))
                       ? "bg-[#FF4A3E] border-[#FF4A3E] shadow-[0_10px_24px_rgba(255,74,62,0.25)]"
                       : "border-black/12 bg-white/55 hover:bg-white/80 hover:border-black/18"}
                   `}
                 >
                   <div className="pl-2">
-                    <div className={`font-light uppercase leading-none tracking-[0.26em] text-[clamp(22px,6.6vw,34px)] ${!aboutOpen && !vendreOpen && isPathActive("/acheter") ? "text-white" : "text-black"}`}>ACHETER</div>
-                    <div className={`mt-2 text-[13px] ${!aboutOpen && !vendreOpen && isPathActive("/acheter") ? "text-white/80" : "text-black/70"}`}>Découvrir nos biens</div>
+                    <div className={`font-light uppercase leading-none tracking-[0.26em] text-[clamp(22px,6.6vw,34px)] ${!aboutOpen && !vendreOpen && isPathActive(link("buy")) ? "text-white" : "text-black"}`}>{t("drawer.buy")}</div>
+                    <div className={`mt-2 text-[13px] ${!aboutOpen && !vendreOpen && isPathActive(link("buy")) ? "text-white/80" : "text-black/70"}`}>{t("drawer.buy_sub")}</div>
                   </div>
                 </NavLink>
               </li>
@@ -206,8 +210,8 @@ export default function DrawerNav({ open, onClose }) {
                 >
                   <div className="pl-2 flex items-center justify-between">
                     <div>
-                      <div className={`font-light uppercase leading-none tracking-[0.26em] text-[clamp(22px,6.6vw,34px)] ${vendreActive || vendreOpen ? "text-white" : "text-black"}`}>VENDRE</div>
-                      <div className={`mt-2 text-[13px] ${vendreActive || vendreOpen ? "text-white/80" : "text-black/70"}`}>Le processus complet</div>
+                      <div className={`font-light uppercase leading-none tracking-[0.26em] text-[clamp(22px,6.6vw,34px)] ${vendreActive || vendreOpen ? "text-white" : "text-black"}`}>{t("drawer.sell")}</div>
+                      <div className={`mt-2 text-[13px] ${vendreActive || vendreOpen ? "text-white/80" : "text-black/70"}`}>{t("drawer.sell_sub")}</div>
                     </div>
                     <span
                       className={`text-[20px] transition-transform duration-300 ease-out ${vendreActive || vendreOpen ? "text-white/60" : "text-black/40"}`}
@@ -242,7 +246,7 @@ export default function DrawerNav({ open, onClose }) {
               </li>
 
               {/* ESTIMER, PROJETS NEUFS */}
-              {navItems.filter(item => item.to !== "/acheter").map((item) => {
+              {navItems.filter(item => item.to !== link("buy")).map((item) => {
                 const active = !aboutOpen && !vendreOpen && isPathActive(item.to);
                 return (
                   <li key={item.to}>
@@ -287,10 +291,10 @@ export default function DrawerNav({ open, onClose }) {
                   <div className="pl-2 flex items-center justify-between">
                     <div>
                       <div className={`font-light uppercase leading-none tracking-[0.26em] text-[clamp(22px,6.6vw,34px)] ${aboutActive || aboutOpen ? "text-white" : "text-black"}`}>
-                        À PROPOS
+                        {t("drawer.about")}
                       </div>
                       <div className={`mt-2 text-[13px] ${aboutActive || aboutOpen ? "text-white/80" : "text-black/70"}`}>
-                        En savoir plus sur GARY
+                        {t("drawer.about_sub")}
                       </div>
                     </div>
                     <span
@@ -355,7 +359,7 @@ export default function DrawerNav({ open, onClose }) {
             style={{ paddingBottom: "max(18px, env(safe-area-inset-bottom))" }}
           >
             <NavLink
-              to="/contact"
+              to={link("contact")}
               onClick={onClose}
               className="
                 w-full inline-flex items-center justify-center
@@ -379,11 +383,11 @@ export default function DrawerNav({ open, onClose }) {
                   mask: "url('/Logo/logo-gary-orange.png') center / cover no-repeat",
                 }}
               />
-              <span className="relative z-[1]">Contacter GARY</span>
+              <span className="relative z-[1]">{t("drawer.contact_gary")}</span>
             </NavLink>
 
             <p className="mt-3 text-[12px] text-black/55 text-center">
-              Réponse rapide • Discrétion • Expertise Genève
+              {t("drawer.tagline")}
             </p>
           </div>
         </div>

@@ -1,5 +1,6 @@
 // src/components/estimate/steps/StepAtouts.jsx
 import BubbleOption from "../BubbleOption.jsx";
+import { useLocale } from "../../../hooks/useLocale.js";
 import {
   IconLeaf,
   IconWaves,
@@ -12,6 +13,7 @@ import {
 } from "../../icons/estimate.jsx";
 
 export default function StepAtouts({ value, onChange }) {
+  const { t } = useLocale();
   const toggle = (k) => {
     const next = { ...value, [k]: !value[k] };
     // nettoyer la surface si on désactive
@@ -26,15 +28,15 @@ export default function StepAtouts({ value, onChange }) {
 
   // 9 atouts (4 + 4 + 1)
   const atouts = [
-    { k: "jardin", label: "Jardin", Icon: IconLeaf },
-    { k: "piscine", label: "Piscine", Icon: IconWaves },
-    { k: "vue", label: "Vue d'exception", Icon: IconMountain },
-    { k: "garage", label: "Garage/Box", Icon: IconCar, size: "garageM2" },
-    { k: "parkingInterieur", label: "Parking intérieur", Icon: IconParking },
-    { k: "parkingExterieur", label: "Parking extérieur", Icon: IconParking },
-    { k: "cave", label: "Cave", Icon: IconBox, size: "caveM2" },
-    { k: "balcon", label: "Balcon", Icon: IconBalcony, size: "balconM2" },
-    { k: "terrasse", label: "Terrasse", Icon: IconTerrace, size: "terrasseM2" },
+    { k: "jardin", label: t("estimate_steps.atout_jardin"), Icon: IconLeaf },
+    { k: "piscine", label: t("estimate_steps.atout_piscine"), Icon: IconWaves },
+    { k: "vue", label: t("estimate_steps.atout_vue"), Icon: IconMountain },
+    { k: "garage", label: t("estimate_steps.atout_garage"), Icon: IconCar, size: "garageM2" },
+    { k: "parkingInterieur", label: t("estimate_steps.atout_parking_int"), Icon: IconParking },
+    { k: "parkingExterieur", label: t("estimate_steps.atout_parking_ext"), Icon: IconParking },
+    { k: "cave", label: t("estimate_steps.atout_cave"), Icon: IconBox, size: "caveM2" },
+    { k: "balcon", label: t("estimate_steps.atout_balcon"), Icon: IconBalcony, size: "balconM2" },
+    { k: "terrasse", label: t("estimate_steps.atout_terrasse"), Icon: IconTerrace, size: "terrasseM2" },
   ];
 
   const top8 = atouts.slice(0, 8);
@@ -42,9 +44,9 @@ export default function StepAtouts({ value, onChange }) {
 
   return (
     <div className="text-center">
-      <h3 className="font-serif text-2xl">Atouts du bien</h3>
+      <h3 className="font-serif text-2xl">{t("estimate_steps.atouts_title")}</h3>
       <p className="text-black/60 mt-1">
-        Sélectionnez vos atouts. Ajoutez la surface quand c'est pertinent.
+        {t("estimate_steps.atouts_subtitle")}
       </p>
 
       {/* 2 lignes de 4 */}
@@ -80,7 +82,7 @@ export default function StepAtouts({ value, onChange }) {
           .map(({ k, label, size }) => (
             <div key={k}>
               <label className="text-sm text-black/70">
-                {label} — Surface (m²)
+                {label} — {t("estimate_steps.surface_sqm")}
               </label>
               <input
                 type="number"

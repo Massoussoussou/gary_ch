@@ -1,7 +1,8 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { ArrowLeft, Calendar, Tag } from "lucide-react";
-import actualites from "../data/actualites.json";
+import { useArticleById } from "../hooks/useArticles.js";
+import { useLocale } from "../hooks/useLocale.js";
 import "../styles/projet.css";
 import navigateBackFn, { fadeOutOverlay } from "../utils/navigateBack.js";
 
@@ -15,9 +16,10 @@ const categoryColors = {
 export default function ActualiteDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t, link } = useLocale();
 
-  // Trouver l'article par ID
-  const article = actualites.find((a) => a.id === parseInt(id));
+  // Trouver l'article par ID dans la langue courante
+  const article = useArticleById(id);
 
   useEffect(() => fadeOutOverlay(), []);
 
@@ -25,13 +27,13 @@ export default function ActualiteDetail() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-serif mb-4">Article non trouvé</h1>
+          <h1 className="text-4xl font-serif mb-4">{t("news_detail.not_found")}</h1>
           <Link
-            to="/actualites"
+            to={link("news")}
             className="inline-flex items-center gap-2 text-[#FF4A3E] hover:underline"
           >
             <ArrowLeft className="w-4 h-4" />
-            Retour aux actualités
+            {t("news_detail.back_to_news")}
           </Link>
         </div>
       </div>
@@ -111,8 +113,8 @@ export default function ActualiteDetail() {
         type="button"
         onClick={() => navigateBackFn(navigate)}
         className="close-back-btn"
-        aria-label={article.category === "Presse" ? "Revenir à la presse" : "Revenir aux actualités"}
-        title={article.category === "Presse" ? "Revenir à la presse" : "Revenir aux actualités"}
+        aria-label={article.category === "Presse" ? t("aria.back_to_press") : t("aria.back_to_news")}
+        title={article.category === "Presse" ? t("aria.back_to_press") : t("aria.back_to_news")}
       >
         <svg className="close-back-icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
@@ -165,7 +167,7 @@ export default function ActualiteDetail() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 bg-black text-white font-semibold hover:bg-[#FF4A3E] transition-colors"
             >
-              Lire l'article original sur gary.ch
+              {t("news_detail.read_original")}
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>

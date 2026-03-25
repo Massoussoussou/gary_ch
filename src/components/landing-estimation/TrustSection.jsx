@@ -1,51 +1,49 @@
 import React, { useRef, useState, useEffect } from "react";
-
-const testimonials = [
-  {
-    quote:
-      "Nous avons reçu deux offres avant même que le bien ne soit publié sur les portails. La phase off-market a créé exactement l'urgence dont nous avions besoin.",
-    initials: "ML",
-    name: "M. & Mme L.",
-    detail: "Appartement 5 pièces · Champel",
-    accent: false,
-  },
-  {
-    quote:
-      "On pensait que mettre en ligne rapidement était la bonne stratégie. GARY nous a convaincus de faire l'inverse. Résultat : vendu en 6 semaines, au-dessus du prix estimé.",
-    initials: "PD",
-    name: "P. Dumont",
-    detail: "Villa · Nyon",
-    accent: true,
-  },
-  {
-    quote:
-      "Ce qui m'a convaincu, c'est d'avoir le contrôle. À chaque phase, mon courtier m'expliquait où on en était et quelles étaient les options.",
-    initials: "SF",
-    name: "S. Fischer",
-    detail: "Appartement 4 pièces · Carouge",
-    accent: false,
-  },
-  {
-    quote:
-      "J'avais déjà essayé avec une autre agence pendant 4 mois. Avec GARY, la stratégie en 3 phases a tout changé. Vendu en phase Coming Soon.",
-    initials: "AR",
-    name: "A. Rousseau",
-    detail: "Maison mitoyenne · Meyrin",
-    accent: false,
-  },
-];
-
-const numbers = [
-  { val: "150+", label: "Biens vendus" },
-  { val: "Genève", label: "Nyon · Lausanne · Valais" },
-  { val: "48h", label: "Estimation détaillée" },
-  { val: "4.9★", label: "Avis Google" },
-];
+import { useLocale } from "../../hooks/useLocale.js";
 
 export default function TrustSection() {
+  const { t } = useLocale();
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
   const [activeIdx, setActiveIdx] = useState(1);
+
+  const testimonials = [
+    {
+      quote: t("estimate.trust.quote_1"),
+      initials: "ML",
+      name: t("estimate.trust.name_1"),
+      detail: t("estimate.trust.detail_1"),
+      accent: false,
+    },
+    {
+      quote: t("estimate.trust.quote_2"),
+      initials: "PD",
+      name: t("estimate.trust.name_2"),
+      detail: t("estimate.trust.detail_2"),
+      accent: true,
+    },
+    {
+      quote: t("estimate.trust.quote_3"),
+      initials: "SF",
+      name: t("estimate.trust.name_3"),
+      detail: t("estimate.trust.detail_3"),
+      accent: false,
+    },
+    {
+      quote: t("estimate.trust.quote_4"),
+      initials: "AR",
+      name: t("estimate.trust.name_4"),
+      detail: t("estimate.trust.detail_4"),
+      accent: false,
+    },
+  ];
+
+  const numbers = [
+    { val: "150+", label: t("estimate.trust.stat_sold") },
+    { val: t("estimate.trust.stat_geneva_val"), label: t("estimate.trust.stat_geneva_label") },
+    { val: "48h", label: t("estimate.trust.stat_estimate") },
+    { val: "4.9\u2605", label: t("estimate.trust.stat_google") },
+  ];
 
   useEffect(() => {
     const el = ref.current;
@@ -72,12 +70,12 @@ export default function TrustSection() {
           }}
         >
           <p className="text-[12px] uppercase tracking-[0.3em] text-[#FF4A3E] mb-4">
-            Témoignages
+            {t("estimate.trust.label")}
           </p>
           <h2 className="font-serif text-[clamp(2rem,4.5vw,3.2rem)] tracking-[-0.02em] leading-[1.05] text-[#1A1A1A]">
-            Ils ont vendu avec
+            {t("estimate.trust.title_line1")}
             <br />
-            la méthode GARY<span className="text-[#FF4A3E]">.</span>
+            {t("estimate.trust.title_line2")}<span className="text-[#FF4A3E]">.</span>
           </h2>
         </div>
 

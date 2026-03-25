@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useLocale } from "../../hooks/useLocale.js";
 
 function HeroContent({ children }) {
+  const { t } = useLocale();
   const ref = useRef(null);
   const [offset, setOffset] = useState(0);
 
@@ -35,20 +37,15 @@ function HeroContent({ children }) {
             <div className="px-7 sm:px-10 pt-10 sm:pt-12 pb-8 sm:pb-10 text-center md:text-left">
               {/* Eyebrow */}
               <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-neutral-600 mb-3">
-                Estimation immobilière
+                {t("estimate.hero.eyebrow")}
               </p>
 
               {/* Headline */}
-              <h1 className="font-serif tracking-[-0.03em] leading-[0.92] text-[clamp(2.6rem,8vw,3.6rem)] md:text-[clamp(3.2rem,4.5vw,5rem)]">
-                Estimez<br />
-                votre bien<span className="text-[#FF4A3E]">,</span><br />
-                gratuitement.
-              </h1>
+              <h1 className="font-serif tracking-[-0.03em] leading-[0.92] text-[clamp(2.6rem,8vw,3.6rem)] md:text-[clamp(3.2rem,4.5vw,5rem)]" dangerouslySetInnerHTML={{ __html: t("estimate.hero.headline") }} />
 
               {/* Subheadline */}
               <p className="mt-4 text-[clamp(0.95rem,1.8vw,1.15rem)] text-neutral-900/80 max-w-[42ch] mx-auto md:mx-0">
-                Estimation détaillée en 48h par nos experts, basée sur les données
-                du marché genevois. 100% gratuit et sans engagement.
+                {t("estimate.hero.subheadline")}
               </p>
             </div>
 

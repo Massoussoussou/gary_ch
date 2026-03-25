@@ -2,6 +2,9 @@
 import { useMemo, useRef, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
+/* i18n */
+import { useLocale } from "../hooks/useLocale.js";
+
 /* Données & composants */
 import useProperties from "../hooks/useProperties.js";
 
@@ -164,6 +167,7 @@ function parseSortFromQS(search) {
 
 /* ---------- Hero content avec parallax (scroll plus lent) ---------- */
 function HeroContent({ scrollToListings }) {
+  const { t, link } = useLocale();
   const ref = useRef(null);
   const [offset, setOffset] = useState(0);
 
@@ -189,26 +193,26 @@ function HeroContent({ scrollToListings }) {
 
           <div className="relative text-center px-3 sm:px-0 py-5 sm:py-0">
             <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-neutral-600 mb-3">
-              Acheter
+              {t("nav.buy")}
             </p>
 
             <h1 className="font-serif tracking-[-0.03em] leading-[0.95] md:leading-[0.9] text-[clamp(2.6rem,11vw,4.2rem)] md:text-[clamp(4.2rem,10vw,7.6rem)]">
-              Notre sélection de biens
+              {t("buy.hero_title_line1")}
               <br />
-              <span className="block">à la vente<span className="text-[#FF4A3E]">.</span></span>
+              <span className="block">{t("buy.hero_title_line2")}<span className="text-[#FF4A3E]">.</span></span>
             </h1>
 
             <p className="mt-5 text-[clamp(1.05rem,2.1vw,1.4rem)] text-neutral-900/90 max-w-[52ch] mx-auto">
-              Appartements, maisons et projets actuellement disponibles.
+              {t("buy.hero_subtitle")}
             </p>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <CTAFuturaGlow
-                label="Voir les annonces"
+                label={t("buy.cta_see_listings")}
                 onClick={scrollToListings}
                 minWidth={260}
               />
-              <CTAWhiteSweep to="/contact" label="Contacter GARY" />
+              <CTAWhiteSweep to={link("contact")} label={t("cta.contact_gary")} />
             </div>
           </div>
         </div>
@@ -219,10 +223,10 @@ function HeroContent({ scrollToListings }) {
 
 /* ---------- Chiffres clés (mêmes que page Qui est GARY) ---------- */
 const BUY_KEY_FIGURES = [
-  { value: 100, suffix: "+", label: "ventes en 2025", icon: "sales" },
-  { value: 90, suffix: "+", label: "avis 5 étoiles sur Google", icon: "star", link: "https://www.google.com/maps/place/GARY+Real+Estate", linkText: "voir ici" },
-  { value: 6.6, suffix: "M", label: "de vues sur nos publications", icon: "eye", decimals: 1 },
-  { value: 40, suffix: "k+", label: "followers sur nos réseaux", icon: "followers" },
+  { value: 100, suffix: "+", labelKey: "buy.fig_sales", icon: "sales" },
+  { value: 90, suffix: "+", labelKey: "buy.fig_reviews", icon: "star", link: "https://www.google.com/maps/place/GARY+Real+Estate", linkTextKey: "buy.fig_reviews_link" },
+  { value: 6.6, suffix: "M", labelKey: "buy.fig_views", icon: "eye", decimals: 1 },
+  { value: 40, suffix: "k+", labelKey: "buy.fig_followers", icon: "followers" },
 ];
 
 function BuyFigureIcon({ type }) {
@@ -259,6 +263,7 @@ function useCountUp(target, duration = 2000, start = false) {
 }
 
 function BuyFigureItem({ fig, index, active }) {
+  const { t } = useLocale();
   const delay = index * 0.15;
   const count = useCountUp(fig.value, 2200, active);
   const display = fig.decimals
@@ -274,11 +279,11 @@ function BuyFigureItem({ fig, index, active }) {
         {display}{fig.suffix}
       </span>
       <p className="mt-3 text-[14px] md:text-[17px] uppercase tracking-[0.12em] text-gray-600 leading-relaxed max-w-[260px]" style={{ opacity: active ? 1 : 0, transition: `opacity 0.6s ease-out ${delay + 0.4}s` }}>
-        {fig.label}
+        {t(fig.labelKey)}
       </p>
       {fig.link && (
         <a href={fig.link} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-[12px] uppercase tracking-[0.12em] text-[#FF4A3E]/80 hover:text-[#FF4A3E] transition-colors duration-300" style={{ opacity: active ? 1 : 0, transition: `opacity 0.6s ease-out ${delay + 0.6}s` }}>
-          {fig.linkText}
+          {t(fig.linkTextKey)}
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
         </a>
       )}
@@ -287,6 +292,7 @@ function BuyFigureItem({ fig, index, active }) {
 }
 
 function KeyFiguresSection() {
+  const { t } = useLocale();
   const sectionRef = useRef(null);
   const [seen, setSeen] = useState(false);
 
@@ -307,7 +313,7 @@ function KeyFiguresSection() {
           <div className="h-[2px] bg-[#FF4A3E]" style={{ width: seen ? "60px" : "0px", transition: "width 0.8s cubic-bezier(0.22, 1, 0.36, 1)" }} />
         </div>
         <h2 className="text-center font-serif text-3xl md:text-5xl tracking-wide mb-16 md:mb-20 text-gray-900" style={{ opacity: seen ? 1 : 0, transform: seen ? "translateY(0)" : "translateY(20px)", transition: "opacity 0.8s ease-out, transform 0.8s ease-out" }}>
-          Quelques chiffres de <span className="text-[#FF4A3E]">2025</span>
+          {t("buy.figures_title_prefix")} <span className="text-[#FF4A3E]">2025</span>
         </h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-14 md:gap-y-16 gap-x-8 md:gap-x-12 lg:gap-x-16">
           {BUY_KEY_FIGURES.map((fig, i) => (
@@ -321,6 +327,7 @@ function KeyFiguresSection() {
 
 /* ---------- Compteur avec rectangle animé ---------- */
 function CounterBanner({ count }) {
+  const { t } = useLocale();
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
 
@@ -384,10 +391,10 @@ function CounterBanner({ count }) {
           {count}
         </span>
         <span className="relative text-3xl md:text-4xl lg:text-5xl uppercase leading-none tracking-wide text-neutral-900 font-serif font-light">
-          BIEN{count > 1 ? "S" : ""}
+          {count > 1 ? t("buy.counter_properties_other") : t("buy.counter_properties_one")}
         </span>
         <span className="relative text-3xl md:text-4xl lg:text-5xl uppercase leading-none tracking-wide text-neutral-900 font-serif font-light">
-          DISPONIBLE{count > 1 ? "S" : ""}
+          {count > 1 ? t("buy.counter_available_other") : t("buy.counter_available_one")}
         </span>
       </div>
     </div>
@@ -396,6 +403,7 @@ function CounterBanner({ count }) {
 
 /* ---------- composant principal ---------- */
 export default function BuyIntro() {
+  const { t, link } = useLocale();
   const location = useLocation();
   const { data, loading } = useProperties();
   // Filtrage par statut : on exclut les vendus et suspendus de la grille principale
@@ -616,7 +624,7 @@ export default function BuyIntro() {
       {/*
       <section
         ref={calcRef}
-        aria-label="Outils d'achat – calculette"
+        aria-label={t("buy.aria_tools_calc")}
         className={`relative py-24 bg-white transition-all duration-700 ${calcShown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
       >
         <div className="max-w-7xl mx-auto px-6 md:px-8">
@@ -660,7 +668,7 @@ export default function BuyIntro() {
       {vendus.length > 0 && (
         <section className="relative bg-white pt-16 md:pt-24" style={{ zIndex: 2 }}>
           <BandCarousel
-            title="Déjà vendu"
+            title={t("buy.already_sold")}
             items={vendus}
             renderItem={ListingCardSold}
           />
@@ -674,7 +682,7 @@ export default function BuyIntro() {
 
       {/* 12) Pont vers VENTE */}
       <div className="relative" style={{ zIndex: 2 }}>
-        <AlreadyOwner toEstimate="/estimer" toSell="/vendre" />
+        <AlreadyOwner toEstimate={link("estimate")} toSell={link("sell")} />
       </div>
     </main>
   );

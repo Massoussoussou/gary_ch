@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Home, BedDouble, Ruler, Bath, ChevronLeft, ChevronRight } from "lucide-react";
+import { useLocale } from "../hooks/useLocale.js";
 
 /* =========================
    PRESETS STYLE "LUXE CARRÉ"
@@ -26,11 +27,11 @@ function isRecent(d, days = 21) {
   if (isNaN(dt)) return false;
   return Date.now() - dt.getTime() <= days * 86400 * 1000;
 }
-function composeMeta(item) {
+function composeMeta(item, t) {
   const parts = [];
-  if (item?.pieces) parts.push(`${item.pieces} pièces`);
+  if (item?.pieces) parts.push(`${item.pieces} ${t ? t("listing.rooms") : "pièces"}`);
   if (item?.surface_m2) parts.push(`${item.surface_m2} m²`);
-  if (item?.chambres) parts.push(`${item.chambres} ch.`);
+  if (item?.chambres) parts.push(`${item.chambres} ${t ? t("listing.bedrooms_short") : "ch."}`);
   return parts.join(" • ");
 }
 function normalizeBanner(b) {
@@ -48,20 +49,22 @@ function normalizeBanner(b) {
    NOUVEAU BANDEAU (Carré + rectangle blanc, centré haut)
    ========================= */
 function TopStatusTag({ kind }) {
+  const { t } = useLocale();
   if (!kind) return null;
 
   const ORANGE = "#FF4A3E";
   const GREY = "#6B7280";
   const map = {
-    vendu:        { label: "VENDU",       color: ORANGE },
-    reserve:      { label: "RÉSERVÉ",     color: ORANGE },
-    exclu:        { label: "EXCLUSIF",    color: ORANGE },
-    "coming-soon":{ label: "COMING SOON", color: ORANGE },
-    suspendu:     { label: "SUSPENDU",    color: GREY },
+    vendu:        { labelKey: "listing.status_sold",       color: ORANGE },
+    reserve:      { labelKey: "listing.status_reserved",   color: ORANGE },
+    exclu:        { labelKey: "listing.status_exclusive",   color: ORANGE },
+    "coming-soon":{ labelKey: "listing.status_coming_soon", color: ORANGE },
+    suspendu:     { labelKey: "listing.status_suspended",   color: GREY },
   };
   const entry = map[kind];
   if (!entry) return null;
-  const { label, color } = entry;
+  const label = t(entry.labelKey);
+  const { color } = entry;
 
   return (
     <div className="absolute top-5 md:top-6 left-0 z-20 pointer-events-none">
@@ -83,6 +86,7 @@ function TopStatusTag({ kind }) {
    LISTING CARD
    ========================= */
 export default function ListingCard({ item, size = "md" }) {
+  const { t, link } = useLocale();
   const imgs = Array.isArray(item.images) ? item.images : [];
   const start =
     Number.isInteger(item.heroIdx) && item.heroIdx >= 0 && item.heroIdx < imgs.length
@@ -203,7 +207,7 @@ useEffect(() => {
     `focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20`;
 
   return (
-    <Link to={`/annonce/${item.id}`} className={cardCls} aria-label={item.titre}>
+    <Link to={link("listing", { id: item.id })} className={cardCls} aria-label={item.titre}>
       {/* CLIPPER */}
       <div
         ref={galleryRef}
@@ -268,7 +272,7 @@ useEffect(() => {
       card-reveal opacity-0 translate-y-1 pointer-events-none
     "
     role="group"
-    aria-label="Contrôles du carrousel"
+    aria-label={t("carousel.aria_controls")}
   >
     <button
       onClick={handlePrev}
@@ -281,7 +285,7 @@ useEffect(() => {
         disabled:bg-white/40 disabled:text-zinc-400 disabled:opacity-50 disabled:cursor-not-allowed
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30
       "
-      aria-label="Image précédente"
+      aria-label={t("listing.aria_prev_image")}
     >
       <ChevronLeft className="w-5 h-5" />
     </button>
@@ -297,7 +301,7 @@ useEffect(() => {
         disabled:bg-white/40 disabled:text-zinc-400 disabled:opacity-50 disabled:cursor-not-allowed
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30
       "
-      aria-label="Image suivante"
+      aria-label={t("listing.aria_next_image")}
     >
       <ChevronRight className="w-5 h-5" />
     </button>
@@ -519,11 +523,11 @@ useEffect(() => {
           <div className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-[14px]">
             <span className="inline-flex items-center gap-2">
               <Home className="w-5 h-5" />
-              {item.pieces ?? "-"} pièces
+              {item.pieces ?? "-"} {t("listing.rooms")}
             </span>
             <span className="inline-flex items-center gap-2">
               <BedDouble className="w-5 h-5" />
-              {item.chambres ?? "-"} ch.
+              {item.chambres ?? "-"} {t("listing.bedrooms_short")}
             </span>
             <span className="inline-flex items-center gap-2">
               <Ruler className="w-5 h-5" />
@@ -532,7 +536,7 @@ useEffect(() => {
             {typeof item.sdb !== "undefined" && (
               <span className="inline-flex items-center gap-2">
                 <Bath className="w-5 h-5" />
-                {item.sdb ?? "-"} s.d'eau
+                {item.sdb ?? "-"} {t("listing.water_rooms_short")}
               </span>
             )}
           </div>
@@ -570,13 +574,13 @@ useEffect(() => {
           {item.titre ?? "Propriété"}
         </h3>
         <p className="mt-1 text-[13px] text-[#61646B]">
-          {composeMeta(item)}
+          {composeMeta(item, t)}
         </p>
         <div className="mt-3">
           <span
             className={`inline-block ${tileRadiusCls} bg-[#0F1115] text-white card-price px-3 py-1.5 text-[15px] font-semibold shadow-md min-w-[96px] text-center`}
           >
-            {item.prix ? formatCHF(item.prix) : "Prix sur demande"}
+            {item.prix ? formatCHF(item.prix) : t("listing.price_on_request")}
           </span>
         </div>
       </div>

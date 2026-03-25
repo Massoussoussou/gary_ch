@@ -3,11 +3,12 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useLocale } from "../../hooks/useLocale.js";
 
 /* ---------------- utils ---------------- */
-function formatCHF(n) {
+function formatCHF(n, onRequestLabel = "Sur demande") {
   const v = Number(n);
-  if (!Number.isFinite(v) || v <= 0) return "Sur demande";
+  if (!Number.isFinite(v) || v <= 0) return onRequestLabel;
   return "CHF " + v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'");
 }
 function badgeFrom(item) {
@@ -86,12 +87,13 @@ function useSwipeGallery(imgs, startIdx = 0) {
 
 /* --------------- sous-composants --------------- */
 function Panel({ item }) {
+  const { t, link } = useLocale();
   return (
     <aside className="w-[480px] max-w-full bg-white p-8 shadow-[0_16px_50px_rgba(0,0,0,0.10)] ring-1 ring-black/5">
       <div className="flex items-center gap-3">
         <span className="inline-block w-8 h-[2px] bg-[#FF4A3E]" />
         <p className="tracking-[0.16em] text-[12px] text-neutral-500">
-          SÉLECTION DE LA SEMAINE
+          {t("listing.weekly_pick")}
         </p>
       </div>
 
@@ -104,36 +106,36 @@ function Panel({ item }) {
       </p>
 
       <div className="mt-4 text-[15px] text-neutral-700">
-        {item.pieces != null && <span>{item.pieces} pièces</span>}
+        {item.pieces != null && <span>{item.pieces} {t("listing.spec_rooms").toLowerCase()}</span>}
         {item.pieces != null && item.surface_m2 != null && <span className="mx-2">·</span>}
         {item.surface_m2 != null && <span>{item.surface_m2} m²</span>}
         {item.sdb != null && (<><span className="mx-2">·</span><span>{item.sdb} sdb</span></>)}
       </div>
 
       <div className="mt-5">
-        <div className="text-[11px] uppercase tracking-wide text-neutral-500">Prix</div>
+        <div className="text-[11px] uppercase tracking-wide text-neutral-500">{t("listing.spec_price")}</div>
         <div className="mt-1 text-2xl font-semibold text-neutral-900" style={{ fontVariantNumeric: "tabular-nums" }}>
-          {formatCHF(item.prix)}
+          {formatCHF(item.prix, t("listing.price_on_request"))}
         </div>
       </div>
 
       <div className="mt-6 flex flex-wrap gap-3">
         <Link
-          to={`/annonce/${item.id}`}
+          to={link("listing", { id: item.id })}
           className="inline-flex items-center px-5 py-3 bg-[#FF4A3E] text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF4A3E]/50"
         >
-          Découvrir le bien
+          {t("cta.discover_property")}
         </Link>
         <Link
-          to={`/contact?ref=weekly-${item.id}`}
+          to={`${link("contact")}?ref=weekly-${item.id}`}
           className="inline-flex items-center px-5 py-3 border border-neutral-200 text-neutral-900 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300"
         >
-          Planifier une visite
+          {t("cta.schedule_visit")}
         </Link>
       </div>
 
       <p className="mt-6 text-xs leading-relaxed text-neutral-500">
-        Dossier complet sur demande. Visites privées possibles.
+        {t("listing.full_file_on_request")}
       </p>
     </aside>
   );
@@ -151,6 +153,7 @@ function SwipeArrows({ idx, total }) {
 }
 
 function CompactCard({ item }) {
+  const { t, link } = useLocale();
   const imgs = Array.isArray(item.images) ? item.images : [];
   const startIdx = Number.isInteger(item.heroIdx) && item.heroIdx >= 0 && item.heroIdx < imgs.length ? item.heroIdx : 0;
   const { idx, ref, trackStyle } = useSwipeGallery(imgs, startIdx);
@@ -167,7 +170,7 @@ function CompactCard({ item }) {
                 <img
                   key={i}
                   src={src}
-                  alt={i === idx ? (item.titre || "Bien en vedette") : ""}
+                  alt={i === idx ? (item.titre || t("listing.featured_property")) : ""}
                   className={`absolute top-0 h-full w-full object-cover ${item.vendu ? "grayscale" : ""}`}
                   style={{ left: `${i * 100}%` }}
                   loading="lazy"
@@ -188,26 +191,26 @@ function CompactCard({ item }) {
       </div>
 
       <div className="p-6">
-        <p className="tracking-[0.16em] text-[11px] text-neutral-500">SÉLECTION DE LA SEMAINE</p>
+        <p className="tracking-[0.16em] text-[11px] text-neutral-500">{t("listing.weekly_pick")}</p>
         <h3 className="mt-2 text-xl md:text-2xl leading-tight text-neutral-950">{item.titre}</h3>
         <p className="mt-1 text-neutral-600">{item.ville}{item.canton ? `, ${item.canton}` : ""}</p>
 
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[15px] text-neutral-700">
-          {item.pieces != null && <span>{item.pieces} pièces</span>}
+          {item.pieces != null && <span>{item.pieces} {t("listing.spec_rooms").toLowerCase()}</span>}
           {item.surface_m2 != null && <span>{item.surface_m2} m²</span>}
           {item.sdb != null && <span>{item.sdb} sdb</span>}
         </div>
 
         <div className="mt-4">
-          <div className="text-[11px] uppercase tracking-wide text-neutral-500">Prix</div>
+          <div className="text-[11px] uppercase tracking-wide text-neutral-500">{t("listing.spec_price")}</div>
           <div className="mt-1 text-lg md:text-xl font-semibold text-neutral-900" style={{ fontVariantNumeric: "tabular-nums" }}>
-            {formatCHF(item.prix)}
+            {formatCHF(item.prix, t("listing.price_on_request"))}
           </div>
         </div>
 
         <div className="mt-5 flex flex-wrap gap-3">
-          <Link to={`/annonce/${item.id}`} className="inline-flex items-center px-5 py-3 bg-[#FF4A3E] text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF4A3E]/50">Découvrir le bien</Link>
-          <Link to={`/contact?ref=weekly-${item.id}`} className="inline-flex items-center px-5 py-3 border border-neutral-200 text-neutral-900 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300">Planifier une visite</Link>
+          <Link to={link("listing", { id: item.id })} className="inline-flex items-center px-5 py-3 bg-[#FF4A3E] text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF4A3E]/50">{t("cta.discover_property")}</Link>
+          <Link to={`${link("contact")}?ref=weekly-${item.id}`} className="inline-flex items-center px-5 py-3 border border-neutral-200 text-neutral-900 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300">{t("cta.schedule_visit")}</Link>
         </div>
       </div>
     </article>
@@ -225,16 +228,16 @@ export default function WeekCardV1({
   overlay = "light",
   bgIntervalMs = 9000,
 }) {
-  if (!item) return null;
+  const { t } = useLocale();
 
   const imgs = useMemo(
-    () => (Array.isArray(item.images) ? item.images.filter(Boolean) : []),
-    [item.images]
+    () => (Array.isArray(item?.images) ? item.images.filter(Boolean) : []),
+    [item?.images]
   );
-  const startIdx = Number.isInteger(item.heroIdx) && item.heroIdx >= 0 && item.heroIdx < imgs.length ? item.heroIdx : 0;
+  const startIdx = Number.isInteger(item?.heroIdx) && item.heroIdx >= 0 && item.heroIdx < imgs.length ? item.heroIdx : 0;
   const { idx: imgIdx, ref: splitRef, trackStyle: splitTrackStyle } = useSwipeGallery(imgs, startIdx);
   const hero = imgs[imgIdx];
-  const badge = badgeFrom(item);
+  const badge = item ? badgeFrom(item) : null;
 
   const reduceMotion = useMemo(() => {
     if (typeof window === "undefined") return false;
@@ -248,6 +251,8 @@ export default function WeekCardV1({
       return () => clearInterval(id);
     }
   }, [bg, imgs.length, bgIntervalMs, reduceMotion]);
+
+  if (!item) return null;
 
   if (mode === "card") {
     return (
@@ -310,7 +315,7 @@ export default function WeekCardV1({
                       <img
                         key={i}
                         src={src}
-                        alt={i === imgIdx ? (item.titre || "Bien de la semaine") : ""}
+                        alt={i === imgIdx ? (item.titre || t("listing.weekly_property")) : ""}
                         className="absolute top-0 h-full w-full object-cover"
                         style={{ left: `${i * 100}%` }}
                         loading="lazy"

@@ -1,18 +1,21 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { GaryLogoRed } from "./icons";
+import { useLocale } from "../../hooks/useLocale.js";
 
 export default function LandingFooter() {
+  const { t, link } = useLocale();
   return (
     <footer className="footer">
-      <a href="/" className="footer-logo" aria-label="GARY">
+      <Link to={link("home")} className="footer-logo" aria-label="GARY">
         <GaryLogoRed />
-      </a>
+      </Link>
       <div className="footer-links">
-        <a href="/acheter">Nos biens</a>
-        <a href="/vendre">Notre méthode</a>
-        <a href="/a-propos">Nos courtiers</a>
-        <a href="/contact">Contact</a>
-        <a href="#">Mentions légales</a>
+        <Link to={link("buy")}>{t("footer.our_properties")}</Link>
+        <Link to={link("sell")}>{t("footer.our_method")}</Link>
+        <Link to={link("about")}>{t("footer.our_brokers")}</Link>
+        <Link to={link("contact")}>{t("footer.contact")}</Link>
+        <Link to={link("legal")}>{t("footer.legal")}</Link>
       </div>
     </footer>
   );

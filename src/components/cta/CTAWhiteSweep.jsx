@@ -1,15 +1,18 @@
 // src/components/CTAWhiteSweep.jsx
 import { useNavigate } from "react-router-dom";
+import { useLocale } from "../../hooks/useLocale.js";
 
 export default function CTAWhiteSweep({
   to = "/acheter",
   onClick,
-  label = "Voir les biens",
+  label,
   Icon, // optionnel
   minWidth = 260,
   className = "",
 }) {
+  const { t } = useLocale();
   const nav = useNavigate();
+  const resolvedLabel = label ?? t("cta.see_properties");
   const handleClick = () =>
     typeof onClick === "function" ? onClick() : nav(to);
 
@@ -21,7 +24,7 @@ export default function CTAWhiteSweep({
         "px-[clamp(28px,4.4vw,56px)] py-[clamp(16px,2.4vw,22px)]",
 
         `min-w-[${minWidth}px]`,
-        // ✅ plus de border, juste un bloc blanc
+        // plus de border, juste un bloc blanc
         "rounded-none overflow-hidden",
         "bg-white text-black",
         "select-none",
@@ -38,9 +41,9 @@ export default function CTAWhiteSweep({
 
       {/* Contenu (texte + icône éventuelle) */}
       <span className="relative z-[1] inline-flex items-center gap-2 cta-white-sweep__content">
-        {/* ✅ plus gros et plus gras, comme le CTA principal */}
+        {/* plus gros et plus gras, comme le CTA principal */}
         <span className="tracking-wide text-[clamp(1.15rem,2.05vw,1.55rem)]">
-          {label}
+          {resolvedLabel}
         </span>
         {Icon && (
           <Icon

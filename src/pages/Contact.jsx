@@ -5,6 +5,7 @@
 
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { useLocale } from "../hooks/useLocale.js"
 
 // === Images d'Estimate (extraits) ===
 const ESTIMATE_BG = [
@@ -103,28 +104,35 @@ function BackgroundSlideshow({ images, duration = 5.8, pan = 88, scaleFrom = 1.1
 }
 
 // === Onglets Type de demande – version "pills" plus grande ===
-function TabsDemandType({ type, onChange }) {
+function TabsDemandType({ type, onChange, t: translate }) {
   const types = [ "Achat", "Vente","Estimation", "Autre"]
+
+  const typeLabels = {
+    Achat: translate("contact.tab_buy"),
+    Vente: translate("contact.tab_sell"),
+    Estimation: translate("contact.tab_estimate"),
+    Autre: translate("contact.tab_other"),
+  }
 
   return (
     <div className="flex justify-center">
       <div
         role="tablist"
-        aria-label="Type de demande"
+        aria-label={translate("contact.demand_type")}
         className="inline-flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-black/5 bg-black/5 px-3 py-2 shadow-sm select-none max-w-full"
 
       >
-        {types.map((t) => {
-          const isActive = t === type
-          const Icon = Icons[t]
+        {types.map((tp) => {
+          const isActive = tp === type
+          const Icon = Icons[tp]
 
           return (
             <button
-              key={t}
+              key={tp}
               type="button"
               role="tab"
               aria-selected={isActive}
-              onClick={() => onChange(t)}
+              onClick={() => onChange(tp)}
               className="relative px-0 py-0 focus:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(255,74,62,0.25)] rounded-full"
             >
               <motion.span
@@ -160,7 +168,7 @@ function TabsDemandType({ type, onChange }) {
                     (isActive ? "text-black" : "text-black/65")
                   }
                 >
-                  {t}
+                  {typeLabels[tp]}
                 </span>
               </motion.span>
             </button>
@@ -248,6 +256,7 @@ function SquareTile({ base = 780, children }) {
 
 
 export default function Contact() {
+  const { t } = useLocale()
   const [type, setType] = useState("Estimation")
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -286,13 +295,13 @@ export default function Contact() {
 
       if (!resp.ok) {
         const data = await resp.json().catch(() => ({}))
-        throw new Error(data.error || "Erreur lors de l’envoi")
+        throw new Error(data.error || t("error.send"))
       }
 
       setSuccess(true)
       form.reset()
     } catch (err) {
-      setError(err.message || "Une erreur est survenue. Réessayez.")
+      setError(err.message || t("error.generic"))
     } finally {
       setSubmitting(false)
     }
@@ -312,25 +321,23 @@ export default function Contact() {
 
               {/* En-tête */}
               <header className="text-center mt-6 md:mt-8">
-                <h1 className="font-serif tracking-[-0.03em] leading-tight text-[clamp(2.15rem,7vw,3.5rem)] text-black">
-                  Parlez-nous de votre <span className="text-[#FF4A3E]">projet</span>
-                </h1>
+                <h1 className="font-serif tracking-[-0.03em] leading-tight text-[clamp(2.15rem,7vw,3.5rem)] text-black" dangerouslySetInnerHTML={{ __html: t("contact.hero_title") }} />
                 <p className="mt-3 text-[clamp(1rem,1.9vw,1.1rem)] text-black/70 max-w-md mx-auto">
-                  Nous vous recontactons rapidement pour vous conseiller.
+                  {t("contact.hero_subtitle")}
                 </p>
               </header>
 
               {success ? (
                 <div className="mt-10 text-center py-12">
                   <div className="text-4xl mb-4">✓</div>
-                  <h2 className="text-2xl font-serif text-black mb-2">Message envoyé</h2>
-                  <p className="text-black/70">Nous vous recontactons dans les plus brefs délais.</p>
+                  <h2 className="text-2xl font-serif text-black mb-2">{t("contact.success_title")}</h2>
+                  <p className="text-black/70">{t("contact.success_message")}</p>
                   <button
                     type="button"
                     onClick={() => setSuccess(false)}
                     className="mt-6 text-[#FF4A3E] underline underline-offset-4 text-sm"
                   >
-                    Envoyer un autre message
+                    {t("contact.send_another")}
                   </button>
                 </div>
               ) : (
@@ -349,46 +356,46 @@ export default function Contact() {
 
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
-                      <label htmlFor="nom" className="block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5">Nom</label>
+                      <label htmlFor="nom" className="block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5">{t("form.lastname")}</label>
                       <input id="nom" name="nom" required className="w-full px-4 py-3.5 bg-[#FAF7F4] border border-[#E5E7EB] text-gray-900 text-[15px] outline-none transition-colors focus:border-[#FF4A3E] placeholder:text-gray-400" />
                     </div>
                     <div>
-                      <label htmlFor="prenom" className="block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5">Prénom</label>
+                      <label htmlFor="prenom" className="block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5">{t("form.firstname")}</label>
                       <input id="prenom" name="prenom" required className="w-full px-4 py-3.5 bg-[#FAF7F4] border border-[#E5E7EB] text-gray-900 text-[15px] outline-none transition-colors focus:border-[#FF4A3E] placeholder:text-gray-400" />
                     </div>
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
-                      <label htmlFor="email" className="block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5">Email</label>
-                      <input id="email" name="email" type="email" required className="w-full px-4 py-3.5 bg-[#FAF7F4] border border-[#E5E7EB] text-gray-900 text-[15px] outline-none transition-colors focus:border-[#FF4A3E] placeholder:text-gray-400" placeholder="vous@exemple.com" />
+                      <label htmlFor="email" className="block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5">{t("form.email")}</label>
+                      <input id="email" name="email" type="email" required className="w-full px-4 py-3.5 bg-[#FAF7F4] border border-[#E5E7EB] text-gray-900 text-[15px] outline-none transition-colors focus:border-[#FF4A3E] placeholder:text-gray-400" placeholder={t("form.placeholder_email")} />
                     </div>
                     <div>
-                      <label htmlFor="tel" className="block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5">Téléphone</label>
+                      <label htmlFor="tel" className="block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5">{t("form.phone")}</label>
                       <input id="tel" name="tel" type="tel" inputMode="tel" required className="w-full px-4 py-3.5 bg-[#FAF7F4] border border-[#E5E7EB] text-gray-900 text-[15px] outline-none transition-colors focus:border-[#FF4A3E] placeholder:text-gray-400" placeholder="+41 79 123 45 67" />
                     </div>
                   </div>
 
                   {/* Type de demande */}
                   <div>
-                    <label htmlFor="type" className="block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5">Type de demande</label>
+                    <label htmlFor="type" className="block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5">{t("contact.demand_type")}</label>
                     <select
                       id="type"
                       value={type}
                       onChange={(e) => setType(e.target.value)}
                       className="w-full px-4 py-3.5 bg-[#FAF7F4] border border-[#E5E7EB] text-gray-900 text-[15px] outline-none transition-colors focus:border-[#FF4A3E] placeholder:text-gray-400"
                     >
-                      <option value="Estimation">Estimation de mon bien</option>
-                      <option value="Achat">Recherche d’un bien à acheter</option>
-                      <option value="Vente">Vendre mon bien</option>
-                      <option value="Autre">Autre demande</option>
+                      <option value="Estimation">{t("contact.option_estimate")}</option>
+                      <option value="Achat">{t("contact.option_buy")}</option>
+                      <option value="Vente">{t("contact.option_sell")}</option>
+                      <option value="Autre">{t("contact.option_other")}</option>
                     </select>
                   </div>
 
                   {/* Message */}
                   <div>
-                    <label htmlFor="message" className="block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5">Message</label>
-                    <textarea id="message" name="message" rows={6} required className="w-full px-4 py-3.5 bg-[#FAF7F4] border border-[#E5E7EB] text-gray-900 text-[15px] outline-none transition-colors focus:border-[#FF4A3E] placeholder:text-gray-400" placeholder="Décrivez votre bien (type, surface, localisation), vos délais, vos questions…" />
+                    <label htmlFor="message" className="block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5">{t("form.message")}</label>
+                    <textarea id="message" name="message" rows={6} required className="w-full px-4 py-3.5 bg-[#FAF7F4] border border-[#E5E7EB] text-gray-900 text-[15px] outline-none transition-colors focus:border-[#FF4A3E] placeholder:text-gray-400" placeholder={t("contact.placeholder_message")} />
                   </div>
 
                   {error && (
@@ -396,14 +403,14 @@ export default function Contact() {
                   )}
 
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <p className="text-xs text-black/60 leading-relaxed">En envoyant ce formulaire, vous acceptez d’être recontacté(e) par GARY.</p>
+                    <p className="text-xs text-black/60 leading-relaxed">{t("contact.consent")}</p>
                     <button
                       type="submit"
                       disabled={submitting}
                       className="group inline-flex items-center justify-center gap-2 px-7 md:px-9 py-3 text-white shadow-lg transition hover:shadow-xl disabled:opacity-60"
                       style={{ backgroundColor: "#FF4A3E" }}
                     >
-                      {submitting ? "Envoi…" : "Envoyer"}
+                      {submitting ? t("form.sending") : t("form.send")}
                       {!submitting && (
                         <span aria-hidden className="inline-block translate-x-0 transition-transform duration-200 ease-out group-hover:translate-x-1">→</span>
                       )}

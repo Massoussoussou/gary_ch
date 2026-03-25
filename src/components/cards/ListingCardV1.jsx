@@ -1,20 +1,21 @@
 // src/components/cards/ListingCardV1.jsx
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useLocale } from "../../hooks/useLocale.js";
 
 const GARY_ORANGE = "#FF4A3E";
 
-function formatCHF(n) {
-  if (typeof n !== "number" || isNaN(n) || n <= 0) return "Prix sur demande";
+function formatCHF(n, t) {
+  if (typeof n !== "number" || isNaN(n) || n <= 0) return t ? t("listing.price_on_request") : "Price on request";
   return "CHF " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'");
 }
 
-function composeMeta(item) {
+function composeMeta(item, t) {
   const parts = [];
-  if (item?.pieces) parts.push(`${item.pieces} pièces`);
+  if (item?.pieces) parts.push(`${item.pieces} ${t ? t("listing.rooms") : "pièces"}`);
   if (item?.surface_m2) parts.push(`${item.surface_m2} m²`);
-  if (item?.chambres) parts.push(`${item.chambres} ch.`);
-  if (item?.sdb) parts.push(`${item.sdb} sdb`);
+  if (item?.chambres) parts.push(`${item.chambres} ${t ? t("listing.bedrooms_short") : "ch."}`);
+  if (item?.sdb) parts.push(`${item.sdb} ${t ? t("listing.bathrooms_short") : "sdb"}`);
   return parts.join(" • ");
 }
 
@@ -33,6 +34,7 @@ export default function ListingCardV1({
   item: legacyItem, // compat ancien code
   onClick,
 }) {
+  const { t, link } = useLocale();
   const item = listing ?? legacyItem ?? {};
   const imgs = Array.isArray(item.images) ? item.images : [];
   const [idx] = useState(0);
@@ -47,9 +49,9 @@ export default function ListingCardV1({
 
   return (
     <Link
-      to={`/annonce/${item.id}`}
+      to={link("listing", { id: item.id })}
       onClick={onClick}
-      aria-label={item.titre || "Voir l’annonce"}
+      aria-label={item.titre || t("listing.view_listing")}
       className="group listing-card-v1 block overflow-hidden rounded-none border border-zinc-200 bg-white shadow-sm
                  focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(255,74,62,0.18)]"
       draggable={false}
@@ -62,7 +64,7 @@ export default function ListingCardV1({
       >
         <img
           src={img}
-          alt={item.titre || "Annonce"}
+          alt={item.titre || t("listing.view_listing")}
           loading="lazy"
           decoding="async"
           srcSet={srcSet}
@@ -79,7 +81,7 @@ export default function ListingCardV1({
         {/* Légende révélée tout en bas, sous la description */}
         <div className="absolute inset-x-0 bottom-0 h-12 flex items-center justify-center z-0 pointer-events-none">
           <span className="text-sm font-medium tracking-wide text-[#0F1115] opacity-0 card-v1-reveal">
-            Découvrir le bien →
+            {t("listing.discover_arrow")}
           </span>
         </div>
 
@@ -90,12 +92,12 @@ export default function ListingCardV1({
         >
           {/* Titre 2 lignes max */}
           <h3 className="text-[18px] leading-snug font-medium text-[#0F1115] line-clamp-2">
-            {item.titre ?? "Propriété d’exception"}
+            {item.titre ?? t("listing.exceptional_property")}
           </h3>
 
           {/* Métadonnées compactes */}
           <p className="mt-1 text-[13px] text-[#61646B]">
-            {composeMeta(item) || "Surface généreuse • Finitions haut de gamme"}
+            {composeMeta(item, t) || t("listing.fallback_meta")}
           </p>
 
           {/* Atouts en simple texte (pas de boîtes) */}
@@ -108,7 +110,7 @@ export default function ListingCardV1({
             <span
               className="inline-block px-3 py-2 text-[18px] font-semibold text-white bg-black rounded-none card-v1-price"
             >
-              {formatCHF(item.prix)}
+              {formatCHF(item.prix, t)}
             </span>
           </div>
         </div>

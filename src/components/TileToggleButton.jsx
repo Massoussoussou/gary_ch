@@ -1,4 +1,5 @@
 // src/components/TileToggleButton.jsx
+import { useLocale } from "../hooks/useLocale.js";
 
 export default function TileToggleButton({
   isTileVisible = true,
@@ -6,7 +7,8 @@ export default function TileToggleButton({
   className = "",
   minWidth = 170, // bouton plus petit
 }) {
-  const label = isTileVisible ? "Cacher la tuile" : "Afficher la tuile";
+  const { t } = useLocale();
+  const label = isTileVisible ? t("home.hide_tile") : t("home.show_tile");
   const isActive = !isTileVisible; // actif = tuile cachée
 
   return (

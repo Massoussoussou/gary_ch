@@ -1,10 +1,6 @@
 import React, { useState, useMemo } from "react";
+import { useLocale } from "../../hooks/useLocale.js";
 
-const MONTHS_FR = [
-  "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
-  "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre",
-];
-const DAYS_FR = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 const TIME_SLOTS = [
   "08:00", "09:00", "10:00", "11:00",
   "12:00", "13:00", "14:00", "15:00",
@@ -16,12 +12,15 @@ const pushGTM = (event, data = {}) => {
   window.dataLayer.push({ event, ...data });
 };
 
-const formatDateFr = (date) => {
-  const days = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
-  return `${days[date.getDay()]} ${date.getDate()} ${MONTHS_FR[date.getMonth()].toLowerCase()}`;
-};
-
 export default function CalendarPicker() {
+  const { t } = useLocale();
+  const MONTHS = t("estimate.calendar.months", { returnObjects: true });
+  const DAYS = t("estimate.calendar.days_short", { returnObjects: true });
+  const DAYS_LONG = t("estimate.calendar.days_long", { returnObjects: true });
+
+  const formatDate = (date) =>
+    `${DAYS_LONG[date.getDay()]} ${date.getDate()} ${MONTHS[date.getMonth()].toLowerCase()}`;
+
   const today = new Date();
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [viewYear, setViewYear] = useState(today.getFullYear());
@@ -94,20 +93,20 @@ export default function CalendarPicker() {
     return (
       <div className="cal-confirmed">
         <div className="cal-confirmed-icon">&#10003;</div>
-        <div className="cal-confirmed-title">Créneau réservé</div>
+        <div className="cal-confirmed-title">{t("estimate.calendar.slot_booked")}</div>
         <div className="cal-confirmed-detail">
-          {formatDateFr(selectedDate)} à {selectedTime}
+          {formatDate(selectedDate)} {t("estimate.calendar.at")} {selectedTime}
         </div>
         <p className="cal-confirmed-note">
-          Nous vous enverrons une confirmation par SMS.<br />
-          Vous pouvez aussi nous joindre au <a href="tel:+41225570700">+41 22 557 07 00</a>.
+          {t("estimate.calendar.sms_confirmation")}<br />
+          {t("estimate.calendar.call_us")} <a href="tel:+41225570700">+41 22 557 07 00</a>.
         </p>
         <button
           type="button"
           className="cal-change-btn"
           onClick={() => setConfirmed(false)}
         >
-          Modifier le créneau
+          {t("estimate.calendar.change_slot")}
         </button>
       </div>
     );
@@ -123,18 +122,18 @@ export default function CalendarPicker() {
           className="cal-nav-arrow"
           onClick={goPrev}
           disabled={!canGoPrev}
-          aria-label="Mois précédent"
+          aria-label={t("estimate.calendar.prev_month")}
         >
           &#8249;
         </button>
         <span className="cal-nav-label">
-          {MONTHS_FR[viewMonth]} {viewYear}
+          {MONTHS[viewMonth]} {viewYear}
         </span>
         <button
           type="button"
           className="cal-nav-arrow"
           onClick={goNext}
-          aria-label="Mois suivant"
+          aria-label={t("estimate.calendar.next_month")}
         >
           &#8250;
         </button>
@@ -142,7 +141,7 @@ export default function CalendarPicker() {
 
       {/* Day grid */}
       <div className="cal-grid">
-        {DAYS_FR.map((d) => (
+        {DAYS.map((d) => (
           <div className="cal-head" key={d}>{d}</div>
         ))}
         {days.map((day, i) => {
@@ -159,7 +158,7 @@ export default function CalendarPicker() {
               }
               onClick={() => handleDayClick(day)}
               disabled={disabled}
-              aria-label={day ? `${day} ${MONTHS_FR[viewMonth]}` : undefined}
+              aria-label={day ? `${day} ${MONTHS[viewMonth]}` : undefined}
             >
               {day || ""}
             </button>
@@ -171,7 +170,7 @@ export default function CalendarPicker() {
       {selectedDate && (
         <div className="cal-times">
           <div className="cal-times-label">
-            Créneaux disponibles &mdash; {formatDateFr(selectedDate)}
+            {t("estimate.calendar.available_slots")} &mdash; {formatDate(selectedDate)}
           </div>
           <div className="cal-times-grid">
             {TIME_SLOTS.map((t) => (
@@ -191,7 +190,7 @@ export default function CalendarPicker() {
       {/* Confirm button */}
       {selectedDate && selectedTime && (
         <button type="button" className="cal-book-btn" onClick={handleConfirm}>
-          Confirmer &mdash; {formatDateFr(selectedDate)} à {selectedTime}
+          {t("estimate.calendar.confirm")} &mdash; {formatDate(selectedDate)} {t("estimate.calendar.at")} {selectedTime}
         </button>
       )}
     </div>

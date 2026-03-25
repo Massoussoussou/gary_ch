@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom";
 import navigateBackFn from "../utils/navigateBack.js";
 import { usePromotionDetail } from "../hooks/usePromotions.js";
+import { useLocale } from "../hooks/useLocale.js";
 import team from "../data/team.json";
 
 import "../styles/projet.css";
@@ -30,7 +31,7 @@ function parseSecondDescription(raw = "") {
     sections.push({ title: label, body });
     rest = colonTrim.slice(endIdx);
   }
-  if (sections.length === 0 && txt) sections.push({ title: "Détails", body: txt });
+  if (sections.length === 0 && txt) sections.push({ title: "__details__", body: txt });
   return sections;
 }
 
@@ -63,6 +64,7 @@ function SpecIcon({ name }) {
 export default function ProjetNeufDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t, link } = useLocale();
   const { data: p, loading, error } = usePromotionDetail(id);
   const [isReady, setIsReady] = useState(false);
 
@@ -83,14 +85,14 @@ export default function ProjetNeufDetail() {
     } else {
       overlay.classList.add("is-on");
     }
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       overlay.classList.remove("is-on");
       setIsReady(true);
       setTimeout(() => {
         if (overlay && document.body.contains(overlay)) overlay.remove();
       }, 250);
     }, 120);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, []);
 
   /* --------- Reveal de la 2e description quand visible --------- */
@@ -139,20 +141,20 @@ export default function ProjetNeufDetail() {
     const firstContact = contacts[0];
     // 1. Matcher le contact API par email dans team.json
     if (firstContact?.email) {
-      const byEmail = (team || []).find((t) => t.email?.toLowerCase() === firstContact.email.toLowerCase());
+      const byEmail = (team || []).find((m) => m.email?.toLowerCase() === firstContact.email.toLowerCase());
       if (byEmail) return byEmail;
     }
     // 2. Matcher par nom (prénom + nom)
     if (firstContact?.firstname || firstContact?.lastname) {
       const contactName = [firstContact.firstname, firstContact.lastname].filter(Boolean).join(" ").toLowerCase();
-      const byName = (team || []).find((t) => t.name?.toLowerCase() === contactName);
+      const byName = (team || []).find((m) => m.name?.toLowerCase() === contactName);
       if (byName) return byName;
     }
     // 3. Fallback : données du contact API directement
     if (firstContact?.firstname || firstContact?.lastname) {
       return {
-        name: [firstContact.firstname, firstContact.lastname].filter(Boolean).join(" ") || "Conseiller GARY",
-        role: firstContact.role || "Conseiller immobilier",
+        name: [firstContact.firstname, firstContact.lastname].filter(Boolean).join(" ") || t("project_detail.advisor_gary"),
+        role: firstContact.role || t("project_detail.advisor_role"),
         email: firstContact.email || "contact@gary.ch",
         phone: firstContact.phone || firstContact.mobile || "+41 22 557 07 00",
         photo: firstContact.avatar || "/team/default.jpg",
@@ -160,13 +162,13 @@ export default function ProjetNeufDetail() {
     }
     // 4. Matcher par slug
     if (p?.agentSlug) {
-      const bySlug = (team || []).find((t) => t.slug === p.agentSlug);
+      const bySlug = (team || []).find((m) => m.slug === p.agentSlug);
       if (bySlug) return bySlug;
     }
     // 5. Dernier recours
     return (team || [])[0] || {
-      name: "Conseiller GARY",
-      role: "Conseiller immobilier",
+      name: t("project_detail.advisor_gary"),
+      role: t("project_detail.advisor_role"),
       email: "contact@gary.ch",
       phone: "+41 22 557 07 00",
       photo: "/team/default.jpg",
@@ -176,7 +178,7 @@ export default function ProjetNeufDetail() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-neutral-500 animate-pulse">Chargement du projet…</p>
+        <p className="text-sm text-neutral-500 animate-pulse">{t("loading.project")}</p>
       </div>
     );
   }
@@ -184,9 +186,9 @@ export default function ProjetNeufDetail() {
   if (!p) {
     return (
       <div className="gary-list" style={{ padding: 20 }}>
-        <p>Projet introuvable.</p>
-        <Link to="/projets-neufs" className="gary-btn" style={{ marginTop: 12 }}>
-          ← Retour
+        <p>{t("project_detail.not_found")}</p>
+        <Link to={link("newProjects")} className="gary-btn" style={{ marginTop: 12 }}>
+          {t("back")}
         </Link>
       </div>
     );
@@ -217,8 +219,8 @@ export default function ProjetNeufDetail() {
   type="button"
   onClick={() => navigateBackFn(navigate)}
   className="close-back-btn"
-  aria-label="Revenir à la page Projets Neufs"
-  title="Revenir aux projets neufs"
+  aria-label={t("project_detail.back_to_projects")}
+  title={t("project_detail.back_to_projects")}
 >
   <svg className="close-back-icon" viewBox="0 0 24 24" aria-hidden="true">
     <path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
@@ -230,15 +232,15 @@ export default function ProjetNeufDetail() {
             {p.city && (
               <p className="proj-city">{p.city}</p>
             )}
-            <h1 className="proj-serif">{p.name || "Projet"}</h1>
+            <h1 className="proj-serif">{p.name || t("project_detail.project")}</h1>
             {p.tagline && (
               <p className="proj-price">{p.tagline}</p>
             )}
           </header>
 
           {/* Flèche -> 2e description (juste sous le hero) */}
-          <button className="detail-hero__cta" onClick={scrollToSpecs} aria-label="Découvrir le bien">
-            <span className="cta-label">Découvrir le bien</span>
+          <button className="detail-hero__cta" onClick={scrollToSpecs} aria-label={t("aria.discover_property")}>
+            <span className="cta-label">{t("cta.discover_property")}</span>
             <svg viewBox="0 0 64 36" className="cta-arrow" aria-hidden>
               <path
                 d="M16 12 L32 28 L48 12"
@@ -307,27 +309,27 @@ export default function ProjetNeufDetail() {
           <article className="specs-copy overlay-copy">
             {secondSections.map((s, idx) => (
               <section key={idx} className="specs-section">
-                <h3 className="specs-title hero-anim-item">{s.title}</h3>
+                <h3 className="specs-title hero-anim-item">{s.title === "__details__" ? t("project_detail.details") : s.title}</h3>
                 <p className="specs-body hero-anim-item">{s.body}</p>
               </section>
             ))}
           </article>
-            <aside className="specs-aside" aria-label="Caractéristiques du bien">
+            <aside className="specs-aside" aria-label={t("project_detail.specs_aria")}>
     {(() => {
       const specs = p.specs || {};
       const rows = [
-        { k: "prix",         label: "Prix", v: p.tagline || null },
-        { k: "reference",    label: "Référence", v: specs.reference },
-        { k: "pieces",       label: "Pièces", v: specs.pieces },
-        { k: "sdb",          label: "Nb de salles de bain", v: specs.sdb },
-        { k: "chambres",     label: "Nb de chambres", v: specs.chambres },
-        { k: "surface",      label: "Surface", v: specs.surface },
-        { k: "surfaceUtile", label: "Surface utile", v: specs.surfaceUtile },
-        { k: "terrain",      label: "Surface du terrain", v: specs.terrain },
-        { k: "vue",          label: "Vue", v: specs.vue },
-        { k: "etat",         label: "État", v: specs.etat },
-        { k: "terrasse",     label: "Surface terrasse", v: specs.terrasse },
-        { k: "jardin",       label: "Jardin", v: specs.jardin },
+        { k: "prix",         label: t("project_detail.spec.price"), v: p.tagline || null },
+        { k: "reference",    label: t("project_detail.spec.reference"), v: specs.reference },
+        { k: "pieces",       label: t("project_detail.spec.rooms"), v: specs.pieces },
+        { k: "sdb",          label: t("project_detail.spec.bathrooms"), v: specs.sdb },
+        { k: "chambres",     label: t("project_detail.spec.bedrooms"), v: specs.chambres },
+        { k: "surface",      label: t("project_detail.spec.surface"), v: specs.surface },
+        { k: "surfaceUtile", label: t("project_detail.spec.useful_surface"), v: specs.surfaceUtile },
+        { k: "terrain",      label: t("project_detail.spec.land_surface"), v: specs.terrain },
+        { k: "vue",          label: t("project_detail.spec.view"), v: specs.vue },
+        { k: "etat",         label: t("project_detail.spec.condition"), v: specs.etat },
+        { k: "terrasse",     label: t("project_detail.spec.terrace_surface"), v: specs.terrasse },
+        { k: "jardin",       label: t("project_detail.spec.garden"), v: specs.jardin },
       ].filter(x => x.v);
 
       if (!rows.length) return null;
@@ -354,7 +356,7 @@ export default function ProjetNeufDetail() {
         <section ref={catRef} className="catalogue hidden xl:block">
           {grouped.length === 0 ? (
             <div className="catalogue-slide">
-              <div className="proj-overlay">Aucune image disponible.</div>
+              <div className="proj-overlay">{t("filters.no_image")}</div>
             </div>
           ) : (
             grouped.map((g, i) => (
@@ -432,12 +434,12 @@ export default function ProjetNeufDetail() {
                   <button
                     type="button"
                     onClick={() => {
-                      window.location.href = "/contact";
+                      window.location.href = link("contact");
                     }}
                     className="group inline-flex items-center justify-center gap-2 px-5 md:px-6 py-2.5 rounded-xl text-[15px] text-white shadow-lg transition hover:shadow-xl"
                     style={{ backgroundColor: "#FF4A3E" }}
                   >
-                    Contacter
+                    {t("project_detail.contact")}
                     <span
                       aria-hidden
                       className="inline-block translate-x-0 transition-transform duration-200 ease-out group-hover:translate-x-1"

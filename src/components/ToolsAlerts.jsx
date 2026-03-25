@@ -1,5 +1,6 @@
 // src/components/ToolsAlerts.jsx
 import React, { useMemo, useState } from "react";
+import { useLocale } from "../hooks/useLocale";
 
 /**
  * Module "Alertes nouvelles annonces"
@@ -20,6 +21,7 @@ export default function ToolsAlerts({
   defaultEmail = "",
   defaultCollapsed = true,
 }) {
+  const { t } = useLocale();
   const [email, setEmail] = useState(defaultEmail);
   const [open, setOpen] = useState(!defaultCollapsed);
   const [zones, setZones] = useState(new Set());
@@ -104,12 +106,12 @@ export default function ToolsAlerts({
       }
       // petite réassurance UX sans “sursignalement” visuel
       // (intégrer votre système de toast si dispo)
-      alert("✅ Alerte créée. Vous recevrez les nouvelles annonces selon vos préférences.");
+      alert(t("alerts.success"));
       // Optionnel: reset partiel (on garde l’email pour réutilisation)
       // setZones(new Set()); setTypes(new Set()); setMaxPrice(""); setFrequency("immediate"); setWaOptIn(false); setWaNumber("");
     } catch (err) {
       console.error(err);
-      alert("Une erreur est survenue. Merci de réessayer.");
+      alert(t("error.alert_retry"));
     } finally {
       setSubmitting(false);
     }
@@ -117,7 +119,7 @@ export default function ToolsAlerts({
 
   return (
     <section
-      aria-label="Créer une alerte nouvelles annonces"
+      aria-label={t("alerts.aria_create")}
       className="border border-neutral-200 bg-white/70 supports-[backdrop-filter]:bg-white/60 backdrop-blur-md px-4 py-5 md:px-6 md:py-6 shadow-sm"
     >
       <form onSubmit={handleSubmit} noValidate>
@@ -141,7 +143,7 @@ export default function ToolsAlerts({
               aria-describedby={
                 touchedEmail && !emailValid ? "alert-email-error" : undefined
               }
-              placeholder="Votre e-mail"
+              placeholder={t("alerts.placeholder_email")}
               className="w-full h-12 md:h-11 rounded-lg border border-neutral-300 bg-white/80 px-4 outline-none focus:border-[#FF4A3E] focus:ring-2 focus:ring-[#FF4A3E]/30 transition"
             />
             {touchedEmail && !emailValid && (
@@ -150,7 +152,7 @@ export default function ToolsAlerts({
                 className="mt-1 text-sm text-red-600"
                 role="alert"
               >
-                Entrez une adresse e-mail valide.
+                {t("alerts.invalid_email")}
               </p>
             )}
           </div>
@@ -162,7 +164,7 @@ export default function ToolsAlerts({
               aria-expanded={open}
               className="h-12 md:h-11 px-4 rounded-lg border border-neutral-300 bg-white hover:border-neutral-400 transition"
             >
-              {open ? "Masquer les options" : "Options"}
+              {open ? t("alerts.hide_options") : t("alerts.options")}
             </button>
 
             <button
@@ -170,7 +172,7 @@ export default function ToolsAlerts({
               disabled={!canSubmit}
               className="h-12 md:h-11 px-5 rounded-lg bg-[#FF4A3E] text-white font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:translate-y-[-1px] active:translate-y-0 transition"
             >
-              {submitting ? "Création…" : "Créer mon alerte"}
+              {submitting ? t("alerts.creating") : t("alerts.create_alert")}
             </button>
           </div>
         </div>
@@ -181,7 +183,7 @@ export default function ToolsAlerts({
             {/* Zones */}
             <fieldset>
               <legend className="mb-2 text-sm font-medium text-neutral-700">
-                Zones (multi)
+                {t("alerts.zones")}
               </legend>
               <div className="flex flex-wrap gap-2">
                 {zonesOptions.map((z) => {
@@ -209,7 +211,7 @@ export default function ToolsAlerts({
             {/* Types */}
             <fieldset>
               <legend className="mb-2 text-sm font-medium text-neutral-700">
-                Type de bien (multi)
+                {t("alerts.property_type")}
               </legend>
               <div className="flex flex-wrap gap-2">
                 {typeOptions.map((t) => {
@@ -237,11 +239,11 @@ export default function ToolsAlerts({
             {/* Prix max */}
             <fieldset>
               <legend className="mb-2 text-sm font-medium text-neutral-700">
-                Prix max
+                {t("alerts.max_price")}
               </legend>
               <div className="relative">
                 <label htmlFor="max-price" className="sr-only">
-                  Prix maximum
+                  {t("alerts.max_price")}
                 </label>
                 <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-neutral-500">
                   CHF
@@ -267,18 +269,18 @@ export default function ToolsAlerts({
             {/* Fréquence + WhatsApp */}
             <fieldset>
               <legend className="mb-2 text-sm font-medium text-neutral-700">
-                Notifications
+                {t("alerts.notifications")}
               </legend>
 
               {/* Fréquence (segmented) */}
               <div
                 role="radiogroup"
-                aria-label="Fréquence d'envoi"
+                aria-label={t("alerts.frequency")}
                 className="inline-flex rounded-lg border border-neutral-300 overflow-hidden"
               >
                 {[
-                  { key: "immediate", label: "Immédiat" },
-                  { key: "daily", label: "Quotidien (9h)" },
+                  { key: "immediate", label: t("alerts.immediate") },
+                  { key: "daily", label: t("alerts.daily") },
                 ].map((opt) => {
                   const active = frequency === opt.key;
                   return (
@@ -311,14 +313,14 @@ export default function ToolsAlerts({
                   className="h-4 w-4 rounded border-neutral-300 text-[#FF4A3E] focus:ring-[#FF4A3E]"
                 />
                 <label htmlFor="wa-opt" className="text-sm text-neutral-800">
-                  Recevoir aussi sur WhatsApp (optionnel)
+                  {t("alerts.whatsapp_opt_in")}
                 </label>
               </div>
 
               {waOptIn && (
                 <div className="mt-2">
                   <label htmlFor="wa-phone" className="sr-only">
-                    Numéro WhatsApp
+                    {t("alerts.whatsapp_number")}
                   </label>
                   <input
                     id="wa-phone"
@@ -330,8 +332,7 @@ export default function ToolsAlerts({
                     className="w-full h-12 md:h-11 rounded-lg border border-neutral-300 bg-white/80 px-4 outline-none focus:border-[#FF4A3E] focus:ring-2 focus:ring-[#FF4A3E]/30 transition"
                   />
                   <p className="mt-1 text-xs text-neutral-500">
-                    Nous n’enverrons que des alertes liées à vos critères. Vous
-                    pouvez vous désinscrire à tout moment.
+                    {t("alerts.whatsapp_disclaimer")}
                   </p>
                 </div>
               )}
@@ -341,8 +342,7 @@ export default function ToolsAlerts({
 
         {/* Disclaimer discret */}
         <p className="mt-4 text-xs text-neutral-500">
-          En créant une alerte, vous acceptez nos conditions et notre politique
-          de confidentialité.
+          {t("alerts.consent")}
         </p>
       </form>
     </section>

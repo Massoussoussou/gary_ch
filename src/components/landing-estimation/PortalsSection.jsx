@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { useLocale } from "../../hooks/useLocale.js";
 
 const portals = [
   { parts: [{ t: "H", o: true }, { t: "ome" }, { t: "g", o: true }, { t: "ate" }], url: "https://www.homegate.ch/fr" },
@@ -9,6 +10,7 @@ const portals = [
 ];
 
 export default function PortalsSection() {
+  const { t } = useLocale();
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
 
@@ -34,7 +36,7 @@ export default function PortalsSection() {
               transition: "opacity 0.5s ease",
             }}
           >
-            Votre bien diffusé sur
+            {t("estimate.portals_label")}
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-10 md:gap-24 flex-1">

@@ -1,30 +1,32 @@
 import React, { useRef, useState, useEffect } from "react";
-
-const phases = [
-  {
-    num: "01",
-    title: "Off-Market",
-    desc: "Votre bien est présenté exclusivement à un cercle restreint d'acquéreurs qualifiés. La rareté crée la valeur.",
-    tag: "Crée l'exclusivité",
-    img: "/img/gary/garymontalegre03.webp",
-  },
-  {
-    num: "02",
-    title: "Coming Soon",
-    desc: "La visibilité s'élargit progressivement. Les acquéreurs réalisent que la fenêtre se referme.",
-    tag: "Amplifie la demande",
-    img: "/img/gary/ExtVer-6.webp",
-  },
-  {
-    num: "03",
-    title: "Public",
-    desc: "Publication sur tous les portails avec un historique de demandes et une dynamique de prix favorable.",
-    tag: "Maximise le prix",
-    img: "/img/gary/ExtBlv-8.webp",
-  },
-];
+import { useLocale } from "../../hooks/useLocale.js";
 
 export default function MethodSection() {
+  const { t } = useLocale();
+
+  const phases = [
+    {
+      num: "01",
+      title: "Off-Market",
+      desc: t("estimate.method.phase1_desc"),
+      tag: t("estimate.method.phase1_tag"),
+      img: "/img/gary/garymontalegre03.webp",
+    },
+    {
+      num: "02",
+      title: "Coming Soon",
+      desc: t("estimate.method.phase2_desc"),
+      tag: t("estimate.method.phase2_tag"),
+      img: "/img/gary/ExtVer-6.webp",
+    },
+    {
+      num: "03",
+      title: "Public",
+      desc: t("estimate.method.phase3_desc"),
+      tag: t("estimate.method.phase3_tag"),
+      img: "/img/gary/ExtBlv-8.webp",
+    },
+  ];
   const headerRef = useRef(null);
   const [headerVisible, setHeaderVisible] = useState(false);
   const cardRefs = useRef([]);
@@ -76,16 +78,14 @@ export default function MethodSection() {
           }}
         >
           <p className="text-[12px] uppercase tracking-[0.3em] text-[#FF4A3E] mb-4">
-            Notre approche exclusive
+            {t("estimate.method.label")}
           </p>
           <h2 className="font-serif text-[clamp(2.2rem,4.5vw,3.6rem)] tracking-[-0.03em] leading-[1.05] text-[#1A1A1A] mb-5">
-            Une stratégie en 3 phases pour vendre au meilleur prix
+            {t("estimate.method.title")}
             <span className="text-[#FF4A3E]">.</span>
           </h2>
           <p className="text-[1.05rem] text-neutral-500 leading-relaxed">
-            La plupart des agences publient immédiatement. Nous faisons
-            l'inverse : une diffusion séquentielle qui crée l'urgence à chaque
-            étape.
+            {t("estimate.method.subtitle")}
           </p>
         </div>
 

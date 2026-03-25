@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import navigateBackFn, { fadeOutOverlay } from "../utils/navigateBack.js";
+import { useLocale } from "../hooks/useLocale.js";
 import team from '../data/team.json';
 import { Linkedin } from "lucide-react";
 
@@ -9,15 +10,21 @@ import "../styles/projet.css";
 export default function Member() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const { t, lang, link } = useLocale();
   React.useEffect(() => fadeOutOverlay(), []);
   const member = team.find(m => m.slug === slug);
+  // i18n helpers for team data
+  const mRole = lang === "en" && member?.role_en ? member.role_en : member?.role;
+  const mQuote = lang === "en" && member?.quote_en ? member.quote_en : member?.quote;
+  const mBio = lang === "en" && member?.bio_en ? member.bio_en : member?.bio;
+  const mLangs = lang === "en" && member?.languages_en?.length ? member.languages_en : member?.languages;
 
   if (!member) {
     return (
       <main className="mx-auto max-w-4xl px-4 py-16 text-center">
-        <p className="text-gray-600">Membre introuvable.</p>
-        <Link to="/a-propos" className="text-brand underline">
-          Retour à l'équipe
+        <p className="text-gray-600">{t("team.member_not_found")}</p>
+        <Link to={link("about")} className="text-brand underline">
+          {t("back_to_team")}
         </Link>
       </main>
     );
@@ -30,8 +37,8 @@ export default function Member() {
         type="button"
         onClick={() => navigateBackFn(navigate)}
         className="close-back-btn close-back-btn--inverted"
-        aria-label="Retour à l'équipe"
-        title="Retour à l'équipe"
+        aria-label={t("aria.back_to_team")}
+        title={t("back_to_team")}
       >
         <svg className="close-back-icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
@@ -59,11 +66,11 @@ export default function Member() {
             </div>
           </div>
           <h1 className="font-serif text-[1.75rem] tracking-wide text-gray-900">{member.name}</h1>
-          <p className="text-[13px] uppercase tracking-[0.15em] text-[#FF4A3E] font-semibold mt-1.5">{member.role}</p>
+          <p className="text-[13px] uppercase tracking-[0.15em] text-[#FF4A3E] font-semibold mt-1.5">{mRole}</p>
 
           {member.quote && (
             <p className="mt-5 text-gray-500 text-[15px] italic leading-relaxed max-w-[320px] mx-auto">
-              "{member.quote}"
+              "{mQuote}"
             </p>
           )}
         </div>
@@ -81,7 +88,7 @@ export default function Member() {
                 </svg>
               </div>
               <div>
-                <p className="text-[11px] uppercase tracking-[0.08em] text-gray-400 font-semibold">Mobile</p>
+                <p className="text-[11px] uppercase tracking-[0.08em] text-gray-400 font-semibold">{t("team.mobile")}</p>
                 <p className="text-[15px] text-gray-900">{member.phoneMobile}</p>
               </div>
             </a>
@@ -98,7 +105,7 @@ export default function Member() {
                 </svg>
               </div>
               <div>
-                <p className="text-[11px] uppercase tracking-[0.08em] text-gray-400 font-semibold">Bureau</p>
+                <p className="text-[11px] uppercase tracking-[0.08em] text-gray-400 font-semibold">{t("team.office")}</p>
                 <p className="text-[15px] text-gray-900">{member.phoneOffice}</p>
               </div>
             </a>
@@ -115,7 +122,7 @@ export default function Member() {
                 </svg>
               </div>
               <div>
-                <p className="text-[11px] uppercase tracking-[0.08em] text-gray-400 font-semibold">Email</p>
+                <p className="text-[11px] uppercase tracking-[0.08em] text-gray-400 font-semibold">{t("team.email")}</p>
                 <p className="text-[15px] text-gray-900">{member.email}</p>
               </div>
             </a>
@@ -133,21 +140,21 @@ export default function Member() {
               </div>
               <div>
                 <p className="text-[11px] uppercase tracking-[0.08em] text-gray-400 font-semibold">LinkedIn</p>
-                <p className="text-[15px] text-gray-900">Voir le profil</p>
+                <p className="text-[15px] text-gray-900">{t("team.view_profile")}</p>
               </div>
             </a>
           )}
         </div>
 
         {/* Langues */}
-        {member.languages?.length > 0 && (
+        {mLangs?.length > 0 && (
           <div className="px-6 pb-6 max-w-[400px] mx-auto">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[11px] uppercase tracking-[0.08em] text-gray-400 font-semibold">Langues</span>
+              <span className="text-[11px] uppercase tracking-[0.08em] text-gray-400 font-semibold">{t("team.languages")}</span>
               <span className="text-gray-300">—</span>
-              {member.languages.map((lang, i) => (
-                <span key={lang} className="text-[13px] text-gray-600">
-                  {lang}{i < member.languages.length - 1 ? "," : ""}
+              {mLangs.map((lng, i) => (
+                <span key={lng} className="text-[13px] text-gray-600">
+                  {lng}{i < mLangs.length - 1 ? "," : ""}
                 </span>
               ))}
             </div>
@@ -159,9 +166,9 @@ export default function Member() {
 
         {/* Bio */}
         <div className="px-6 py-10">
-          <p className="text-[11px] uppercase tracking-[0.15em] text-gray-400 font-semibold mb-5">Parcours</p>
+          <p className="text-[11px] uppercase tracking-[0.15em] text-gray-400 font-semibold mb-5">{t("team.background")}</p>
           <div className="text-[15px] leading-7 text-gray-700 whitespace-pre-line">
-            {member.bio}
+            {mBio}
           </div>
         </div>
       </div>
@@ -175,11 +182,11 @@ export default function Member() {
           <div className="border-l-2 border-[#FF4A3E]/20 pl-12 md:pl-16">
             {member.quote && (
               <p className="text-xl text-gray-500 italic leading-relaxed mb-8 font-light">
-                "{member.quote}"
+                "{mQuote}"
               </p>
             )}
             <div className="max-w-3xl text-[15px] md:text-base leading-7 text-gray-900 whitespace-pre-line">
-              {member.bio}
+              {mBio}
             </div>
           </div>
 
@@ -197,7 +204,7 @@ export default function Member() {
                 }}
               />
               <p className="font-serif text-lg text-gray-900">{member.name}</p>
-              <p className="text-[12px] uppercase tracking-[0.12em] text-[#FF4A3E] font-semibold mt-1">{member.role}</p>
+              <p className="text-[12px] uppercase tracking-[0.12em] text-[#FF4A3E] font-semibold mt-1">{mRole}</p>
             </div>
 
             {/* Coordonnées */}
@@ -210,7 +217,7 @@ export default function Member() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-[11px] uppercase tracking-[0.06em] text-gray-400 font-medium">Mobile</p>
+                    <p className="text-[11px] uppercase tracking-[0.06em] text-gray-400 font-medium">{t("team.mobile")}</p>
                     <p className="text-sm text-gray-900 group-hover:text-[#FF4A3E] transition-colors">{member.phoneMobile}</p>
                   </div>
                 </a>
@@ -224,7 +231,7 @@ export default function Member() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-[11px] uppercase tracking-[0.06em] text-gray-400 font-medium">Bureau</p>
+                    <p className="text-[11px] uppercase tracking-[0.06em] text-gray-400 font-medium">{t("team.office")}</p>
                     <p className="text-sm text-gray-900 group-hover:text-[#FF4A3E] transition-colors">{member.phoneOffice}</p>
                   </div>
                 </a>
@@ -238,7 +245,7 @@ export default function Member() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-[11px] uppercase tracking-[0.06em] text-gray-400 font-medium">Email</p>
+                    <p className="text-[11px] uppercase tracking-[0.06em] text-gray-400 font-medium">{t("team.email")}</p>
                     <p className="text-sm text-gray-900 group-hover:text-[#FF4A3E] transition-colors">{member.email}</p>
                   </div>
                 </a>
@@ -251,17 +258,17 @@ export default function Member() {
                   </div>
                   <div>
                     <p className="text-[11px] uppercase tracking-[0.06em] text-gray-400 font-medium">LinkedIn</p>
-                    <p className="text-sm text-gray-900 group-hover:text-[#0A66C2] transition-colors">Voir le profil</p>
+                    <p className="text-sm text-gray-900 group-hover:text-[#0A66C2] transition-colors">{t("team.view_profile")}</p>
                   </div>
                 </a>
               )}
             </div>
 
             {/* Langues */}
-            {member.languages?.length > 0 && (
+            {mLangs?.length > 0 && (
               <div className="mt-6 pt-5 border-t border-gray-100">
-                <p className="text-[11px] uppercase tracking-[0.06em] text-gray-400 font-medium mb-2">Langues</p>
-                <p className="text-sm text-gray-700">{member.languages.join(", ")}</p>
+                <p className="text-[11px] uppercase tracking-[0.06em] text-gray-400 font-medium mb-2">{t("team.languages")}</p>
+                <p className="text-sm text-gray-700">{mLangs.join(", ")}</p>
               </div>
             )}
           </aside>

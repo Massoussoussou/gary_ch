@@ -2,6 +2,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
+import { useLocale } from "../hooks/useLocale.js";
 
 function CalculatorIcon({ className = "w-8 h-8", strokeWidth = 1.5 }) {
   return (
@@ -12,7 +13,7 @@ function CalculatorIcon({ className = "w-8 h-8", strokeWidth = 1.5 }) {
     </svg>
   );
 }
-CalculatorIcon.propTypes = { className: PropTypes.string, strokeWidth: PropTypes.number };
+ CalculatorIcon.propTypes = { className: PropTypes.string, strokeWidth: PropTypes.number };
 
 function HandshakeIcon({ className = "w-8 h-8", strokeWidth = 1.5 }) {
   return (
@@ -25,7 +26,7 @@ function HandshakeIcon({ className = "w-8 h-8", strokeWidth = 1.5 }) {
 }
 HandshakeIcon.propTypes = { className: PropTypes.string, strokeWidth: PropTypes.number };
 
-function Tile({ title, subtitle, Icon, onClick, to }) {
+function Tile({ title, subtitle, Icon, onClick, to, discoverLabel }) {
   const Element = to ? Link : "button";
   const commonClass = `group relative isolate w-full text-left
     border border-zinc-200 bg-white px-10 py-12 md:py-14
@@ -54,7 +55,7 @@ function Tile({ title, subtitle, Icon, onClick, to }) {
           </h3>
           {subtitle ? <p className="mt-2 text-[15px] text-zinc-600">{subtitle}</p> : null}
           <div className="mt-6 text-[15px] font-medium text-zinc-900/70 group-hover:text-[#FF4A3E]">
-            Découvrir <span aria-hidden>→</span>
+            {discoverLabel} <span aria-hidden>→</span>
           </div>
         </div>
       </div>
@@ -67,6 +68,7 @@ Tile.propTypes = {
   Icon: PropTypes.elementType.isRequired,
   onClick: PropTypes.func,
   to: PropTypes.string,
+  discoverLabel: PropTypes.string,
 };
 
 export default function AlreadyOwner({
@@ -74,29 +76,34 @@ export default function AlreadyOwner({
   onSell,
   toEstimate,
   toSell,
-  title = "Déjà propriétaire ?",
+  title,
   className = "",
 }) {
+  const { t } = useLocale();
+  const resolvedTitle = title ?? t("home.already_owner");
+
   return (
     <section className={`bg-[#FAFAFA] py-14 md:py-20 ${className} relative z-10`}>
       <div className="max-w-7xl mx-auto px-6 md:px-8">
         {/*<h2 className="mb-10 md:mb-12 font-serif tracking-tight leading-[0.95] text-[clamp(2rem,5vw,3.4rem)] text-zinc-900">
-          {title}
+          {resolvedTitle}
   </h2>*/}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           <Tile
-            title="Estimer mon bien"
-            subtitle="Estimation précise et gratuite, réalisée par un expert local."
+            title={t("home.estimate_my_property")}
+            subtitle={t("home.estimate_my_property_sub")}
             Icon={CalculatorIcon}
             onClick={onEstimate}
             to={toEstimate}
+            discoverLabel={t("cta.discover")}
           />
           <Tile
-            title="Confier une vente"
-            subtitle="Stratégie de mise en marché haut de gamme et accompagnement complet."
+            title={t("home.entrust_sale")}
+            subtitle={t("home.entrust_sale_sub")}
             Icon={HandshakeIcon}
             onClick={onSell}
             to={toSell}
+            discoverLabel={t("cta.discover")}
           />
         </div>
       </div>

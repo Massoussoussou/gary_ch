@@ -1,5 +1,6 @@
 // src/components/ToolsBudgetCalc.jsx
 import React, { useEffect, useMemo, useState } from "react";
+import { useLocale } from "../hooks/useLocale";
 
 /**
  * Calculette de budget (grand format, sans carte)
@@ -22,6 +23,8 @@ export default function ToolsBudgetCalc({
   currency = "CHF",
   onSearch,
 }) {
+  const { t } = useLocale();
+
   // --- Local state (immédiat) ---
   const [incomeMonthlyRaw, setIncomeMonthlyRaw] = useState(String(defaultIncomeMonthly));
   const [downPaymentRaw, setDownPaymentRaw] = useState(String(defaultDownPayment));
@@ -128,34 +131,34 @@ export default function ToolsBudgetCalc({
           <div className="space-y-6">
             <header className="space-y-1">
               <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">
-                Calculette de budget
+                {t("budget.title")}
               </h2>
               <p className="text-sm text-neutral-500">
-                Estimation indicative – hors assurance, frais de notaire et entretien.
+                {t("budget.disclaimer_short")}
               </p>
             </header>
 
             <div className="space-y-5">
               <FieldCurrency
-                label="Revenus nets (par mois)"
+                label={t("budget.net_income")}
                 value={incomeMonthlyRaw}
                 onChange={setIncomeMonthlyRaw}
                 currency={currency}
-                placeholder="ex. 9 000"
+                placeholder={t("budget.placeholder_income")}
                 data-testid="income-input"
               />
 
               <FieldCurrency
-                label={`Apport (${currency})`}
+                label={t("budget.down_payment", { currency })}
                 value={downPaymentRaw}
                 onChange={setDownPaymentRaw}
                 currency={currency}
-                placeholder="ex. 200 000"
+                placeholder={t("budget.placeholder_down_payment")}
                 data-testid="downpayment-input"
               />
 
               <FieldPercent
-                label="Taux d’intérêt"
+                label={t("budget.interest_rate")}
                 value={rateRaw}
                 onChange={setRateRaw}
                 step="0.05"
@@ -164,12 +167,13 @@ export default function ToolsBudgetCalc({
               />
 
               <FieldYears
-                label="Durée"
+                label={t("budget.duration")}
                 value={yearsRaw}
                 onChange={setYearsRaw}
                 min={5}
                 max={35}
                 data-testid="years-input"
+                yearsLabel={t("budget.years")}
               />
             </div>
 
@@ -178,13 +182,12 @@ export default function ToolsBudgetCalc({
                 role="alert"
                 className="rounded-xl border border-amber-300/60 bg-amber-50 px-4 py-3 text-amber-800"
               >
-                Votre endettement dépasse 33%. Réduisez la durée, le taux ou le budget.
+                {t("budget.debt_warning")}
               </div>
             )}
 
             <p className="text-xs text-neutral-500 leading-relaxed">
-              * Règle d’accessibilité: la mensualité recommandée ne doit pas dépasser{" "}
-              <span className="tabular-nums font-medium">33%</span> de vos revenus nets mensuels.
+              {t("budget.affordability_rule")}
             </p>
           </div>
 
@@ -195,20 +198,20 @@ export default function ToolsBudgetCalc({
               <div className="space-y-8 rounded-3xl px-6 py-8 md:px-10 md:py-12 border border-neutral-200">
                 <div className="space-y-6">
                   <ResultBlock
-                    title="Budget maximum estimé"
+                    title={t("budget.max_budget")}
                     value={fmt.format(Math.max(0, Math.floor(budgetMax)))}
-                    subtitle="Inclut votre apport et la capacité d’emprunt"
+                    subtitle={t("budget.includes_down_payment")}
                   />
                   <Divider />
                   <ResultBlock
-                    title="Mensualité estimée"
+                    title={t("budget.estimated_monthly")}
                     value={fmt.format(Math.max(0, Math.floor(monthlyForBudgetMax)))}
                     subtitle={`À ~${fmtNum.format( Math.max(1, debounced.years) )} ans • ${
                       debounced.rate?.toLocaleString?.("fr-CH", {maximumFractionDigits:2}) ?? debounced.rate
                     }%`}
                   />
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-neutral-500">Endettement</span>
+                    <span className="text-neutral-500">{t("budget.debt_ratio")}</span>
                     <span
                       className={
                         "tabular-nums font-medium " +
@@ -227,10 +230,10 @@ export default function ToolsBudgetCalc({
                     className="w-full rounded-2xl bg-[#FF4A3E] px-6 py-4 text-white text-base md:text-lg font-medium hover:opacity-95 active:opacity-90 transition"
                     data-testid="cta-search"
                   >
-                    Voir les biens dans mon budget
+                    {t("cta.see_budget_properties")}
                   </button>
                   <p className="mt-3 text-xs text-neutral-500">
-                    Nous filtrerons vos résultats autour de votre budget maximum.
+                    {t("budget.filter_results")}
                   </p>
                 </div>
               </div>
@@ -289,7 +292,7 @@ function FieldPercent({ label, value, onChange, step = "0.05", placeholder, ...r
   );
 }
 
-function FieldYears({ label, value, onChange, min = 5, max = 35, ...rest }) {
+function FieldYears({ label, value, onChange, min = 5, max = 35, yearsLabel, ...rest }) {
   const years = Math.max(min, Math.min(max, Math.round(Number(value) || min)));
   return (
     <label className="block">
@@ -312,7 +315,7 @@ function FieldYears({ label, value, onChange, min = 5, max = 35, ...rest }) {
           onChange={(e) => onChange(e.target.value)}
           className="w-20 rounded-2xl border border-neutral-200 bg-white px-3 py-2 text-base outline-none focus:border-neutral-300"
         />
-        <span className="text-neutral-500 text-sm">ans</span>
+        <span className="text-neutral-500 text-sm">{yearsLabel || "ans"}</span>
       </div>
     </label>
   );

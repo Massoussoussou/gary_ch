@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import DrawerNav from './DrawerNav.jsx'
+import LanguageSwitcher from './LanguageSwitcher.jsx'
+import { useLocale } from '../../hooks/useLocale.js'
 
 /* === Réglages rapides === */
 
@@ -48,6 +50,7 @@ const S = {
 function LogoWithHoverAnim() {
   const [showVideo, setShowVideo] = useState(false);
   const videoRef = useRef(null);
+  const { t } = useLocale();
 
   const handleMouseEnter = () => {
     setShowVideo(true);
@@ -66,7 +69,7 @@ function LogoWithHoverAnim() {
       style={{ height: S.logoH }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={() => {}}
-      aria-label="GARY - Accueil"
+      aria-label={t("aria.logo")}
     >
       <img
         src="/Logo/logo-gary-orange.png"
@@ -106,7 +109,8 @@ function LogoWithHoverAnim() {
 export default function Header(){
   const [open, setOpen] = useState(false)
   const { pathname } = useLocation()
-  const isHome = pathname === '/'
+  const { t, link } = useLocale()
+  const isHome = pathname === '/' || pathname === '/en'
 
   const headerRef = useRef(null)
   const [headerH, setHeaderH] = useState(0)
@@ -152,8 +156,8 @@ export default function Header(){
         }}
       >
         <Link
-          to="/"
-          aria-label="Accueil"
+          to={link("home")}
+          aria-label={t("aria.home")}
           className="justify-self-start inline-block"
         >
           <LogoWithHoverAnim />
@@ -194,25 +198,25 @@ export default function Header(){
           `}</style>
 
           {[
-            { to: '/acheter',       label: 'Acheter' },
-            { to: '/vendre',        label: 'Vendre', dropdown: [
-              { to: '/vendre#constat',        label: 'Le constat' },
-              { to: '/vendre#difference',     label: 'Notre différence' },
-              { to: '/vendre#parcours',       label: 'Votre parcours' },
-              { to: '/vendre#livrables',      label: 'Nos livrables' },
-              { to: '/vendre#faq',            label: 'Questions fréquentes' },
-              { to: '/vendre#vendus',         label: 'Vendus récemment' },
-              { to: '/vendre#equipe',         label: "L'équipe" },
-              { to: '/vendre#cta-final-sell', label: 'Contactez-nous' },
+            { to: link("buy"),       label: t("nav.buy") },
+            { to: link("sell"),        label: t("nav.sell"), dropdown: [
+              { to: link("sell") + '#constat',        label: t("nav.sell_sub.observation") },
+              { to: link("sell") + '#difference',     label: t("nav.sell_sub.difference") },
+              { to: link("sell") + '#parcours',       label: t("nav.sell_sub.journey") },
+              { to: link("sell") + '#livrables',      label: t("nav.sell_sub.deliverables") },
+              { to: link("sell") + '#faq',            label: t("nav.sell_sub.faq") },
+              { to: link("sell") + '#vendus',         label: t("nav.sell_sub.recently_sold") },
+              { to: link("sell") + '#equipe',         label: t("nav.sell_sub.team") },
+              { to: link("sell") + '#cta-final-sell', label: t("nav.sell_sub.contact_us") },
             ]},
-            { to: '/estimer',       label: 'Estimer' },
-            { to: '/projets-neufs', label: 'Projets\u00A0neufs' },
-            { to: '/actualites',    label: 'Actualités', dropdown: [
-              { to: '/actualites', label: 'Articles' },
-              { to: '/presse',     label: 'Presse' },
-              { to: '/ressources', label: 'Ressources' },
+            { to: link("estimate"),       label: t("nav.estimate") },
+            { to: link("newProjects"), label: t("nav.new_projects") },
+            { to: link("news"),    label: t("nav.news"), dropdown: [
+              { to: link("news"), label: t("nav.about_sub.articles") },
+              { to: link("press"),     label: t("nav.about_sub.press") },
+              { to: link("resources"), label: t("nav.about_sub.resources") },
             ]},
-            { to: '/a-propos',      label: 'Qui\u00A0est\u00A0GARY\u00A0?' },
+            { to: link("about"),      label: t("nav.about") },
           ].map(({ to, label, dropdown }) =>
             dropdown ? (
               <div key={to} className="relative group/dd">
@@ -322,7 +326,7 @@ export default function Header(){
           `}</style>
 
           <Link
-            to="/contact"
+            to={link("contact")}
             className="btn-gary hidden xl:inline-flex items-center gap-2 rounded-full bg-[#FF4A3E] text-white shadow-sm
                        transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/40
                        relative"
@@ -339,8 +343,10 @@ export default function Header(){
             <span className="logo-reveal" aria-hidden="true">
               <span className="logo-layer" />
             </span>
-            <span className="relative z-[1]">Contactez GARY</span>
+            <span className="relative z-[1]">{t("nav.contact_gary")}</span>
           </Link>
+
+          <LanguageSwitcher className="text-text" />
 
           {/* ✅ Burger mobile refait (plus clean + centré) */}
           <button
@@ -354,12 +360,12 @@ export default function Header(){
                 ? "bg-[#FF4A3E] border-[#FF4A3E]/50"
                 : "bg-white/85 border-black/10 hover:bg-white hover:border-black/20"}
             `}
-            aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
+            aria-label={open ? t("aria.close_menu") : t("aria.open_menu")}
             aria-expanded={open}
             onClick={() => setOpen(v => !v)}
             style={{ width: burgerWH, height: burgerWH }}
           >
-            <span className="sr-only">{open ? "Fermer le menu" : "Ouvrir le menu"}</span>
+            <span className="sr-only">{open ? t("aria.close_menu") : t("aria.open_menu")}</span>
 
             <span
               aria-hidden="true"

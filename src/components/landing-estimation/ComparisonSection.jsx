@@ -1,26 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
-
-const classicItems = [
-  "Publication immédiate sur tous les portails",
-  "Visites massives dès la première semaine",
-  "L'intérêt retombe après quelques semaines",
-  "Pression à la baisse sur le prix",
-  "Le vendeur subit le calendrier",
-];
-
-const garyItems = [
-  "Diffusion progressive et contrôlée",
-  "Chaque phase génère une nouvelle vague de demandes",
-  "L'intérêt se renouvelle à chaque étape",
-  "Compétition entre acquéreurs → prix optimisé",
-  "Le vendeur décide du rythme",
-];
+import { useLocale } from "../../hooks/useLocale.js";
 
 function easeOutCubic(t) {
   return 1 - Math.pow(1 - t, 3);
 }
 
 export default function ComparisonSection() {
+  const { t } = useLocale();
   const sectionRef = useRef(null);
   const columnsRef = useRef(null);
   const garyColRef = useRef(null);
@@ -28,6 +14,9 @@ export default function ComparisonSection() {
   const [progress, setProgress] = useState(0);
   const [garyOffset, setGaryOffset] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+
+  const classicItems = t("estimate.comparison.classic_items", { returnObjects: true });
+  const garyItems = t("estimate.comparison.gary_items", { returnObjects: true });
 
   /* Mobile detect */
   useEffect(() => {
@@ -109,14 +98,14 @@ export default function ComparisonSection() {
             }}
           >
             <p className="text-[12px] uppercase tracking-[0.3em] text-[#FF4A3E] mb-4">
-              Comparaison
+              {t("estimate.comparison.label")}
             </p>
             <h2 className="font-serif text-[clamp(2rem,4.5vw,3.2rem)] tracking-[-0.02em] leading-[1.05] text-white mb-4">
-              Pourquoi cette méthode change tout
+              {t("estimate.comparison.title")}
               <span className="text-[#FF4A3E]">.</span>
             </h2>
             <p className="text-[1.1rem] text-white/60">
-              Deux approches. Deux résultats très différents.
+              {t("estimate.comparison.subtitle")}
             </p>
           </div>
 
@@ -138,7 +127,7 @@ export default function ComparisonSection() {
               }
             >
               <h3 className="text-[0.9rem] uppercase tracking-[0.2em] text-white/45 mb-8 pb-3 border-b border-white/10">
-                Approche classique
+                {t("estimate.comparison.classic_heading")}
               </h3>
               <div className="space-y-7">
                 {classicItems.map((text, i) => (
@@ -176,7 +165,7 @@ export default function ComparisonSection() {
               }
             >
               <h3 className="text-[0.9rem] uppercase tracking-[0.2em] text-[#FF4A3E] mb-8 pb-3 border-b border-[#FF4A3E]/25">
-                Méthode GARY
+                {t("estimate.comparison.gary_heading")}
               </h3>
               <div className="space-y-7">
                 {garyItems.map((text, i) => (

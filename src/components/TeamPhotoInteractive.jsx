@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import team from "../data/team.json";
+import { useLocale } from "../hooks/useLocale.js";
 
 const TEAM_DOTS = [
   // Jared — debout extrême gauche
@@ -19,6 +20,7 @@ const TEAM_DOTS = [
 
 function TeamMemberZone({ member, dotX, dotY, zoneX, zoneY, zoneW, zoneH }) {
   const navigate = useNavigate();
+  const { t, link } = useLocale();
   const [hovered, setHovered] = useState(false);
   const labelRef = useRef(null);
   const mousePos = useRef({ x: 0, y: 0 });
@@ -80,11 +82,11 @@ function TeamMemberZone({ member, dotX, dotY, zoneX, zoneY, zoneW, zoneH }) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={() => setHovered(false)}
       onMouseMove={handleMouseMove}
-      onClick={() => navigate(`/equipe/${member.slug}`)}
+      onClick={() => navigate(link("team", { slug: member.slug }))}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => { if (e.key === "Enter") navigate(`/equipe/${member.slug}`); }}
-      aria-label={`Voir le profil de ${member.name}`}
+      onKeyDown={(e) => { if (e.key === "Enter") navigate(link("team", { slug: member.slug })); }}
+      aria-label={t("about.aria_view_profile", { name: member.name })}
     >
       <div
         className="absolute"
@@ -136,7 +138,7 @@ function TeamMemberZone({ member, dotX, dotY, zoneX, zoneY, zoneW, zoneH }) {
                 : "opacity 0.05s ease, transform 0.05s ease",
             }}
           >
-            voir →
+            {t("about.see")} →
           </span>
         </span>
       </div>

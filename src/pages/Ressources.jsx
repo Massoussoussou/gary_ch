@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { useLocale } from "../hooks/useLocale.js";
 
 const INPUT_CLASS =
   "w-full px-4 py-3.5 bg-[#FAF7F4] border border-[#E5E7EB] text-gray-900 text-[15px] outline-none transition-colors focus:border-[#FF4A3E] placeholder:text-gray-400";
@@ -7,7 +8,7 @@ const LABEL_CLASS =
   "block text-[11px] font-semibold uppercase tracking-[0.05em] text-gray-500 mb-1.5";
 
 /* ========== Modal formulaire e-book ========== */
-function EbookModal({ onClose }) {
+function EbookModal({ onClose, t }) {
   const [form, setForm] = useState({ firstname: "", lastname: "", email: "", phone: "" });
   const [honeypot, setHoneypot] = useState("");
   const [status, setStatus] = useState("idle");
@@ -70,7 +71,7 @@ function EbookModal({ onClose }) {
           <button
             onClick={onClose}
             className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors"
-            aria-label="Fermer"
+            aria-label={t("aria.close")}
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -85,21 +86,21 @@ function EbookModal({ onClose }) {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h3 className="font-serif text-2xl text-gray-900 mb-3">Demande envoyée</h3>
+                <h3 className="font-serif text-2xl text-gray-900 mb-3">{t("resources.ebook_modal.success_title")}</h3>
                 <p className="text-gray-500 leading-relaxed">
-                  Merci pour votre intérêt. Vous recevrez votre e-book par email dans les plus brefs délais.
+                  {t("resources.ebook_modal.success_message")}
                 </p>
                 <button
                   onClick={onClose}
                   className="mt-8 text-[#FF4A3E] font-medium text-sm uppercase tracking-[0.1em] hover:underline"
                 >
-                  Fermer
+                  {t("aria.close")}
                 </button>
               </div>
             ) : (
               <>
-                <h3 className="font-serif text-2xl md:text-3xl text-gray-900 mb-2">Recevoir le e-book</h3>
-                <p className="text-gray-500 text-sm mb-8">Remplissez le formulaire et recevez votre guide gratuitement par email.</p>
+                <h3 className="font-serif text-2xl md:text-3xl text-gray-900 mb-2">{t("resources.ebook_modal.title")}</h3>
+                <p className="text-gray-500 text-sm mb-8">{t("resources.ebook_modal.subtitle")}</p>
 
                 <form onSubmit={handleSubmit}>
                   {/* Honeypot */}
@@ -115,11 +116,11 @@ function EbookModal({ onClose }) {
 
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
-                      <label className={LABEL_CLASS}>Nom</label>
+                      <label className={LABEL_CLASS}>{t("form.lastname")}</label>
                       <input
                         type="text"
                         name="lastname"
-                        placeholder="Votre nom"
+                        placeholder={t("form.placeholder_lastname")}
                         required
                         value={form.lastname}
                         onChange={handleChange}
@@ -127,11 +128,11 @@ function EbookModal({ onClose }) {
                       />
                     </div>
                     <div>
-                      <label className={LABEL_CLASS}>Prénom</label>
+                      <label className={LABEL_CLASS}>{t("form.firstname")}</label>
                       <input
                         type="text"
                         name="firstname"
-                        placeholder="Votre prénom"
+                        placeholder={t("form.placeholder_firstname")}
                         required
                         value={form.firstname}
                         onChange={handleChange}
@@ -141,11 +142,11 @@ function EbookModal({ onClose }) {
                   </div>
 
                   <div className="mb-4">
-                    <label className={LABEL_CLASS}>Email</label>
+                    <label className={LABEL_CLASS}>{t("form.email")}</label>
                     <input
                       type="email"
                       name="email"
-                      placeholder="votre@email.com"
+                      placeholder={t("form.placeholder_email")}
                       required
                       value={form.email}
                       onChange={handleChange}
@@ -154,7 +155,7 @@ function EbookModal({ onClose }) {
                   </div>
 
                   <div className="mb-6">
-                    <label className={LABEL_CLASS}>Téléphone <span className="font-normal text-gray-400">(optionnel)</span></label>
+                    <label className={LABEL_CLASS}>{t("form.phone")} <span className="font-normal text-gray-400">({t("form.optional")})</span></label>
                     <input
                       type="tel"
                       name="phone"
@@ -166,7 +167,7 @@ function EbookModal({ onClose }) {
                   </div>
 
                   {status === "error" && (
-                    <p className="text-red-500 text-sm mb-4">Une erreur est survenue. Veuillez réessayer.</p>
+                    <p className="text-red-500 text-sm mb-4">{t("error.form_retry")}</p>
                   )}
 
                   <button
@@ -176,7 +177,7 @@ function EbookModal({ onClose }) {
                   >
                     <span className="absolute -inset-1 bg-[#FF4A3E] translate-y-[110%] group-hover/btn:translate-y-0 transition-transform duration-[0.4s] ease-[cubic-bezier(0.22,1,0.36,1)]" />
                     <span className="relative z-10">
-                      {status === "sending" ? "Envoi en cours..." : "Recevoir mon e-book"}
+                      {status === "sending" ? t("form.sending") : t("resources.ebook_modal.submit")}
                     </span>
                     {status !== "sending" && (
                       <svg className="relative z-10 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -203,6 +204,7 @@ function EbookModal({ onClose }) {
 
 /* ========== PAGE RESSOURCES ========== */
 export default function Ressources() {
+  const { t } = useLocale();
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
@@ -213,10 +215,10 @@ export default function Ressources() {
           {/* Header */}
           <div className="text-center mb-20 md:mb-28">
             <p className="text-[12px] md:text-[13px] uppercase tracking-[0.2em] text-neutral-500 mb-3">
-              Outils et guides
+              {t("resources.label")}
             </p>
             <h1 className="font-serif tracking-[-0.03em] leading-[1.05] text-[clamp(2.8rem,8vw,4.5rem)]">
-              Ressources
+              {t("resources.title")}
             </h1>
           </div>
 
@@ -226,7 +228,7 @@ export default function Ressources() {
             <div>
               <img
                 src="/ebook-cover.png"
-                alt="E-book GARY — Les 5 erreurs qui font perdre des milliers aux vendeurs"
+                alt={t("resources.ebook_alt")}
                 className="w-full h-auto max-w-[600px] mx-auto lg:mx-0"
               />
             </div>
@@ -234,16 +236,11 @@ export default function Ressources() {
             {/* Texte + CTA */}
             <div className="lg:pl-4">
               <p className="text-[11px] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-5">
-                Guide gratuit
+                {t("resources.ebook_tag")}
               </p>
-              <h2 className="font-serif text-4xl md:text-5xl lg:text-[3.2rem] leading-[1.15] text-gray-900 mb-8">
-                Les <span className="text-[#FF4A3E]">5 erreurs</span> qui font
-                perdre des milliers aux vendeurs
-              </h2>
+              <h2 className="font-serif text-4xl md:text-5xl lg:text-[3.2rem] leading-[1.15] text-gray-900 mb-8" dangerouslySetInnerHTML={{ __html: t("resources.ebook_title") }} />
               <p className="text-gray-600 text-lg md:text-xl leading-relaxed mb-12 max-w-[520px]">
-                Vous envisagez de vendre votre bien ? Découvrez les erreurs les plus fréquentes
-                commises par les propriétaires et comment les éviter pour maximiser la valeur de
-                votre vente.
+                {t("resources.ebook_description")}
               </p>
 
               {/* Bouton recevoir */}
@@ -252,7 +249,7 @@ export default function Ressources() {
                 className="group/btn relative inline-flex items-center gap-3 bg-[#1a1a1a] text-white px-12 py-5 text-base font-semibold uppercase tracking-[0.12em] overflow-hidden"
               >
                 <span className="absolute -inset-1 bg-[#FF4A3E] translate-y-[110%] group-hover/btn:translate-y-0 transition-transform duration-[0.4s] ease-[cubic-bezier(0.22,1,0.36,1)]" />
-                <span className="relative z-10">Recevoir le e-book</span>
+                <span className="relative z-10">{t("resources.ebook_cta")}</span>
                 <svg className="relative z-10 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
@@ -262,7 +259,7 @@ export default function Ressources() {
         </div>
       </section>
 
-      {modalOpen && <EbookModal onClose={() => setModalOpen(false)} />}
+      {modalOpen && <EbookModal onClose={() => setModalOpen(false)} t={t} />}
     </main>
   );
 }

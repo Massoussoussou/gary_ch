@@ -1,44 +1,46 @@
 // src/components/ThreeHeroTiles.jsx
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
-const bands = [
-  {
-    id: "acheter",
-    label: "ACHETER",
-    sub: "Découvrir nos biens",
-    to: "/acheter",
-    justify: "justify-center sm:justify-start",
-    offsetClass: "md:ml-[8vw] lg:ml-[10vw]",
-    direction: "left",
-    delay: 0,
-  },
-  {
-    id: "vendre",
-    label: "VENDRE",
-    sub: "Le processus complet",
-    to: "/vendre",
-    justify: "justify-center sm:justify-end",
-    offsetClass: "md:mr-[10vw] lg:mr-[12vw]",
-    direction: "right",
-    delay: 120,
-  },
-  {
-    id: "estimer",
-    label: "ESTIMER",
-    sub: "Estimation et stratégie",
-    to: "/estimer",
-    justify: "justify-center sm:justify-start",
-    offsetClass: "md:ml-[6vw] lg:ml-[8vw]",
-    direction: "left",
-    delay: 240,
-  },
-];
+import { useLocale } from "../hooks/useLocale.js";
 
 export default function ThreeHeroTiles() {
+  const { t, link } = useLocale();
   const [textEntered, setTextEntered] = useState(false);
   const [pulsePhase, setPulsePhase] = useState(0);
   const [imageEntered, setImageEntered] = useState(false);
+
+  const bands = [
+    {
+      id: "acheter",
+      label: t("home.tile_buy"),
+      sub: t("home.tile_buy_sub"),
+      to: link("buy"),
+      justify: "justify-center sm:justify-start",
+      offsetClass: "md:ml-[8vw] lg:ml-[10vw]",
+      direction: "left",
+      delay: 0,
+    },
+    {
+      id: "vendre",
+      label: t("home.tile_sell"),
+      sub: t("home.tile_sell_sub"),
+      to: link("sell"),
+      justify: "justify-center sm:justify-end",
+      offsetClass: "md:mr-[10vw] lg:mr-[12vw]",
+      direction: "right",
+      delay: 120,
+    },
+    {
+      id: "estimer",
+      label: t("home.tile_estimate"),
+      sub: t("home.tile_estimate_sub"),
+      to: link("estimate"),
+      justify: "justify-center sm:justify-start",
+      offsetClass: "md:ml-[6vw] lg:ml-[8vw]",
+      direction: "left",
+      delay: 240,
+    },
+  ];
 
   useEffect(() => {
     const t0 = setTimeout(() => setImageEntered(true), 50);

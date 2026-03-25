@@ -1,8 +1,12 @@
 // src/components/TeamMemberCard.jsx
 import React from "react";
 import { Link } from "react-router-dom";
+import { useLocale } from "../hooks/useLocale.js";
 
-export default function TeamMemberCard({ name, role, photo, quote, slug }) {
+export default function TeamMemberCard({ name, role, role_en, photo, quote, quote_en, slug }) {
+  const { t, lang, link } = useLocale();
+  const displayRole = lang === "en" && role_en ? role_en : role;
+  const displayQuote = lang === "en" && quote_en ? quote_en : quote;
   return (
     <div className="group relative overflow-hidden rounded-2xl shadow-lg">
       {/* Image */}
@@ -18,7 +22,7 @@ export default function TeamMemberCard({ name, role, photo, quote, slug }) {
 
       {/* Badge rôle + nom (masqués au hover) */}
       <div className="absolute left-3 top-3 z-10 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-gray-800 shadow transition-opacity duration-200 group-hover:opacity-0">
-        {role}
+        {displayRole}
       </div>
       <div className="absolute bottom-14 left-3 z-10 text-white drop-shadow-lg transition-opacity duration-200 group-hover:opacity-0">
         <p className="text-lg font-semibold">{name}</p>
@@ -28,16 +32,16 @@ export default function TeamMemberCard({ name, role, photo, quote, slug }) {
       <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 p-6 opacity-0 transition duration-300 ease-out group-hover:opacity-100">
         <blockquote className="text-center text-white max-w-xs">
           <p className="text-sm italic leading-relaxed md:text-base">
-            &ldquo;{quote}&rdquo;
+            &ldquo;{displayQuote}&rdquo;
           </p>
           <footer className="mt-3 text-xs opacity-90">— {name}</footer>
         </blockquote>
 
         <Link
-          to={`/equipe/${slug}`}
+          to={link("team", { slug })}
           className="pointer-events-auto inline-block border border-white/80 rounded-full px-5 py-2 text-sm font-medium transition-transform duration-300 ease-out hover:bg-white hover:text-black hover:scale-110 hover:shadow-lg hover:shadow-white/30 active:scale-95"
         >
-          En savoir plus
+          {t("cta.learn_more")}
         </Link>
       </div>
 

@@ -1,5 +1,7 @@
 // src/components/sell/SellTrustStrip.jsx
 // → même gabarit/typo/espaces que TrustStrip.jsx (BuyIntro)
+import { useLocale } from "../../hooks/useLocale.js";
+
 export default function SellTrustStrip({
   // Données GARY
   sold = 75,          // biens vendus
@@ -13,6 +15,7 @@ export default function SellTrustStrip({
   reviewsLabel = "RealAdvisor",
   reviewsUrl = "https://realadvisor.ch/fr/agences-immobilieres/agence-gary",
 }) {
+  const { t } = useLocale();
   const fmt = (n) => new Intl.NumberFormat("fr-FR").format(n);
 
   // → mêmes échelles que dans TrustStrip.jsx
@@ -26,7 +29,7 @@ export default function SellTrustStrip({
     : "bg-transparent";
 
   return (
-    <section aria-label="Indices de confiance (vente)" className={wrapCls}>
+    <section aria-label={t("trust.aria_label_sell")} className={wrapCls}>
       <div className="w-full px-[min(6vw,72px)]">
         {/* grille identique (pas de divide, seulement des gaps) */}
         <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full items-start justify-items-center gap-y-6">
@@ -34,18 +37,18 @@ export default function SellTrustStrip({
           <li className={`${S.py} text-center w-full`}>
             <div className={S.h1}>{fmt(sold)}</div>
             <div className="mt-3 text-xs md:text-sm uppercase tracking-wide text-zinc-600">
-              Biens vendus
+              {t("trust.properties_sold")}
             </div>
-            <div className="mt-1 text-[12px] text-zinc-500">sur 12 derniers mois</div>
+            <div className="mt-1 text-[12px] text-zinc-500">{t("trust.last_12_months")}</div>
           </li>
 
           {/* 2 — Certification */}
           <li className={`${S.py} text-center w-full`}>
             <div className={S.h2}>{fmt(certs)}</div>
             <div className="mt-3 text-xs md:text-sm uppercase tracking-wide text-zinc-600">
-              Certification
+              {t("trust.certification")}
             </div>
-            <div className="mt-1 text-[12px] text-zinc-500">officielle</div>
+            <div className="mt-1 text-[12px] text-zinc-500">{t("trust.official")}</div>
           </li>
 
           {/* 3 — Avis (même rendu étoile + chiffre que TrustStrip) */}
@@ -56,13 +59,13 @@ export default function SellTrustStrip({
               </span>
               <span className={S.h1}>
                 {rating.toFixed(1)}
-                <span className="sr-only"> sur 5</span>
+                <span className="sr-only"> {t("trust.out_of_5")}</span>
               </span>
             </div>
             <div className="mt-3 text-xs md:text-sm uppercase tracking-wide text-zinc-600">
-              Note moyenne / 5
+              {t("trust.avg_rating")}
             </div>
-            <div className="mt-1 text-[12px] text-zinc-500">({fmt(reviewsCount)} avis)</div>
+            <div className="mt-1 text-[12px] text-zinc-500">({fmt(reviewsCount)} {t("trust.reviews")})</div>
 
             <div className="mt-4">
               {reviewsUrl ? (
@@ -71,11 +74,11 @@ export default function SellTrustStrip({
                   target="_blank"
                   rel="noopener noreferrer nofollow"
                   className="inline-flex items-center gap-2 underline underline-offset-4 decoration-zinc-300 hover:decoration-zinc-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E] focus-visible:ring-offset-2 focus-visible:ring-offset-white text-zinc-800"
-                  title={`Voir les avis de GARY sur ${reviewsLabel} (nouvel onglet)`}
-                  aria-label={`Voir les avis de GARY sur ${reviewsLabel} (nouvel onglet)`}
+                  title={t("trust.see_reviews_on", { platform: reviewsLabel })}
+                  aria-label={t("trust.see_reviews_on", { platform: reviewsLabel })}
                 >
-                  Voir les avis sur {reviewsLabel}
-                  
+                  {t("trust.see_reviews_link", { platform: reviewsLabel })}
+
                 </a>
               ) : null}
             </div>
@@ -87,9 +90,9 @@ export default function SellTrustStrip({
               +{fmt(expYears)}
             </div>
             <div className="mt-3 text-xs md:text-sm uppercase tracking-wide text-zinc-600">
-              Ans d’expérience
+              {t("trust.years_experience")}
             </div>
-            <div className="mt-1 text-[12px] text-zinc-500">équipe GARY (cumulé)</div>
+            <div className="mt-1 text-[12px] text-zinc-500">{t("trust.team_combined")}</div>
           </li>
         </ul>
       </div>

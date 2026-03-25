@@ -1,13 +1,16 @@
 // src/components/ProcessSteps.jsx
 import React, { useMemo, useState, useCallback, useEffect } from "react";
+import { useLocale } from "../hooks/useLocale.js";
 
 export default function ProcessSteps({
-  title = "Processus d’achat",
+  title,
   steps = [], // [{ title, desc, imageUrl }]
   imageUrl,   // fallback
   onCallClick = () => {},
   className = "",
 }) {
+  const { t } = useLocale();
+  const resolvedTitle = title ?? t("process.default_title");
   const safeSteps = Array.isArray(steps) ? steps : [];
   const [active, setActive] = useState(0);
 
@@ -37,13 +40,13 @@ export default function ProcessSteps({
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 items-start">
           {/* Colonne texte */}
           <div>
-            {!!title && (
+            {!!resolvedTitle && (
               <h2 className="mb-7 text-4xl md:text-5xl font-semibold leading-tight tracking-tight font-serif">
-                {title}
+                {resolvedTitle}
               </h2>
             )}
 
-            <ol role="listbox" aria-label="Étapes du processus" className="space-y-7">
+            <ol role="listbox" aria-label={t("process.aria_steps")} className="space-y-7">
               {safeSteps.map((s, i) => {
                 const isActive = i === active;
                 return (
@@ -84,9 +87,9 @@ export default function ProcessSteps({
                 type="button"
                 onClick={onCallClick}
                 className="inline-flex items-center justify-center rounded-none bg-[#FF4A3E] px-5 py-3 text-[15px] font-semibold text-white shadow-sm transition-colors hover:bg-[#e44338] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E] focus-visible:ring-offset-2"
-                aria-label="Planifier un appel de 10 minutes"
+                aria-label={t("process.schedule_call")}
               >
-                Planifier un appel de 10 minutes
+                {t("process.schedule_call")}
               </button>
             </div>
           </div>
@@ -115,7 +118,7 @@ export default function ProcessSteps({
                   {safeSteps[active]?.title}
                   <span className="mx-1">—</span>
                   <span className="text-zinc-700">
-                    {safeSteps[active]?.desc || "Aperçu de l’étape sélectionnée"}
+                    {safeSteps[active]?.desc || t("process.step_preview")}
                   </span>
                 </p>
               </div>

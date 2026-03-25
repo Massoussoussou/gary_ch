@@ -1,8 +1,10 @@
 // src/components/sell/StickyCTA.jsx
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useLocale } from "../../hooks/useLocale.js";
 
 export default function StickyCTA() {
+  const { t, link } = useLocale();
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -33,10 +35,10 @@ export default function StickyCTA() {
           <p className="text-[0.7rem] text-neutral-400">Résultat sous 48h</p>
         </div>
         <Link
-          to="/estimer"
+          to={link("estimate")}
           className="shrink-0 bg-[#FF4A3E] text-white px-5 py-2.5 text-[0.8rem] font-medium tracking-[0.03em] active:bg-[#e5382d] transition-colors"
         >
-          Estimer mon bien
+          {t("sell.cta_estimate")}
         </Link>
       </div>
     </div>

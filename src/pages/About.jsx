@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
+import { useLocale } from "../hooks/useLocale.js";
 import team from "../data/team.json";
 import CTAFuturaGlow, { PhoneIcon } from "../components/cta/CTAFuturaGlow.jsx";
 import TeamPhotoInteractive from "../components/TeamPhotoInteractive.jsx";
@@ -58,67 +59,69 @@ function useCountUp(target, duration = 2000, start = false) {
 
 
 /* ========== Sponsors / Partenaires ========== */
-const SPONSORS = [
-  {
-    name: "divorce.ch",
-    src: "/sponsors/divorce-ch.jpeg",
-    url: "https://www.divorce.ch",
-    subtitle: "Transition de vie",
-    short: "divorce.ch simplifie les démarches de divorce en Suisse. Nos activités sont complémentaires dans l'accompagnement de nos clients lors de périodes de transition.",
-    long: "divorce.ch est une plateforme suisse spécialisée dans la simplification des démarches liées au divorce, grâce à des outils digitaux accessibles et un accompagnement structuré sur les aspects administratifs et juridiques de la séparation.\n\nBien que nous ne collaborions pas directement, nos activités s'adressent parfois à une clientèle confrontée aux mêmes étapes de vie. Lors d'une séparation, les questions liées au logement et au patrimoine immobilier deviennent fréquemment centrales. Dans ce contexte, nos approches se complètent naturellement : Gary accompagne les clients dans la vente de leur bien immobilier, tandis que divorce.ch facilite et clarifie les démarches administratives liées au processus de divorce.",
-  },
-  {
-    name: "Mise en Voix",
-    src: "/sponsors/mise-en-voix.jpeg",
-    url: "https://www.mise-en-voix.ch",
-    subtitle: "Association locale",
-    short: "Mise en Voix est une association culturelle basée à Cologny qui met à l'honneur l'art de la voix et l'univers de l'opéra à travers différents projets artistiques et rencontres.",
-    long: "Mise en Voix est une association culturelle basée à Cologny qui met à l'honneur l'art de la voix et l'univers de l'opéra à travers différents projets artistiques et rencontres. En réunissant artistes, passionnés et partenaires, l'association contribue à faire vivre la scène culturelle de la région genevoise.",
-  },
-  {
-    name: "Planifique",
-    src: "/sponsors/planifique.jpeg",
-    url: "https://www.planifique.fr",
-    subtitle: "Planification financière et prévoyance",
-    short: "Planifique accompagne particuliers et entrepreneurs dans la planification financière et la gestion de leur patrimoine. Un partenariat fondé sur une vision commune de l'investissement à long terme.",
-    long: "Planifique est une société spécialisée dans la planification financière et la structuration patrimoniale. Elle accompagne particuliers et entrepreneurs dans la gestion de leurs finances, la prévoyance et la mise en place de stratégies d'investissement durables.\n\nL'immobilier occupant souvent une place centrale dans une stratégie patrimoniale, ce partenariat s'inscrit dans une logique complémentaire. Tandis que Gary accompagne ses clients dans la vente et la valorisation de biens immobiliers, Planifique apporte une expertise en planification financière afin d'aider les clients à structurer et à optimiser leur vision patrimoniale sur le long terme.",
-  },
-  {
-    name: "Plus Groupe",
-    src: "/sponsors/plus-financement.jpeg",
-    url: "https://plus-group.ch",
-    subtitle: "Financement immobilier",
-    short: "Plus Groupe accompagne les clients dans la recherche du financement le plus adapté lors de l'achat d'un bien immobilier. Un partenaire clé dans la structuration d'un projet immobilier.",
-    long: "Plus Groupe accompagne les particuliers dans la recherche des meilleures solutions de financement lors de l'acquisition d'un bien immobilier. Grâce à leur réseau et à leur expertise, ils analysent les différentes offres du marché afin d'orienter les clients vers la banque et les conditions de financement les plus adaptées à leur situation.\n\nDans le cadre d'un projet immobilier, le financement représente une étape essentielle. Notre partenariat repose donc sur une approche complémentaire : Gary accompagne les clients dans la recherche, la vente et la valorisation de biens immobiliers, tandis que Plus Groupe les guide dans le choix de la solution bancaire et du financement le plus avantageux pour concrétiser leur achat.",
-  },
-  {
-    name: "CCIG",
-    src: "/sponsors/ccig.png",
-    url: "https://www.ccig.ch",
-    subtitle: "Réseau économique et entrepreneurial",
-    short: "La CCIG soutient le développement économique et entrepreneurial à Genève. Un réseau qui rassemble et accompagne les entreprises de la région.",
-    long: "La Chambre de commerce, d'industrie et des services de Genève (CCIG) joue un rôle central dans le dynamisme économique du canton. Elle rassemble un large réseau d'entreprises et d'entrepreneurs et favorise les échanges, les opportunités de collaboration et le développement économique local.\n\nEn tant qu'entreprise active dans la région, Gary fait partie de cet écosystème entrepreneurial. Cette affiliation permet de s'inscrire dans un réseau solide d'acteurs économiques genevois et de contribuer au développement et au rayonnement du tissu économique local.",
-  },
-  {
-    name: "TC Veyrier Grand-Donzel",
-    src: "/sponsors/veyrier-grand-donzel.jpeg",
-    url: "https://www.tcvgd.ch",
-    subtitle: "Partenaire sportif",
-    short: "Le TC Veyrier Grand-Donzel est un club de tennis actif dans la région genevoise. Nous sommes fiers de soutenir le club à travers notre sponsoring et de promouvoir les valeurs du sport.",
-    long: "Le TC Veyrier Grand-Donzel est un club de tennis situé dans la région genevoise qui rassemble passionnés et sportifs de tous âges autour de la pratique du tennis. Le club contribue activement à la vie sportive locale et au développement du sport dans la région.\n\nÀ travers notre sponsoring, Gary est fier de soutenir cette initiative sportive. Nous attachons une grande importance aux valeurs que transmet le sport, telles que la discipline, le respect et le dépassement de soi, des principes qui résonnent également dans notre approche professionnelle.",
-  },
-  {
-    name: "On the Water",
-    src: "/sponsors/on-the-water.jpeg",
-    url: "https://on-the-water.ch",
-    subtitle: "Événementiel, festival",
-    short: "On the Water est un événement musical unique organisé sur le lac Léman. Nous sommes fiers de soutenir cette initiative locale à travers notre sponsoring.",
-    long: "On the Water est un événement genevois unique organisé sur le lac Léman, où une scène flottante accueille des DJs sur un catamaran au cœur de la rade de Genève. Le public profite de la musique directement depuis l'eau, à bord de bateaux ou d'embarcations, pour une expérience estivale originale au plus près du lac.\n\nGARY soutient cet événement à travers son sponsoring, notamment avec la présence de notre logo sur les gilets de sauvetage utilisés lors de l'événement. Au-delà de la visibilité, ce soutien participe également à promouvoir la sécurité sur l'eau, un élément essentiel lors de ce type de rassemblement nautique. Par ce partenariat, nous sommes heureux de contribuer à une initiative locale qui valorise la vie autour du lac Léman.",
-  },
-];
+function getSponsors(t) {
+  return [
+    {
+      name: "divorce.ch",
+      src: "/sponsors/divorce-ch.jpeg",
+      url: "https://www.divorce.ch",
+      subtitle: t("about.sponsor_1_subtitle"),
+      short: t("about.sponsor_1_short"),
+      long: t("about.sponsor_1_long"),
+    },
+    {
+      name: "Mise en Voix",
+      src: "/sponsors/mise-en-voix.jpeg",
+      url: "https://www.mise-en-voix.ch",
+      subtitle: t("about.sponsor_2_subtitle"),
+      short: t("about.sponsor_2_short"),
+      long: t("about.sponsor_2_long"),
+    },
+    {
+      name: "Planifique",
+      src: "/sponsors/planifique.jpeg",
+      url: "https://www.planifique.fr",
+      subtitle: t("about.sponsor_3_subtitle"),
+      short: t("about.sponsor_3_short"),
+      long: t("about.sponsor_3_long"),
+    },
+    {
+      name: "Plus Groupe",
+      src: "/sponsors/plus-financement.jpeg",
+      url: "https://plus-group.ch",
+      subtitle: t("about.sponsor_4_subtitle"),
+      short: t("about.sponsor_4_short"),
+      long: t("about.sponsor_4_long"),
+    },
+    {
+      name: "CCIG",
+      src: "/sponsors/ccig.png",
+      url: "https://www.ccig.ch",
+      subtitle: t("about.sponsor_5_subtitle"),
+      short: t("about.sponsor_5_short"),
+      long: t("about.sponsor_5_long"),
+    },
+    {
+      name: "TC Veyrier Grand-Donzel",
+      src: "/sponsors/veyrier-grand-donzel.jpeg",
+      url: "https://www.tcvgd.ch",
+      subtitle: t("about.sponsor_6_subtitle"),
+      short: t("about.sponsor_6_short"),
+      long: t("about.sponsor_6_long"),
+    },
+    {
+      name: "On the Water",
+      src: "/sponsors/on-the-water.jpeg",
+      url: "https://on-the-water.ch",
+      subtitle: t("about.sponsor_7_subtitle"),
+      short: t("about.sponsor_7_short"),
+      long: t("about.sponsor_7_long"),
+    },
+  ];
+}
 
 /* ========== Popup modal partenaire ========== */
-function SponsorModal({ sponsor, onClose }) {
+function SponsorModal({ sponsor, onClose, t }) {
   useEffect(() => {
     document.body.style.overflow = "hidden";
     if (window.__lenis) window.__lenis.stop();
@@ -144,7 +147,7 @@ function SponsorModal({ sponsor, onClose }) {
           <button
             onClick={onClose}
             className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors"
-            aria-label="Fermer"
+            aria-label={t("aria.close")}
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -181,7 +184,7 @@ function SponsorModal({ sponsor, onClose }) {
                   onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}
                 >
                   <span className="absolute -inset-1 bg-[#FF4A3E] translate-y-[110%] group-hover/btn:translate-y-0 transition-transform duration-[0.4s] ease-[cubic-bezier(0.22,1,0.36,1)]" />
-                  <span className="relative z-10">Visiter le site</span>
+                  <span className="relative z-10">{t("about.visit_website")}</span>
                   <svg className="relative z-10 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>
@@ -203,7 +206,7 @@ function SponsorModal({ sponsor, onClose }) {
 }
 
 /* ========== Carte sponsor avec hover ========== */
-function SponsorCard({ sponsor, index, seen }) {
+function SponsorCard({ sponsor, index, seen, t }) {
   const [hovered, setHovered] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const isMobile = useIsMobile();
@@ -249,7 +252,7 @@ function SponsorCard({ sponsor, index, seen }) {
           {/* Mobile: bandeau noir "Voir plus" */}
           {isMobile && (
             <div className="bg-[#1a1a1a] py-3 flex items-center justify-center gap-2">
-              <span className="text-white text-[12px] uppercase tracking-[0.12em] font-semibold">Voir plus</span>
+              <span className="text-white text-[12px] uppercase tracking-[0.12em] font-semibold">{t("about.see_more")}</span>
               <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
@@ -270,7 +273,7 @@ function SponsorCard({ sponsor, index, seen }) {
               <p className="text-[11px] uppercase tracking-[0.15em] text-[#FF4A3E] font-semibold mb-2">{sponsor.subtitle}</p>
               {sponsor.short && <p className="text-gray-600 text-[15px] leading-relaxed mb-3 break-words">{sponsor.short}</p>}
               <span className="inline-flex items-center gap-1.5 text-[#FF4A3E] text-sm font-medium mt-1">
-                Voir plus
+                {t("about.see_more")}
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
@@ -280,14 +283,15 @@ function SponsorCard({ sponsor, index, seen }) {
         </div>
       </div>
 
-      {modalOpen && <SponsorModal sponsor={sponsor} onClose={() => setModalOpen(false)} />}
+      {modalOpen && <SponsorModal sponsor={sponsor} onClose={() => setModalOpen(false)} t={t} />}
     </>
   );
 }
 
 /* ========== Section 7 — Partenaires (fond beige) ========== */
-function SponsorsSection() {
+function SponsorsSection({ t }) {
   const [ref, seen] = useInViewOnce({ threshold: 0.15 });
+  const sponsors = getSponsors(t);
 
   return (
     <section ref={ref} className="relative z-10 w-full py-20 md:py-28 bg-[#FAF6F0]">
@@ -311,27 +315,27 @@ function SponsorsSection() {
             transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
           }}
         >
-          Nos <span className="text-[#FF4A3E]">partenaires</span>
+          {t("about.partners_title_prefix")} <span className="text-[#FF4A3E]">{t("about.partners_title_highlight")}</span>
         </h3>
 
         {/* Ligne 1 — 3 sponsors */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-6 md:mb-8">
-          {SPONSORS.slice(0, 3).map((s, i) => (
-            <SponsorCard key={s.name} sponsor={s} index={i} seen={seen} />
+          {sponsors.slice(0, 3).map((s, i) => (
+            <SponsorCard key={s.name} sponsor={s} index={i} seen={seen} t={t} />
           ))}
         </div>
 
         {/* Ligne 2 — 3 sponsors */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-6 md:mb-8">
-          {SPONSORS.slice(3, 6).map((s, i) => (
-            <SponsorCard key={s.name} sponsor={s} index={i + 3} seen={seen} />
+          {sponsors.slice(3, 6).map((s, i) => (
+            <SponsorCard key={s.name} sponsor={s} index={i + 3} seen={seen} t={t} />
           ))}
         </div>
 
         {/* Ligne 3 — 1 sponsor, centré */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           <div className="lg:col-start-2">
-            <SponsorCard sponsor={SPONSORS[6]} index={6} seen={seen} />
+            <SponsorCard sponsor={sponsors[6]} index={6} seen={seen} t={t} />
           </div>
         </div>
       </div>
@@ -340,12 +344,14 @@ function SponsorsSection() {
 }
 
 /* ========== Chiffres clés 2025 (fond beige) ========== */
-const KEY_FIGURES = [
-  { value: 100, suffix: "+", label: "ventes en 2025", prefix: "", icon: "sales" },
-  { value: 90, suffix: "+", label: "avis 5 étoiles sur Google", prefix: "", link: "https://www.google.com/maps/place/GARY+Real+Estate", linkText: "voir ici", icon: "star" },
-  { value: 6.6, suffix: "M", label: "de vues sur nos publications", prefix: "", decimals: 1, icon: "eye" },
-  { value: 40, suffix: "k+", label: "followers sur nos réseaux", prefix: "", icon: "followers" },
-];
+function getKeyFigures(t) {
+  return [
+    { value: 100, suffix: "+", label: t("about.fig_sales"), prefix: "", icon: "sales" },
+    { value: 90, suffix: "+", label: t("about.fig_reviews"), prefix: "", link: "https://www.google.com/maps/place/GARY+Real+Estate", linkText: t("about.fig_reviews_link"), icon: "star" },
+    { value: 6.6, suffix: "M", label: t("about.fig_views"), prefix: "", decimals: 1, icon: "eye" },
+    { value: 40, suffix: "k+", label: t("about.fig_followers"), prefix: "", icon: "followers" },
+  ];
+}
 
 function FigureIcon({ type }) {
   const cls = "w-8 h-8 md:w-10 md:h-10 text-[#FF4A3E]/70";
@@ -380,8 +386,9 @@ function FigureIcon({ type }) {
   }
 }
 
-function KeyFigures() {
+function KeyFigures({ t }) {
   const [sectionRef, seen] = useInViewOnce({ threshold: 0.2 });
+  const keyFigures = getKeyFigures(t);
 
   return (
     <section id="key-figures" ref={sectionRef} className="relative z-10 w-full bg-[#FAF6F0] py-20 md:py-28">
@@ -406,12 +413,12 @@ function KeyFigures() {
             transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
           }}
         >
-          Quelques chiffres de <span className="text-[#FF4A3E]">2025</span>
+          {t("about.figures_title_prefix")} <span className="text-[#FF4A3E]">2025</span>
         </h3>
 
         {/* Grille de chiffres */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-14 md:gap-y-16 gap-x-8 md:gap-x-12 lg:gap-x-16">
-          {KEY_FIGURES.map((fig, i) => (
+          {keyFigures.map((fig, i) => (
             <FigureItem key={i} fig={fig} index={i} active={seen} />
           ))}
         </div>
@@ -489,15 +496,15 @@ function FigureItem({ fig, index, active }) {
 }
 
 /* ========== Contenu partagé ========== */
-const VL = { label: "Puissance", sub: "Marketing", desc: "Une mise en valeur stratégique & une diffusion digitale maximale et maîtrisée", kw: ["stratégique", "maximale"] };
-const VR = { label: "Expertise", sub: "Locale", desc: "Plus de 60 ans d'expérience cumulée sur le marché immobilier romand", kw: ["60 ans", "romand"] };
-function hl(t, kw) { let r = t; kw.forEach(k => { r = r.replace(k, `<span class="text-[#FF4A3E] font-medium">${k}</span>`); }); return r; }
+function getVL(t) { return { label: t("about.hero_vl_label"), sub: t("about.hero_vl_sub"), desc: t("about.hero_vl_desc"), kw: t("about.hero_vl_keywords").split("|") }; }
+function getVR(t) { return { label: t("about.hero_vr_label"), sub: t("about.hero_vr_sub"), desc: t("about.hero_vr_desc"), kw: t("about.hero_vr_keywords").split("|") }; }
+function hl(text, kw) { let r = text; kw.forEach(k => { r = r.replace(k, `<span class="text-[#FF4A3E] font-medium">${k}</span>`); }); return r; }
 
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 
 /* ========== Section 1 — Hero : Ligne Expansion ========== */
 /* Logo GARY → trait orange se dessine → s'élargit en tuile glassmorphique → contenu */
-function HeroCirclesSection() {
+function HeroCirclesSection({ t }) {
   const [loaded, setLoaded] = useState(false);
   const [phase, setPhase] = useState(0);
   const wrapperRef = useRef(null);
@@ -564,7 +571,7 @@ function HeroCirclesSection() {
         {/* Scroll indicator */}
         <div className="absolute bottom-36 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
           style={{ zIndex: 20, opacity: loaded && phase === 0 ? 1 : 0, transition: "opacity 0.3s ease-out" }}>
-          <span className="text-white text-[11px] uppercase tracking-[0.2em]">Scroll</span>
+          <span className="text-white text-[11px] uppercase tracking-[0.2em]">{t("about.scroll")}</span>
           <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"
             style={{ animation: "heroScrollBounce 2s ease-in-out infinite" }}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -603,17 +610,17 @@ function HeroCirclesSection() {
             opacity: phase >= 3 ? 1 : 0, transition: "opacity 0.6s ease-out",
           }}>
             <div className="text-center pt-8 md:pt-12 px-6 md:px-10 w-full flex-1 flex flex-col justify-center">
-              <p className="uppercase tracking-[0.25em] text-neutral-500 mb-6 text-[13px] md:text-[15px]" style={{ opacity: phase >= 4 ? 1 : 0, transform: phase >= 4 ? "translateY(0)" : "translateY(8px)", transition: "all 0.5s ease-out" }}><span className="text-[#FF4A3E] font-medium tracking-[0.3em] text-[16px] md:text-[20px]">GARY</span>, la dualité entre&nbsp;:</p>
+              <p className="uppercase tracking-[0.25em] text-neutral-500 mb-6 text-[13px] md:text-[15px]" style={{ opacity: phase >= 4 ? 1 : 0, transform: phase >= 4 ? "translateY(0)" : "translateY(8px)", transition: "all 0.5s ease-out" }}><span className="text-[#FF4A3E] font-medium tracking-[0.3em] text-[16px] md:text-[20px]">GARY</span>{t("about.hero_duality")}</p>
               <div className="flex flex-col md:flex-row items-center md:items-stretch">
                 <div className="flex-1 text-center px-4 md:px-8" style={{ opacity: phase >= 4 ? 1 : 0, transform: phase >= 4 ? "translateX(0)" : "translateX(-20px)", transition: "all 0.7s ease-out 0.1s" }}>
-                  <h3 className="font-serif text-[clamp(1.8rem,5.5vw,3.8rem)] text-neutral-900 leading-[1.08]"><span className="text-[#FF4A3E]">{VR.label}</span><br />{VR.sub}</h3>
-                  <p className="mt-4 text-neutral-600 text-[clamp(0.95rem,1.8vw,1.15rem)] leading-relaxed max-w-[360px] mx-auto" dangerouslySetInnerHTML={{ __html: hl(VR.desc, VR.kw) }} />
+                  <h3 className="font-serif text-[clamp(1.8rem,5.5vw,3.8rem)] text-neutral-900 leading-[1.08]"><span className="text-[#FF4A3E]">{getVR(t).label}</span><br />{getVR(t).sub}</h3>
+                  <p className="mt-4 text-neutral-600 text-[clamp(0.95rem,1.8vw,1.15rem)] leading-relaxed max-w-[360px] mx-auto" dangerouslySetInnerHTML={{ __html: hl(getVR(t).desc, getVR(t).kw) }} />
                 </div>
                 <div className="hidden md:flex items-center justify-center w-px relative my-2"><div className="w-px bg-neutral-900 origin-bottom" style={{ height: "80%", transform: phase >= 4 ? "scaleY(1)" : "scaleY(0)", transition: `transform 1.2s ${EASE} 0.3s` }} /></div>
                 <div className="md:hidden flex justify-center my-6"><div className="bg-neutral-900" style={{ height: "2px", width: phase >= 4 ? "50%" : "0%", transition: `width 1.2s ${EASE} 0.3s` }} /></div>
                 <div className="flex-1 text-center px-4 md:px-8" style={{ opacity: phase >= 4 ? 1 : 0, transform: phase >= 4 ? "translateX(0)" : "translateX(20px)", transition: "all 0.7s ease-out 0.2s" }}>
-                  <h3 className="font-serif text-[clamp(1.8rem,5.5vw,3.8rem)] text-neutral-900 leading-[1.08]"><span className="text-[#FF4A3E]">{VL.label}</span><br />{VL.sub}</h3>
-                  <p className="mt-4 text-neutral-600 text-[clamp(0.95rem,1.8vw,1.15rem)] leading-relaxed max-w-[360px] mx-auto" dangerouslySetInnerHTML={{ __html: hl(VL.desc, VL.kw) }} />
+                  <h3 className="font-serif text-[clamp(1.8rem,5.5vw,3.8rem)] text-neutral-900 leading-[1.08]"><span className="text-[#FF4A3E]">{getVL(t).label}</span><br />{getVL(t).sub}</h3>
+                  <p className="mt-4 text-neutral-600 text-[clamp(0.95rem,1.8vw,1.15rem)] leading-relaxed max-w-[360px] mx-auto" dangerouslySetInnerHTML={{ __html: hl(getVL(t).desc, getVL(t).kw) }} />
                 </div>
               </div>
             </div>
@@ -623,7 +630,7 @@ function HeroCirclesSection() {
                   className="cursor-pointer inline-flex flex-col items-center gap-1.5 text-[12px] md:text-[13px] uppercase tracking-[0.15em] text-neutral-600 hover:text-[#FF4A3E] transition-colors duration-300"
                   onClick={() => window.scrollTo({ top: window.innerHeight * 2, behavior: "smooth" })}
                 >
-                  Notre identité
+                  {t("about.our_identity")}
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"
                     style={{ animation: "heroScrollBounce 2s ease-in-out infinite" }}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -651,13 +658,15 @@ function HeroCirclesSection() {
 
 
 /* ========== Données "Ce qui nous distingue" ========== */
-const DISTINGUISH_POINTS = [
-  { main: "Chaque courtier possède plus de 10 ans d'expérience sur le marché immobilier local", detail: "Expertise confirmée, conseils stratégiques avisés", image: "/img/gary/02.webp" },
-  { main: "Une approche marketing moderne et performante", detail: "Mise en valeur sur mesure, photos et vidéos professionnelles, diffusion stratégique", image: "/img/gary/03.webp" },
-  { main: "Une communauté active et fidèle de plus de 40k followers", detail: null, image: "/img/gary/ExtBlv-8.webp" },
-  { main: "Un réseau d'acheteurs qualifiés", detail: "Base de données de plus de 5000 clients acheteurs", image: "/img/gary/extver5.webp" },
-  { main: "Un réseau de partenaires de confiance", detail: "Financements, notaires, avocats, architectes, …", image: "/img/gary/maison35.webp" },
-];
+function getDistinguishPoints(t) {
+  return [
+    { main: t("about.distinguish_1_main"), detail: t("about.distinguish_1_detail"), image: "/img/gary/02.webp" },
+    { main: t("about.distinguish_2_main"), detail: t("about.distinguish_2_detail"), image: "/img/gary/03.webp" },
+    { main: t("about.distinguish_3_main"), detail: null, image: "/img/gary/ExtBlv-8.webp" },
+    { main: t("about.distinguish_4_main"), detail: t("about.distinguish_4_detail"), image: "/img/gary/extver5.webp" },
+    { main: t("about.distinguish_5_main"), detail: t("about.distinguish_5_detail"), image: "/img/gary/maison35.webp" },
+  ];
+}
 
 /* ========== Ce qui nous distingue — Zigzag SVG courbe + images alternées ========== */
 
@@ -766,7 +775,7 @@ function DistinguishRow({ point, index, isLeft, dotRef }) {
   );
 }
 
-function DistinguishZigzag({ seen }) {
+function DistinguishZigzag({ seen, t }) {
   const containerRef = useRef(null);
   const pathRef = useRef(null);
   const haloRef = useRef(null);
@@ -872,7 +881,7 @@ function DistinguishZigzag({ seen }) {
         className="text-center font-serif text-3xl md:text-5xl tracking-wide mb-16 md:mb-24 text-gray-900"
         style={{ opacity: seen ? 1 : 0, transform: seen ? "translateY(0)" : "translateY(15px)", transition: "opacity 0.8s ease-out, transform 0.8s ease-out" }}
       >
-        Ce qui nous <span className="text-[#FF4A3E]">distingue</span>, concrètement.
+        {t("about.distinguish_title_prefix")} <span className="text-[#FF4A3E]">{t("about.distinguish_title_highlight")}</span>{t("about.distinguish_title_suffix")}
       </h3>
 
       <div ref={containerRef} className="relative max-w-[1500px] mx-auto px-6 md:px-16 lg:px-24">
@@ -889,7 +898,7 @@ function DistinguishZigzag({ seen }) {
           </svg>
         )}
 
-        {DISTINGUISH_POINTS.map((point, i) => (
+        {getDistinguishPoints(t).map((point, i) => (
           <DistinguishRow key={i} point={point} index={i} isLeft={i % 2 === 0} dotRef={(el) => setDotRef(el, i)} />
         ))}
       </div>
@@ -899,15 +908,14 @@ function DistinguishZigzag({ seen }) {
         className="mt-16 md:mt-20 text-center text-xl md:text-2xl leading-relaxed text-gray-700 font-light max-w-[800px] mx-auto px-6"
         style={{ opacity: conclusionVisible ? 1 : 0, transform: conclusionVisible ? "translateY(0)" : "translateY(15px)", transition: "opacity 0.8s ease-out, transform 0.8s ease-out" }}
       >
-        L'ensemble réuni pour vous offrir un service <strong className="font-semibold text-[#FF4A3E]">sur mesure</strong>,
-        à la hauteur de vos ambitions.
+        {t("about.distinguish_conclusion_prefix")} <strong className="font-semibold text-[#FF4A3E]">{t("about.distinguish_conclusion_highlight")}</strong>{t("about.distinguish_conclusion_suffix")}
       </p>
     </div>
   );
 }
 
 /* ========== Section 2 — Notre identité (fond blanc) ========== */
-function IdentitySection() {
+function IdentitySection({ t }) {
   const [ref, seen] = useInViewOnce({ threshold: 0.05 });
 
   return (
@@ -948,7 +956,7 @@ function IdentitySection() {
             transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
           }}
         >
-          Notre <span className="text-[#FF4A3E]">identité</span>
+          {t("about.identity_title_prefix")} <span className="text-[#FF4A3E]">{t("about.identity_title_highlight")}</span>
         </h2>
 
         {/* Texte */}
@@ -960,8 +968,7 @@ function IdentitySection() {
             transition: "opacity 0.8s ease-out 0.2s, transform 0.8s ease-out 0.2s",
           }}
         >
-          <strong className="font-semibold text-[#FF4A3E]">GARY</strong> est une agence immobilière spécialisée dans la vente d'appartements,
-          de maisons et de projets neufs en suisse romande.
+          <strong className="font-semibold text-[#FF4A3E]">GARY</strong> {t("about.identity_text_1")}
         </p>
         <p
           className="relative z-10 mt-4 text-xl md:text-2xl leading-relaxed text-gray-700 font-light"
@@ -971,9 +978,7 @@ function IdentitySection() {
             transition: "opacity 0.8s ease-out 0.35s, transform 0.8s ease-out 0.35s",
           }}
         >
-          Véritables stratèges de la vente immobilière, notre équipe combine une connaissance fine du marché immobilier local,
-          forgée par plus de <strong className="font-semibold text-[#FF4A3E]">60 ans d'expérience cumulée</strong>, à une expertise
-          marketing nouvelle génération, innovante et performante.
+          {t("about.identity_text_2_prefix")} <strong className="font-semibold text-[#FF4A3E]">{t("about.identity_text_2_highlight")}</strong>{t("about.identity_text_2_suffix")}
         </p>
       </div>
 
@@ -986,7 +991,7 @@ function IdentitySection() {
             if (el) el.scrollIntoView({ behavior: "smooth" });
           }}
         >
-          Découvrir nos résultats
+          {t("about.discover_results")}
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"
             style={{ animation: "heroScrollBounce 2s ease-in-out infinite" }}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -998,24 +1003,26 @@ function IdentitySection() {
 }
 
 /* ========== Section 2b — Ce qui nous distingue (fond blanc) ========== */
-function DistinguishSection() {
+function DistinguishSection({ t }) {
   const [ref, seen] = useInViewOnce({ threshold: 0.05 });
   return (
     <section ref={ref} className="relative z-10 bg-white py-16 md:py-24">
-      <DistinguishZigzag seen={seen} />
+      <DistinguishZigzag seen={seen} t={t} />
     </section>
   );
 }
 
 /* ========== Section 5 — Influenceurs immobilier suisse (fond beige) ========== */
-const INSTA_STATS = [
-  { value: "40k+", label: "Abonnés" },
-  { value: "6.6M", label: "Vues sur nos publications" },
-  { value: "500+", label: "Contenus publiés" },
-  { value: "N°1", label: "Agence immo suisse sur les réseaux" },
-];
+function getInstaStats(t) {
+  return [
+    { value: "40k+", label: t("about.insta_stat_followers") },
+    { value: "6.6M", label: t("about.insta_stat_views") },
+    { value: "500+", label: t("about.insta_stat_content") },
+    { value: "N\u00b01", label: t("about.insta_stat_rank") },
+  ];
+}
 
-function InfluencersSection() {
+function InfluencersSection({ t }) {
   const [ref, seen] = useInViewOnce({ threshold: 0.2 });
 
   return (
@@ -1038,11 +1045,10 @@ function InfluencersSection() {
             }}
           />
           <h3 className="font-serif text-3xl md:text-5xl tracking-wide text-gray-900 mb-4 leading-tight">
-            Les <span className="text-[#FF4A3E]">influenceurs</span> de l'immobilier suisse
+            {t("about.influencers_title_prefix")} <span className="text-[#FF4A3E]">{t("about.influencers_title_highlight")}</span> {t("about.influencers_title_suffix")}
           </h3>
           <p className="text-lg md:text-xl leading-relaxed text-gray-600 font-light max-w-[600px]">
-            Votre bien touche une audience que les portails n'atteignent pas.
-            Nous créons le désir avant même la mise en vente.
+            {t("about.influencers_subtitle")}
           </p>
         </div>
 
@@ -1114,7 +1120,7 @@ function InfluencersSection() {
 
             {/* Grille de stats */}
             <div className="grid grid-cols-2 gap-4 mb-8">
-              {INSTA_STATS.map((stat, i) => (
+              {getInstaStats(t).map((stat, i) => (
                 <div
                   key={i}
                   className="bg-white p-5 text-center shadow-sm"
@@ -1137,7 +1143,7 @@ function InfluencersSection() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-[13px] uppercase tracking-[0.12em] text-[#FF4A3E] hover:text-[#E43E33] font-medium transition-colors"
             >
-              Voir tout sur Instagram
+              {t("about.see_all_instagram")}
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
@@ -1150,7 +1156,7 @@ function InfluencersSection() {
 }
 
 /* ========== Section 8 — CTA Final (vidéo plein écran au scroll) ========== */
-function CTASection() {
+function CTASection({ t, link }) {
   const wrapperRef = useRef(null);
   const overlayRef = useRef(null);
   const videoBoxRef = useRef(null);
@@ -1234,8 +1240,8 @@ function CTASection() {
               transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
             }}
           >
-            Un projet immobilier ? <br className="hidden md:block" />
-            <span className="text-[#FF4A3E]">Parlons-en.</span>
+            {t("about.cta_title")} <br className="hidden md:block" />
+            <span className="text-[#FF4A3E]">{t("about.cta_title_highlight")}</span>
           </h2>
 
           <div
@@ -1247,8 +1253,8 @@ function CTASection() {
             }}
           >
             <CTAFuturaGlow
-              to="/contact"
-              label="Nous contacter"
+              to={link("contact")}
+              label={t("about.cta_contact")}
               Icon={PhoneIcon}
             />
           </div>
@@ -1259,7 +1265,9 @@ function CTASection() {
 }
 
 /* ========== Carte équipe avec hover ========== */
-function TeamCard({ name, role, photo, quote, slug }) {
+function TeamCard({ name, role, role_en, photo, quote, quote_en, slug, t, link, lang }) {
+  const displayRole = lang === "en" && role_en ? role_en : role;
+  const displayQuote = lang === "en" && quote_en ? quote_en : quote;
   const startX = useRef(0);
 
   const handleClick = (e) => {
@@ -1268,7 +1276,7 @@ function TeamCard({ name, role, photo, quote, slug }) {
 
   return (
     <Link
-      to={`/equipe/${slug}`}
+      to={link("team", { slug })}
       className="group relative overflow-hidden shrink-0 w-[44vw] md:w-[420px] h-[36vh] md:h-[520px] border border-white/30 block"
       draggable={false}
       onMouseDown={(e) => { startX.current = e.clientX; }}
@@ -1276,7 +1284,7 @@ function TeamCard({ name, role, photo, quote, slug }) {
     >
       <img
         src={photo}
-        alt={`${name} — ${role}`}
+        alt={`${name} — ${displayRole}`}
         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
         loading="lazy"
         draggable={false}
@@ -1295,19 +1303,19 @@ function TeamCard({ name, role, photo, quote, slug }) {
 
       {/* Infos en bas */}
       <div className="absolute bottom-0 left-0 right-0 p-3 md:p-8 z-10 transition-transform duration-500 group-hover:translate-y-[-20px] max-md:translate-y-[-10px]">
-        <p className="text-white/60 text-[9px] md:text-sm uppercase tracking-[0.2em] mb-0.5 md:mb-1">{role}</p>
+        <p className="text-white/60 text-[9px] md:text-sm uppercase tracking-[0.2em] mb-0.5 md:mb-1">{displayRole}</p>
         <p className="text-white text-base md:text-3xl font-serif tracking-wide">{name}</p>
 
         {/* Citation — apparaît au hover */}
         <div className="overflow-hidden max-md:max-h-0 max-h-0 group-hover:max-h-40 transition-all duration-500 ease-out">
           <p className="text-white/80 text-sm md:text-base italic leading-relaxed mt-4">
-            &ldquo;{quote}&rdquo;
+            &ldquo;{displayQuote}&rdquo;
           </p>
           <span
             className="inline-block mt-4 px-5 py-2 text-sm uppercase tracking-[0.15em] text-white border border-white/50
                        hover:bg-white hover:text-[#FF4A3E] transition-all duration-300"
           >
-            Découvrir
+            {t("about.discover")}
           </span>
         </div>
       </div>
@@ -1332,7 +1340,7 @@ const TEAM_DOTS = [
   { slug: "florie-autieri",    dotX: 81,  dotY: 53, zoneX: 77, zoneY: 12, zoneW: 23, zoneH: 86 },
 ];
 
-function TeamMemberZone({ member, dotX, dotY, zoneX, zoneY, zoneW, zoneH, index }) {
+function TeamMemberZone({ member, dotX, dotY, zoneX, zoneY, zoneW, zoneH, index, t, link }) {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
   /* Position fluide du label qui suit la souris avec un léger délai */
@@ -1398,11 +1406,11 @@ function TeamMemberZone({ member, dotX, dotY, zoneX, zoneY, zoneW, zoneH, index 
       onMouseEnter={handleMouseEnter}
       onMouseLeave={() => setHovered(false)}
       onMouseMove={handleMouseMove}
-      onClick={() => navigate(`/equipe/${member.slug}`)}
+      onClick={() => navigate(link("team", { slug: member.slug }))}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => { if (e.key === "Enter") navigate(`/equipe/${member.slug}`); }}
-      aria-label={`Voir le profil de ${member.name}`}
+      onKeyDown={(e) => { if (e.key === "Enter") navigate(link("team", { slug: member.slug })); }}
+      aria-label={t("about.aria_view_profile", { name: member.name })}
     >
       {/* Point orange — positionné sur le torse */}
       <div
@@ -1458,7 +1466,7 @@ function TeamMemberZone({ member, dotX, dotY, zoneX, zoneY, zoneW, zoneH, index 
                 : "opacity 0.05s ease, transform 0.05s ease",
             }}
           >
-            voir →
+            {t("about.see")} →
           </span>
         </span>
       </div>
@@ -1506,6 +1514,7 @@ function TeamPhotoSection() {
 
 /* ========== PAGE ABOUT ========== */
 export default function About() {
+  const { t, lang, link } = useLocale();
   const containerRef = useRef(null);
   const trackRef = useRef(null);
   const setWidthRef = useRef(0);
@@ -1624,19 +1633,19 @@ export default function About() {
     <div className="relative" style={{ minHeight: "100vh" }}>
 
       {/* ====== SECTION 1 — Hero + Cercles (fond sombre) ====== */}
-      <HeroCirclesSection />
+      <HeroCirclesSection t={t} />
 
       {/* ====== CONTENU POST-HERO (z-10 passe au-dessus du sticky) ====== */}
       <div className="relative" style={{ zIndex: 10 }}>
 
         {/* ====== SECTION 2 — Notre identité (fond blanc) ====== */}
-        <IdentitySection />
+        <IdentitySection t={t} />
 
         {/* ====== SECTION 3 — Chiffres clés 2025 (fond beige) — avant "ce qui nous distingue" ====== */}
-        <KeyFigures />
+        <KeyFigures t={t} />
 
         {/* ====== SECTION 2b — Ce qui nous distingue (fond blanc) ====== */}
-        <DistinguishSection />
+        <DistinguishSection t={t} />
 
         {/* ====== Photo d'équipe — bandeau pleine largeur avec points interactifs ====== */}
         <TeamPhotoSection />
@@ -1661,7 +1670,7 @@ export default function About() {
               transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
             }}
           >
-            Notre <span className="text-[#FF4A3E]">équipe</span>
+            {t("about.team_title_prefix")} <span className="text-[#FF4A3E]">{t("about.team_title_highlight")}</span>
           </h2>
 
           {/* Carrousel */}
@@ -1688,7 +1697,7 @@ export default function About() {
             >
               {displayTeam.map((m, i) => (
                 <div key={`${m.slug}-${i}`} className="shrink-0">
-                  <TeamCard {...m} />
+                  <TeamCard {...m} t={t} link={link} lang={lang} />
                 </div>
               ))}
             </div>
@@ -1696,16 +1705,16 @@ export default function About() {
         </section>
 
         {/* ====== SECTION 5 — Influenceurs (fond beige) ====== */}
-        <InfluencersSection />
+        <InfluencersSection t={t} />
 
         {/* ====== SECTION 6 — Avis Google (fond blanc) ====== */}
         <GoogleReviews />
 
         {/* ====== SECTION 7 — Partenaires (fond beige) ====== */}
-        <SponsorsSection />
+        <SponsorsSection t={t} />
 
         {/* ====== SECTION 8 — CTA final (fond sombre) ====== */}
-        <CTASection />
+        <CTASection t={t} link={link} />
       </div>
     </div>
   );

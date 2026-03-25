@@ -4,6 +4,7 @@ import FormStep2 from "./FormStep2";
 import FormStep3 from "./FormStep3";
 import useSmsVerification from "../../hooks/useSmsVerification";
 import useSendLead from "../../hooks/useSendLead";
+import { useLocale } from "../../hooks/useLocale.js";
 
 const pushGTM = (event, data = {}) => {
   window.dataLayer = window.dataLayer || [];
@@ -11,6 +12,7 @@ const pushGTM = (event, data = {}) => {
 };
 
 export default function EstimationForm({ onSubmitSuccess, utmParams }) {
+  const { t } = useLocale();
   const [currentStep, setCurrentStep] = useState(1);
   const [formError, setFormError] = useState("");
 
@@ -45,7 +47,7 @@ export default function EstimationForm({ onSubmitSuccess, utmParams }) {
 
     // Validate required fields
     if (!step3.lastName.trim() || !step3.firstName.trim()) {
-      setFormError("Merci de renseigner votre nom et prénom.");
+      setFormError(t("estimate.form.error_name"));
       setStep3((prev) => ({
         ...prev,
         _touched: { ...prev._touched, lastName: true, firstName: true },
@@ -55,7 +57,7 @@ export default function EstimationForm({ onSubmitSuccess, utmParams }) {
 
     const phoneVal = step3.phone.trim().replace(/\s/g, "");
     if (!phoneVal || phoneVal.length < 10) {
-      setFormError("Merci de renseigner un numéro de téléphone valide.");
+      setFormError(t("estimate.form.error_phone"));
       setStep3((prev) => ({
         ...prev,
         _touched: { ...prev._touched, phone: true },
@@ -101,14 +103,14 @@ export default function EstimationForm({ onSubmitSuccess, utmParams }) {
       });
       onSubmitSuccess(step3.firstName.trim());
     } else {
-      setFormError("Une erreur est survenue. Veuillez réessayer ou nous contacter directement.");
+      setFormError(t("error.form_retry_or_contact"));
     }
   };
 
   return (
     <div className="hero-form-wrap" id="form">
-      <div className="form-title">Estimez votre bien</div>
-      <div className="form-sub">Commencez par nous décrire votre bien</div>
+      <div className="form-title">{t("estimate.form.title")}</div>
+      <div className="form-sub">{t("estimate.form.subtitle")}</div>
 
       <FormStep1
         data={step1}

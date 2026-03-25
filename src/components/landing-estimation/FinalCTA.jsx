@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
+import { useLocale } from "../../hooks/useLocale.js";
 
 export default function FinalCTA() {
+  const { t } = useLocale();
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
 
@@ -43,17 +45,16 @@ export default function FinalCTA() {
           }}
         >
           <p className="text-[12px] uppercase tracking-[0.3em] text-[#FF4A3E] mb-5">
-            Prochaine étape
+            {t("estimate.cta_final.label")}
           </p>
           <h2 className="font-serif text-[clamp(2.2rem,5vw,3.8rem)] tracking-[-0.03em] leading-[1.05] text-white mb-5">
-            Prêt à découvrir la stratégie
+            {t("estimate.cta_final.title_line1")}
             <br />
-            adaptée à votre bien
+            {t("estimate.cta_final.title_line2")}
             <span className="text-[#FF4A3E]">&nbsp;?</span>
           </h2>
           <p className="text-[1.05rem] text-white/60 leading-relaxed max-w-[50ch] mx-auto mb-10">
-            Chaque estimation inclut une analyse de marché détaillée et une
-            recommandation personnalisée sur la stratégie de diffusion optimale.
+            {t("estimate.cta_final.subtitle")}
           </p>
 
           {/* CTA — sweep shine on hover */}
@@ -63,7 +64,7 @@ export default function FinalCTA() {
           >
             <span className="absolute inset-0 bg-white/[0.12] -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out" />
             <span className="relative inline-flex items-center gap-3 text-white px-14 py-5 text-[1.1rem] font-medium tracking-[0.04em]">
-              Estimer mon bien
+              {t("sell.cta_estimate")}
               <svg
                 className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
                 fill="none"
@@ -81,7 +82,7 @@ export default function FinalCTA() {
           </button>
 
           <p className="text-[0.72rem] text-white/30 mt-6 tracking-wide uppercase">
-            Gratuit · Sans engagement · Résultat sous 48h
+            {t("estimate.cta_final.disclaimer")}
           </p>
         </div>
       </div>
