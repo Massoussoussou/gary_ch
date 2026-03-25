@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import Header from './components/layout/Header.jsx'
+import Footer from './components/layout/Footer.jsx'
 import IntroCover from './components/layout/IntroCover.jsx'
 import ScrollToTop from "./components/layout/ScrollToTop.jsx";
 import { langFromPath } from "./routes.js";
@@ -82,6 +83,8 @@ export default function App() {
   const location = useLocation();
   const { t, i18n } = useTranslation();
   const isEstimer = location.pathname.startsWith("/estimer") || location.pathname.startsWith("/en/estimate");
+  const isHome = location.pathname === "/" || location.pathname === "/en";
+  const showFooter = !isEstimer && !isHome;
 
   /* Synchronise i18next avec l'URL */
   useEffect(() => {
@@ -128,6 +131,7 @@ export default function App() {
           <AppRoutes />
         </Suspense>
       </main>
+      {showFooter && <Footer />}
     </div>
   )
 }
