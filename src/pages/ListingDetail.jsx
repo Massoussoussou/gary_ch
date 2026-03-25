@@ -981,7 +981,10 @@ export default function ListingDetail() {
                 <button
                   type="button"
                   onClick={() => {
-                    window.location.href = link("contact");
+                    const params = new URLSearchParams();
+                    if (item?.id) params.set("property_id", item.id);
+                    if (item?.titre) params.set("property_title", item.titre);
+                    window.location.href = link("contact") + "?" + params.toString();
                   }}
                   className="group inline-flex items-center justify-center gap-2 px-5 md:px-6 py-2.5 rounded-xl text-[15px] text-white shadow-lg transition hover:shadow-xl"
                   style={{ backgroundColor: "#FF4A3E" }}

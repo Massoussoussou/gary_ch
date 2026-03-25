@@ -4,6 +4,7 @@
 // - Onglets intégrés dans une barre blanche OPAQUE en haut du questionnaire (font partie du carré)
 
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { useSearchParams } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { useLocale } from "../hooks/useLocale.js"
 
@@ -257,7 +258,10 @@ function SquareTile({ base = 780, children }) {
 
 export default function Contact() {
   const { t } = useLocale()
-  const [type, setType] = useState("Estimation")
+  const [searchParams] = useSearchParams()
+  const propertyId = searchParams.get("property_id")
+  const propertyTitle = searchParams.get("property_title")
+  const [type, setType] = useState(propertyId ? "Achat" : "Estimation")
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState("")
@@ -277,20 +281,24 @@ export default function Contact() {
     const tel = form.tel.value.trim()
     const message = form.message.value.trim()
 
-    const senderMessage = `[Contact – ${type}]\n${message}`
+    const propertyNote = propertyTitle ? `\n[Bien : ${propertyTitle}]` : ""
+    const senderMessage = `[Contact – ${type}]${propertyNote}\n${message}`
 
     try {
+      const payload = {
+        sender_firstname: prenom,
+        sender_lastname: nom,
+        sender_email: email,
+        sender_number: tel,
+        sender_message: senderMessage,
+        website: honey, // honeypot
+      }
+      if (propertyId) payload.property_id = propertyId
+
       const resp = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sender_firstname: prenom,
-          sender_lastname: nom,
-          sender_email: email,
-          sender_number: tel,
-          sender_message: senderMessage,
-          website: honey, // honeypot
-        }),
+        body: JSON.stringify(payload),
       })
 
       if (!resp.ok) {
