@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import MOCK_LISTING from "../data/mock-listing.js";
 
 /**
@@ -17,20 +18,23 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 min
  * @param {string} [opts.lang="fr"]
  * @returns {{ data: Array, loading: boolean, error: string|null, refetch: () => void }}
  */
-export default function useProperties({ perPage = 100, page = 1, lang = "fr" } = {}) {
+export default function useProperties({ perPage = 100, page = 1, lang: langOverride } = {}) {
+  const { i18n } = useTranslation();
+  const lang = langOverride || i18n.language || "fr";
   const [data, setData] = useState(propertiesCache?.data || []);
   const [loading, setLoading] = useState(!propertiesCache);
   const [error, setError] = useState(null);
   const abortRef = useRef(null);
 
   const fetchData = (force = false) => {
-    // Utiliser le cache si encore frais
+    // Utiliser le cache si encore frais et même langue
     if (
       !force &&
       propertiesCache &&
       Date.now() - cacheTimestamp < CACHE_TTL &&
       propertiesCache.page === page &&
-      propertiesCache.perPage === perPage
+      propertiesCache.perPage === perPage &&
+      propertiesCache.lang === lang
     ) {
       setData(propertiesCache.data);
       setLoading(false);
@@ -66,7 +70,7 @@ export default function useProperties({ perPage = 100, page = 1, lang = "fr" } =
         if (import.meta.env.DEV) {
           items = [...items, ...normalizeData(FAKE_VENDUS)];
         }
-        propertiesCache = { data: items, page, perPage };
+        propertiesCache = { data: items, page, perPage, lang };
         cacheTimestamp = Date.now();
         setData(items);
         setLoading(false);

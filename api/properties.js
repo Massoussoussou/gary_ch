@@ -1,7 +1,7 @@
 import { fetchPropertyLabels } from "./_labels-cache.js";
 
 // Fallback mappings pour les types de biens courants
-const CATEGORY_FALLBACK = {
+const CATEGORY_FALLBACK_FR = {
   "100": "Appartement",
   "101": "Studio",
   "102": "Loft",
@@ -37,6 +37,44 @@ const CATEGORY_FALLBACK = {
   "192": "Box",
   "200": "Entrepôt",
   "201": "Dépôt",
+};
+
+const CATEGORY_FALLBACK_EN = {
+  "100": "Apartment",
+  "101": "Studio",
+  "102": "Loft",
+  "103": "Duplex",
+  "104": "Triplex",
+  "105": "Penthouse",
+  "110": "Penthouse",
+  "120": "House",
+  "121": "Villa",
+  "122": "Semi-detached villa",
+  "123": "Terraced house",
+  "124": "Manor house",
+  "125": "Town house",
+  "126": "Semi-detached house",
+  "127": "Semi-detached villa",
+  "128": "Farmhouse",
+  "129": "Castle",
+  "130": "Villa",
+  "131": "Architect villa",
+  "139": "Prestige property",
+  "140": "Chalet",
+  "150": "Land",
+  "151": "Building plot",
+  "160": "Building",
+  "161": "Investment property",
+  "170": "Commercial space",
+  "171": "Shop",
+  "172": "Boutique",
+  "180": "Office",
+  "181": "Coworking space",
+  "190": "Parking",
+  "191": "Garage",
+  "192": "Box",
+  "200": "Warehouse",
+  "201": "Storage",
 };
 
 // Fallback mappings pour les cantons suisses (par ID)
@@ -130,18 +168,25 @@ const STATUS_MAP = {
 };
 
 // Détermine le bandeau à afficher à partir du status_id
-function statusToBandeau(statusId) {
+function statusToBandeau(statusId, lang = "fr") {
   const s = STATUS_MAP[String(statusId)];
   if (!s) return null;
-  if (s === "vendu") return "Vendu";
-  if (s === "reserve") return "Réservé";
-  if (s === "suspendu") return "Suspendu";
-  if (s === "offmarket") return "Off Market";
+  if (lang === "en") {
+    if (s === "vendu") return "Sold";
+    if (s === "reserve") return "Reserved";
+    if (s === "suspendu") return "Suspended";
+    if (s === "offmarket") return "Off Market";
+  } else {
+    if (s === "vendu") return "Vendu";
+    if (s === "reserve") return "Réservé";
+    if (s === "suspendu") return "Suspendu";
+    if (s === "offmarket") return "Off Market";
+  }
   return null;
 }
 
 // Fallback pour les équipements/amenities courants
-const AMENITY_FALLBACK = {
+const AMENITY_FALLBACK_FR = {
   "2": "Ascenseur", "3": "Balcon", "4": "Terrasse", "5": "Jardin",
   "6": "Piscine", "7": "Garage", "8": "Parking", "9": "Cave",
   "10": "Grenier", "11": "Cheminée", "12": "Climatisation",
@@ -157,6 +202,24 @@ const AMENITY_FALLBACK = {
   "161": "Accès handicapés", "175": "Home cinéma",
   "266": "Portail électrique", "312": "Salle de sport",
   "353": "Proche transports", "360": "Proche commerces", "362": "Proche écoles",
+};
+
+const AMENITY_FALLBACK_EN = {
+  "2": "Elevator", "3": "Balcony", "4": "Terrace", "5": "Garden",
+  "6": "Swimming pool", "7": "Garage", "8": "Parking", "9": "Cellar",
+  "10": "Attic", "11": "Fireplace", "12": "Air conditioning",
+  "14": "Alarm", "20": "Intercom", "22": "Video intercom",
+  "23": "Home automation", "24": "Double glazing", "25": "Triple glazing",
+  "26": "Solar panels", "28": "Heat pump",
+  "30": "Laundry room", "34": "Bike storage", "36": "Lake view",
+  "40": "Mountain view", "42": "Open view", "45": "Jacuzzi",
+  "47": "Sauna", "49": "Fitness", "53": "Concierge",
+  "54": "Reception", "60": "Fitted kitchen", "72": "Parquet",
+  "92": "Electric blinds", "95": "Roller shutters",
+  "103": "Fibre optic", "119": "EV charging",
+  "161": "Wheelchair access", "175": "Home cinema",
+  "266": "Electric gate", "312": "Gym",
+  "353": "Near public transport", "360": "Near shops", "362": "Near schools",
 };
 
 // Supprime les balises HTML pour le texte brut
@@ -263,6 +326,7 @@ export default async function handler(req, res) {
       return zip ? `${zip}` : null;
     };
 
+    const CATEGORY_FALLBACK = primaryLang === "en" ? CATEGORY_FALLBACK_EN : CATEGORY_FALLBACK_FR;
     const resolveCategory = (catId) => {
       // D'abord essayer les labels API
       const entry = categories[String(catId)];
@@ -281,6 +345,7 @@ export default async function handler(req, res) {
     // Résolution du statut via STATUS_MAP (mapping vérifié depuis choices category 4)
     const resolveStatusKey = (statusId) => STATUS_MAP[String(statusId)] || null;
 
+    const AMENITY_FALLBACK = primaryLang === "en" ? AMENITY_FALLBACK_EN : AMENITY_FALLBACK_FR;
     const resolveAmenity = (amenityId) => {
       const entry = amenities[String(amenityId)];
       if (entry) {
@@ -309,7 +374,7 @@ export default async function handler(req, res) {
       }
 
       // Le titre peut venir de plusieurs sources
-      title = p.title || title || p.reference || "Annonce";
+      title = p.title || title || p.reference || (primaryLang === "en" ? "Listing" : "Annonce");
 
       // Surface: habitable > usable > weighted (surface pondérée) > land (terrain)
       const surface =
@@ -354,7 +419,7 @@ export default async function handler(req, res) {
         equipements,
         // Statut basé sur status_id (mapping vérifié Realforce category 4)
         statusId: p.status_id || null,
-        bandeau: statusToBandeau(p.status_id),
+        bandeau: statusToBandeau(p.status_id, primaryLang),
         vendu: resolveStatusKey(p.status_id) === "vendu" || !!p.sell_date,
         reserve: resolveStatusKey(p.status_id) === "reserve",
         tags: [],
