@@ -13,6 +13,7 @@ import StickyCTA from "../components/sell/StickyCTA";
 
 import { useRevealOnce } from "../hooks/useRevealOnce.js";
 import { hasTag } from "../utils/data.js";
+import useGoogleReviews from "../hooks/useGoogleReviews.js";
 
 /* ─── Hook : compteur animé ─── */
 function useCountUp(target, duration = 2200, start = false) {
@@ -1044,7 +1045,11 @@ function LivrableIcon({ index, small, color = "white" }) {
 function LivrablesSection() {
   const { t } = useLocale();
   const livrables = getLivrables(t);
-  const temoignages = getTemoignages(t);
+  const fallback = getTemoignages(t);
+  const { data: reviewsData } = useGoogleReviews();
+  const temoignages = reviewsData?.reviews?.length
+    ? reviewsData.reviews.slice(0, 3).map((r) => ({ name: r.name, text: r.text, stars: r.stars }))
+    : fallback;
   const sectionRef = useRef(null);
   const [progress, setProgress] = useState(0);
 
