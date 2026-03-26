@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://site-gary.vercel.app/sitemap.xml
+Sitemap: https://gary.ch/sitemap.xml
