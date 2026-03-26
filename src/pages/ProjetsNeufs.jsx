@@ -5,6 +5,7 @@ import { useLocale } from "../hooks/useLocale.js";
 import "../styles/projet.css";
 import CTAFuturaGlow, { VillaIcon, InfoIcon } from "../components/cta/CTAFuturaGlow.jsx";
 import CTAWhiteSweep from "../components/cta/CTAWhiteSweep.jsx";
+import Footer from "../components/layout/Footer.jsx";
 
 
 /* Easing qui ralentit bien sur la fin */
@@ -467,6 +468,7 @@ function CTAEnrollButton(){
 
         </section>
       ))}
+      <Footer />
     </main>
   );
 }

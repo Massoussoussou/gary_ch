@@ -1,5 +1,6 @@
 // src/components/cards/ListingCardSoldV2.jsx
 import { Link } from "react-router-dom";
+import { useLocale } from "../../hooks/useLocale.js";
 
 const ORANGE = "#FF4A3E";
 const AMBRE  = "#F59E0B";
@@ -18,24 +19,25 @@ export default function ListingCardSold({
   mode = "sold",          // "sold" | "coming" | "offer"
   to,                      // override du href si besoin
 }) {
+  const { t, link } = useLocale();
   const it = listing || {};
   const img = (Array.isArray(it.images) && it.images[0]) || it.image || "";
-  const href = to || it.href || `/annonce/${it.id ?? ""}`;
+  const href = to || it.href || link("listing", { id: it.id ?? "" });
 
   const city = it.ville || it.commune || it.quartier || "";
   const subtitle =
-    it.type || it.titre_secondaire || it.category || "Bien d’exception";
+    it.type || it.titre_secondaire || it.category || t("listing.exceptional_property");
 
   const labelMap = {
-    sold:   { text: "VENDU",        color: ORANGE },
-    coming: { text: "COMING SOON",  color: ORANGE },
-    offer:  { text: "SOUS OFFRE",   color: AMBRE  },
+    sold:   { text: t("listing.status_sold"),        color: ORANGE },
+    coming: { text: t("listing.status_coming_soon"),  color: ORANGE },
+    offer:  { text: t("listing.status_under_offer"),  color: AMBRE  },
   };
   const TAG = labelMap[mode] || labelMap.sold;
 
   const finalPrice = it.prix_final ?? it.prixFinal;
   const priceLabel =
-    formatCHF(finalPrice) || (mode === "coming" ? "Prix sur demande" : "Prix confidentiel");
+    formatCHF(finalPrice) || (mode === "coming" ? t("listing.price_on_request") : t("listing.price_confidential"));
 
   return (
     <Link

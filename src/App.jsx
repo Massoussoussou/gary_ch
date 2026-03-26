@@ -84,7 +84,8 @@ export default function App() {
   const { t, i18n } = useTranslation();
   const isEstimer = location.pathname.startsWith("/estimer") || location.pathname.startsWith("/en/estimate");
   const isHome = location.pathname === "/" || location.pathname === "/en";
-  const showFooter = !isEstimer && !isHome;
+  const isProjetsNeufs = location.pathname === "/projets-neufs" || location.pathname === "/en/new-projects";
+  const showFooter = !isEstimer && !isHome && !isProjetsNeufs;
 
   /* Synchronise i18next avec l'URL */
   useEffect(() => {

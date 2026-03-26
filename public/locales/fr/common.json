@@ -279,6 +279,7 @@
   "listing.thumbnail_alt": "Miniature {{num}}",
 
   "sell.proof_stat_sold": "vendus avant publication",
+  "sell.weeks_abbr": " sem.",
   "sell.proof_stat_delay": "d\u00e9lai moyen de vente",
   "sell.proof_stat_reach": "port\u00e9e mensuelle disponible",
   "sell.proof_text_1": "La moiti\u00e9 de nos biens trouvent acqu\u00e9reur",
@@ -612,6 +613,8 @@
   "listing.status_exclusive": "EXCLUSIF",
   "listing.status_coming_soon": "COMING SOON",
   "listing.status_suspended": "SUSPENDU",
+  "listing.status_under_offer": "SOUS OFFRE",
+  "listing.price_confidential": "Prix confidentiel",
   "listing.discover_arrow": "D\u00e9couvrir le bien \u2192",
   "listing.exceptional_property": "Propri\u00e9t\u00e9 d\u2019exception",
   "listing.fallback_meta": "Surface g\u00e9n\u00e9reuse \u2022 Finitions haut de gamme",

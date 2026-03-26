@@ -36,7 +36,7 @@ function useCountUp(target, duration = 2200, start = false) {
 /* ─── Section Proof — chiffres + texte + CTA ─── */
 const PROOF_STATS = [
   { value: 50, suffix: "%", labelKey: "sell.proof_stat_sold" },
-  { value: 8, suffix: " sem.", labelKey: "sell.proof_stat_delay" },
+  { value: 8, suffixKey: "sell.weeks_abbr", labelKey: "sell.proof_stat_delay" },
   { value: 500, suffix: "K", labelKey: "sell.proof_stat_reach" },
 ];
 
@@ -108,7 +108,7 @@ function ProofSection() {
                   className="font-sans font-bold text-[36px] sm:text-[52px] md:text-[72px] lg:text-[88px] leading-none tracking-tight text-[#FF4A3E]"
                   style={{ fontVariantNumeric: "tabular-nums" }}
                 >
-                  {Math.round(count)}{stat.suffix}
+                  {Math.round(count)}{stat.suffixKey ? t(stat.suffixKey) : stat.suffix}
                 </span>
                 <p
                   className="mt-3 text-[14px] md:text-[17px] uppercase tracking-[0.12em] text-gray-600 leading-relaxed"
@@ -1811,7 +1811,7 @@ function EquipeSection() {
 
   const stats = [
     { value: 50, suffix: "%", labelKey: "sell.proof_stat_sold" },
-    { value: 8, suffix: " sem.", labelKey: "sell.proof_stat_delay" },
+    { value: 8, suffixKey: "sell.weeks_abbr", labelKey: "sell.proof_stat_delay" },
     { value: 500, suffix: "K", labelKey: "sell.equipe_stat_reach" },
   ];
 
@@ -1891,7 +1891,7 @@ function EquipeSection() {
                 }}
               >
                 <p className="font-serif text-[clamp(1.6rem,4.5vw,3.4rem)] text-[#1A1A1A] leading-none mb-1">
-                  <CountNumber value={s.value} active={countUp} />{s.suffix}
+                  <CountNumber value={s.value} active={countUp} />{s.suffixKey ? t(s.suffixKey) : s.suffix}
                 </p>
                 <p className="text-[0.65rem] md:text-[0.75rem] uppercase tracking-[0.12em] text-neutral-400">{t(s.labelKey)}</p>
               </div>

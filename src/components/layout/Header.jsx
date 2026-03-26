@@ -206,8 +206,6 @@ export default function Header(){
               { to: link("sell") + '#livrables',      label: t("nav.sell_sub.deliverables") },
               { to: link("sell") + '#faq',            label: t("nav.sell_sub.faq") },
               { to: link("sell") + '#vendus',         label: t("nav.sell_sub.recently_sold") },
-              { to: link("sell") + '#equipe',         label: t("nav.sell_sub.team") },
-              { to: link("sell") + '#cta-final-sell', label: t("nav.sell_sub.contact_us") },
             ]},
             { to: link("estimate"),       label: t("nav.estimate") },
             { to: link("newProjects"), label: t("nav.new_projects") },
