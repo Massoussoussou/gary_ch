@@ -191,11 +191,11 @@ function getPhilosophiePoints(t) {
 
 function getParcoursSteps(t) {
   return [
-    { num: 1, title: t("sell.journey_step_1_title"), tag: t("sell.journey_step_1_tag"), desc: t("sell.journey_step_1_desc"), img: "/img/gary/garymontalegre03.jpg" },
-    { num: 2, title: t("sell.journey_step_2_title"), tag: t("sell.journey_step_2_tag"), desc: t("sell.journey_step_2_desc"), img: "/img/gary/garymontalegre29.jpg" },
-    { num: 3, title: t("sell.journey_step_3_title"), tag: t("sell.journey_step_3_tag"), desc: t("sell.journey_step_3_desc"), img: "/img/gary/intver25.jpg" },
+    { num: 1, title: t("sell.journey_step_1_title"), tag: t("sell.journey_step_1_tag"), desc: t("sell.journey_step_1_desc"), img: "/img/gary/parcours-01.webp" },
+    { num: 2, title: t("sell.journey_step_2_title"), tag: t("sell.journey_step_2_tag"), desc: t("sell.journey_step_2_desc"), img: "/img/gary/parcours-02.webp" },
+    { num: 3, title: t("sell.journey_step_3_title"), tag: t("sell.journey_step_3_tag"), desc: t("sell.journey_step_3_desc"), img: "/img/gary/parcours-03.webp" },
     { num: 4, title: t("sell.journey_step_4_title"), tag: t("sell.journey_step_4_tag"), desc: t("sell.journey_step_4_desc"), img: "/img/gary/extver5.jpg" },
-    { num: 5, title: t("sell.journey_step_5_title"), tag: t("sell.journey_step_5_tag"), desc: t("sell.journey_step_5_desc"), img: "/img/gary/intgvac4.jpg" },
+    { num: 5, title: t("sell.journey_step_5_title"), tag: t("sell.journey_step_5_tag"), desc: t("sell.journey_step_5_desc"), img: "/img/gary/parcours-05.webp" },
   ];
 }
 

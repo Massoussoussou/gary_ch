@@ -660,15 +660,109 @@ function HeroCirclesSection({ t }) {
 /* ========== Données "Ce qui nous distingue" ========== */
 function getDistinguishPoints(t) {
   return [
-    { main: t("about.distinguish_1_main"), detail: t("about.distinguish_1_detail"), image: "/img/gary/02.webp" },
-    { main: t("about.distinguish_2_main"), detail: t("about.distinguish_2_detail"), image: "/img/gary/03.webp" },
-    { main: t("about.distinguish_3_main"), detail: null, image: "/img/gary/ExtBlv-8.webp" },
-    { main: t("about.distinguish_4_main"), detail: t("about.distinguish_4_detail"), image: "/img/gary/extver5.webp" },
-    { main: t("about.distinguish_5_main"), detail: t("about.distinguish_5_detail"), image: "/img/gary/maison35.webp" },
+    { main: t("about.distinguish_1_main"), detail: t("about.distinguish_1_detail"), image: "/img/gary/distingue-01.webp" },
+    { main: t("about.distinguish_2_main"), detail: t("about.distinguish_2_detail"), image: "/img/gary/distingue-02.webp" },
+    { main: t("about.distinguish_3_main"), detail: null, image: "/img/gary/distingue-03.webp" },
+    { main: t("about.distinguish_4_main"), detail: t("about.distinguish_4_detail"), image: "/img/gary/distingue-04.webp" },
+    { main: t("about.distinguish_5_main"), detail: t("about.distinguish_5_detail"), image: "/img/gary/distingue-05.webp" },
   ];
 }
 
 /* ========== Ce qui nous distingue — Zigzag SVG courbe + images alternées ========== */
+
+/* Image interactive réseaux sociaux (3 zones cliquables avec curseur flottant) */
+const SOCIAL_ROWS = [
+  { href: "https://www.instagram.com/gary_realestate/", icon: "instagram" },
+  { href: "https://www.tiktok.com/@gary_realestate", icon: "tiktok" },
+  { href: "https://www.linkedin.com/company/gary-real-estate/", icon: "linkedin" },
+];
+
+const SOCIAL_ICONS = {
+  instagram: (
+    <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+    </svg>
+  ),
+  tiktok: (
+    <svg className="w-5 h-5 text-white" viewBox="0 0 48 48" fill="currentColor">
+      <path d="M34.14 11a9.94 9.94 0 01-2.46-6.52V3h-7.09v26.54a5.73 5.73 0 01-5.72 5.31 5.73 5.73 0 01-5.73-5.73 5.73 5.73 0 015.73-5.73c.6 0 1.17.1 1.71.27v-7.3a13.07 13.07 0 00-1.71-.12A12.86 12.86 0 006 29.12 12.86 12.86 0 0018.87 42a12.86 12.86 0 0012.86-12.88V14.96A16.5 16.5 0 0042 18.36v-7.1a9.97 9.97 0 01-7.86-.26z" />
+    </svg>
+  ),
+  linkedin: (
+    <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+    </svg>
+  ),
+};
+
+function SocialImageBlock({ imgRef, src }) {
+  const containerRef = useRef(null);
+  const followerRef = useRef(null);
+  const [activeRow, setActiveRow] = useState(null);
+  const mousePos = useRef({ x: 0, y: 0 });
+  const followerPos = useRef({ x: 0, y: 0 });
+  const rafRef = useRef(null);
+
+  useEffect(() => {
+    const animate = () => {
+      followerPos.current.x += (mousePos.current.x - followerPos.current.x) * 0.15;
+      followerPos.current.y += (mousePos.current.y - followerPos.current.y) * 0.15;
+      if (followerRef.current) {
+        followerRef.current.style.transform = `translate(${followerPos.current.x}px, ${followerPos.current.y}px) translate(-50%, -50%)`;
+      }
+      rafRef.current = requestAnimationFrame(animate);
+    };
+    rafRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
+
+  const handleMouseMove = (e) => {
+    const rect = containerRef.current.getBoundingClientRect();
+    mousePos.current.x = e.clientX - rect.left;
+    mousePos.current.y = e.clientY - rect.top;
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      className="overflow-hidden relative cursor-pointer"
+      style={{ height: "clamp(280px, 30vw, 440px)" }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => setActiveRow(null)}
+    >
+      <img
+        ref={imgRef}
+        src={src}
+        alt=""
+        className="w-full h-full object-cover will-change-transform"
+        style={{ transform: "scale(1.12)" }}
+        loading="lazy"
+      />
+      {/* 3 zones cliquables */}
+      {SOCIAL_ROWS.map((row, i) => (
+        <a
+          key={row.icon}
+          href={row.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute left-0 right-0"
+          style={{ top: `${(i / 3) * 100}%`, height: "33.333%" }}
+          onMouseEnter={() => setActiveRow(i)}
+        />
+      ))}
+      {/* Curseur flottant */}
+      <div
+        ref={followerRef}
+        className="absolute top-0 left-0 pointer-events-none z-10 transition-opacity duration-200"
+        style={{ opacity: activeRow !== null ? 1 : 0 }}
+      >
+        <div className="w-10 h-10 rounded-full bg-[#FF4A3E] flex items-center justify-center shadow-lg">
+          {activeRow !== null && SOCIAL_ICONS[SOCIAL_ROWS[activeRow].icon]}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /* Sous-composant : une rangée de la timeline (grille 3 colonnes) */
 function DistinguishRow({ point, index, isLeft, dotRef }) {
@@ -713,7 +807,9 @@ function DistinguishRow({ point, index, isLeft, dotRef }) {
     </div>
   );
 
-  const imageBlock = (
+  const imageBlock = index === 2 ? (
+    <SocialImageBlock imgRef={imgRef} src={point.image} />
+  ) : (
     <div className="overflow-hidden" style={{ height: "clamp(280px, 30vw, 440px)" }}>
       <img
         ref={imgRef}
@@ -1012,25 +1108,17 @@ function DistinguishSection({ t }) {
   );
 }
 
-/* ========== Section 5 — Influenceurs immobilier suisse (fond beige) ========== */
-function getInstaStats(t) {
-  return [
-    { value: "40k+", label: t("about.insta_stat_followers") },
-    { value: "6.6M", label: t("about.insta_stat_views") },
-    { value: "500+", label: t("about.insta_stat_content") },
-    { value: "N\u00b01", label: t("about.insta_stat_rank") },
-  ];
-}
+/* ========== Section 5 — Influenceurs immobilier suisse ========== */
 
 function InfluencersSection({ t }) {
   const [ref, seen] = useInViewOnce({ threshold: 0.2 });
 
   return (
-    <section ref={ref} className="relative z-10 bg-[#FAF6F0] py-20 md:py-28">
-      <div className="max-w-[1200px] mx-auto px-6 md:px-12">
+    <section ref={ref} className="relative z-10 bg-white py-20 md:py-28">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12">
         {/* Titre de section */}
         <div
-          className="mb-14 md:mb-20"
+          className="mb-10 md:mb-14"
           style={{
             opacity: seen ? 1 : 0,
             transform: seen ? "translateY(0)" : "translateY(20px)",
@@ -1038,117 +1126,115 @@ function InfluencersSection({ t }) {
           }}
         >
           <div
-            className="h-[2px] bg-[#FF4A3E] mb-6"
+            className="h-[2px] bg-[#FF4A3E] mb-6 mx-auto"
             style={{
               width: seen ? "60px" : "0px",
               transition: "width 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           />
-          <h3 className="font-serif text-3xl md:text-5xl tracking-wide text-gray-900 mb-4 leading-tight">
+          <h3 className="font-serif text-3xl md:text-5xl tracking-wide text-gray-900 mb-4 leading-tight text-center">
             {t("about.influencers_title_prefix")} <span className="text-[#FF4A3E]">{t("about.influencers_title_highlight")}</span> {t("about.influencers_title_suffix")}
           </h3>
-          <p className="text-lg md:text-xl leading-relaxed text-gray-600 font-light max-w-[600px]">
+          <p className="text-lg md:text-xl leading-relaxed text-gray-600 font-light max-w-[600px] text-center mx-auto">
             {t("about.influencers_subtitle")}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-start">
-          {/* Gauche — Grille de posts Instagram */}
-          <div
-            style={{
-              opacity: seen ? 1 : 0,
-              transform: seen ? "translateX(0)" : "translateX(-30px)",
-              transition: "opacity 0.8s ease-out 0.15s, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s",
-            }}
+        {/* Images Instagram + TikTok côte à côte */}
+        <div
+          className="grid grid-cols-2 gap-3 md:gap-5 max-w-[900px] mx-auto"
+          style={{
+            opacity: seen ? 1 : 0,
+            transform: seen ? "translateY(0)" : "translateY(30px)",
+            transition: "opacity 0.8s ease-out 0.15s, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s",
+          }}
+        >
+          {/* Instagram */}
+          <a
+            href="https://www.instagram.com/gary_realestate/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group/insta relative block overflow-hidden"
           >
-            <div className="grid grid-cols-3 gap-1.5 overflow-hidden">
-              {[
-                "/img/gary/01.webp",
-                "/img/gary/02.webp",
-                "/img/gary/03.webp",
-                "/img/gary/ExtBlv-8.webp",
-                "/img/gary/ExtBlv-9.webp",
-                "/img/gary/extver5.webp",
-              ].map((src, i) => (
-                <a
-                  key={i}
-                  href="https://www.instagram.com/gary_realestate/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group/post relative aspect-square overflow-hidden"
-                >
-                  <img src={src} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover/post:scale-110" loading="lazy" />
-                  <div className="absolute inset-0 bg-black/0 group-hover/post:bg-black/30 transition-colors duration-300 flex items-center justify-center">
-                    <svg className="w-6 h-6 text-white opacity-0 group-hover/post:opacity-100 transition-opacity duration-300" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
-                    </svg>
-                  </div>
-                </a>
-              ))}
+            <img src="/img/gary/influenceurs-instagram.webp" alt="GARY Instagram" className="w-full h-auto object-cover" loading="lazy" />
+            <style>{`
+              @keyframes social-pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+              }
+              .social-btn { position: relative; overflow: hidden; }
+              .social-btn::before {
+                content: "";
+                position: absolute;
+                inset: -10%;
+                background: #FF4A3E;
+                border-radius: 9999px;
+                transform: scale(0);
+                transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+              }
+              .social-btn:hover::before {
+                transform: scale(1.2);
+              }
+              .social-btn svg { position: relative; z-index: 1; }
+            `}</style>
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="social-btn w-16 h-16 md:w-20 md:h-20 rounded-full bg-black flex items-center justify-center opacity-0 group-hover/insta:opacity-100 transition-opacity duration-300 pointer-events-auto cursor-pointer" style={{ animation: 'social-pulse 1.8s ease-in-out infinite' }}>
+                <svg className="w-8 h-8 md:w-10 md:h-10 text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                </svg>
+              </div>
             </div>
-          </div>
+          </a>
 
-          {/* Droite — Profil Instagram + stats */}
-          <div
-            style={{
-              opacity: seen ? 1 : 0,
-              transform: seen ? "translateX(0)" : "translateX(30px)",
-              transition: "opacity 0.8s ease-out 0.25s, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.25s",
-            }}
+          {/* TikTok */}
+          <a
+            href="https://www.tiktok.com/@gary_realestate"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group/tiktok relative block overflow-hidden"
           >
-            {/* Header profil */}
-            <a
-              href="https://www.instagram.com/gary_realestate/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center gap-4 mb-8 hover:opacity-80 transition-opacity"
-            >
-              <div className="w-[72px] h-[72px] md:w-20 md:h-20 rounded-full bg-[#FF4A3E] flex items-center justify-center shrink-0 p-3">
-                <img src="/Logo/logo-gary.png" alt="GARY" className="w-full h-full object-contain" />
+            <img src="/img/gary/influenceurs-tiktok.webp" alt="GARY TikTok" className="w-full h-auto object-cover" loading="lazy" />
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="social-btn w-16 h-16 md:w-20 md:h-20 rounded-full bg-black flex items-center justify-center opacity-0 group-hover/tiktok:opacity-100 transition-opacity duration-300 pointer-events-auto cursor-pointer" style={{ animation: 'social-pulse 1.8s ease-in-out infinite' }}>
+                <svg className="w-8 h-8 md:w-10 md:h-10 text-white" viewBox="0 0 48 48" fill="currentColor">
+                  <path d="M34.14 11a9.94 9.94 0 01-2.46-6.52V3h-7.09v26.54a5.73 5.73 0 01-5.72 5.31 5.73 5.73 0 01-5.73-5.73 5.73 5.73 0 015.73-5.73c.6 0 1.17.1 1.71.27v-7.3a13.07 13.07 0 00-1.71-.12A12.86 12.86 0 006 29.12 12.86 12.86 0 0018.87 42a12.86 12.86 0 0012.86-12.88V14.96A16.5 16.5 0 0042 18.36v-7.1a9.97 9.97 0 01-7.86-.26z" />
+                </svg>
               </div>
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="font-semibold text-gray-900 text-lg md:text-xl">gary_realestate</span>
-                  <svg className="w-5 h-5 text-[#3897f0]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.4 14.6l-4.2-4.2 1.4-1.4 2.8 2.8 5.6-5.6 1.4 1.4-7 7z"/></svg>
-                </div>
-                <p className="text-gray-500 text-sm mt-0.5">GARY Real Estate</p>
-              </div>
-              <svg className="w-5 h-5 ml-auto text-gray-400 group-hover:text-[#FF4A3E] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </a>
-
-            {/* Grille de stats */}
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              {getInstaStats(t).map((stat, i) => (
-                <div
-                  key={i}
-                  className="bg-white p-5 text-center shadow-sm"
-                  style={{
-                    opacity: seen ? 1 : 0,
-                    transform: seen ? "translateY(0)" : "translateY(12px)",
-                    transition: `opacity 0.5s ease-out ${0.35 + i * 0.08}s, transform 0.5s ease-out ${0.35 + i * 0.08}s`,
-                  }}
-                >
-                  <p className="text-2xl md:text-3xl font-bold text-[#FF4A3E] leading-none">{stat.value}</p>
-                  <p className="mt-2 text-[13px] text-gray-500 uppercase tracking-[0.08em] leading-snug">{stat.label}</p>
-                </div>
-              ))}
             </div>
+          </a>
+        </div>
 
-            {/* Bouton */}
-            <a
-              href="https://www.instagram.com/gary_realestate/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-[13px] uppercase tracking-[0.12em] text-[#FF4A3E] hover:text-[#E43E33] font-medium transition-colors"
-            >
-              {t("about.see_all_instagram")}
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </a>
-          </div>
+        {/* Boutons sous chaque image */}
+        <div
+          className="grid grid-cols-2 gap-3 md:gap-5 max-w-[900px] mx-auto mt-6"
+          style={{
+            opacity: seen ? 1 : 0,
+            transform: seen ? "translateY(0)" : "translateY(10px)",
+            transition: "opacity 0.6s ease-out 0.4s, transform 0.6s ease-out 0.4s",
+          }}
+        >
+          <a
+            href="https://www.instagram.com/gary_realestate/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-[13px] uppercase tracking-[0.12em] text-[#FF4A3E] hover:text-[#E43E33] font-medium transition-colors"
+          >
+            {t("about.see_all_instagram")}
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+          <a
+            href="https://www.tiktok.com/@gary_realestate"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-[13px] uppercase tracking-[0.12em] text-[#FF4A3E] hover:text-[#E43E33] font-medium transition-colors"
+          >
+            {t("about.see_all_tiktok", "Voir tout sur TikTok")}
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
         </div>
       </div>
     </section>

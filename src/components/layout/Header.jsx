@@ -109,7 +109,7 @@ function LogoWithHoverAnim() {
 export default function Header(){
   const [open, setOpen] = useState(false)
   const { pathname } = useLocation()
-  const { t, link } = useLocale()
+  const { t, link, lang, switchLanguage } = useLocale()
   const isHome = pathname === '/' || pathname === '/en'
 
   const headerRef = useRef(null)
@@ -325,28 +325,49 @@ export default function Header(){
             }
           `}</style>
 
-          <Link
-            to={link("contact")}
-            className="btn-gary hidden xl:inline-flex items-center gap-2 rounded-full bg-[#FF4A3E] text-white shadow-sm
-                       transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/40
-                       relative"
-            style={{
-              padding: `${S.ctaPadY}px ${S.ctaPadX}px`,
-              fontSize: `${S.ctaFont}px`,
-              fontWeight: 600,
-              whiteSpace: 'nowrap',
-              ['--logoUrl']: "url('/Logo/logo-gary-orange.png')",
-              ['--logoAlpha']: 0.16,
-              ['--wipeDur']: '550ms',
-            }}
-          >
-            <span className="logo-reveal" aria-hidden="true">
-              <span className="logo-layer" />
-            </span>
-            <span className="relative z-[1]">{t("nav.contact_gary")}</span>
-          </Link>
-
-          <LanguageSwitcher className="text-text" />
+          {/* Bouton combiné Langue + Contact */}
+          <div className="hidden xl:inline-flex items-stretch rounded-full overflow-hidden shadow-sm">
+            <button
+              type="button"
+              onClick={() => switchLanguage(lang === "fr" ? "en" : "fr")}
+              className="group/lang relative flex items-center justify-center bg-white text-gray-900 font-normal uppercase tracking-[0.1em]
+                         overflow-hidden
+                         focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/40"
+              style={{
+                padding: `${S.ctaPadY}px ${Math.round(S.ctaPadX * 0.75)}px`,
+                fontSize: `${S.ctaFont}px`,
+                borderTopLeftRadius: '9999px',
+                borderBottomLeftRadius: '9999px',
+                border: '1px solid #FF4A3E',
+                borderRight: 'none',
+              }}
+              aria-label={lang === "fr" ? "Switch to English" : "Passer en français"}
+            >
+              <span className="absolute inset-0 bg-[#FF4A3E] origin-bottom scale-y-0 group-hover/lang:scale-y-100 transition-transform duration-300 ease-out" />
+              <span className="relative z-[1] transition-colors duration-300 group-hover/lang:text-white">{lang === "fr" ? "EN" : "FR"}</span>
+            </button>
+            <Link
+              to={link("contact")}
+              className="btn-gary relative inline-flex items-center gap-2 bg-[#FF4A3E] text-white
+                         transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/40"
+              style={{
+                padding: `${S.ctaPadY}px ${S.ctaPadX}px`,
+                fontSize: `${S.ctaFont}px`,
+                fontWeight: 600,
+                whiteSpace: 'nowrap',
+                borderTopRightRadius: '9999px',
+                borderBottomRightRadius: '9999px',
+                ['--logoUrl']: "url('/Logo/logo-gary-orange.png')",
+                ['--logoAlpha']: 0.16,
+                ['--wipeDur']: '550ms',
+              }}
+            >
+              <span className="logo-reveal" aria-hidden="true">
+                <span className="logo-layer" />
+              </span>
+              <span className="relative z-[1]">{t("nav.contact_gary")}</span>
+            </Link>
+          </div>
 
           {/* ✅ Burger mobile refait (plus clean + centré) */}
           <button
