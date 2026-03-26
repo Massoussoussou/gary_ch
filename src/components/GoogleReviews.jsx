@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import reviews from "../data/reviews.json";
+import fallbackReviews from "../data/reviews.json";
+import useGoogleReviews from "../hooks/useGoogleReviews.js";
 
 const GOOGLE_URL =
   "https://www.google.com/maps/place/GARY/@46.2076666,6.1350407,17z/data=!4m16!1m9!3m8!1s0x478c65ab47ccae1f:0x198c041cb8124a41!2sGARY!8m2!3d46.2007532!4d6.1554987!9m1!1b1!16s%2Fg%2F11vbtxghc1!3m5!1s0x478c65ab47ccae1f:0x198c041cb8124a41!8m2!3d46.2007532!4d6.1554987!16s%2Fg%2F11vbtxghc1?entry=ttu&g_ep=EgoyMDI2MDMxMC4wIKXMDSoASAFQAw%3D%3D";
@@ -43,7 +44,8 @@ function GoogleLogo({ className = "" }) {
 }
 
 /* ── Carte d'avis ── */
-function ReviewCard({ review, index, seen }) {
+function ReviewCard({ review, index, seen, onReadMore }) {
+  const needsTruncate = review.text.length > 200;
   return (
     <div
       className="bg-white border border-gray-100 shadow-[0_4px_24px_rgba(0,0,0,0.06)] p-6 md:p-8 flex flex-col"
@@ -73,17 +75,49 @@ function ReviewCard({ review, index, seen }) {
 
       {/* Texte */}
       <p className="text-gray-700 text-[15px] md:text-base leading-relaxed flex-1">
-        &ldquo;{review.text}&rdquo;
+        &ldquo;{needsTruncate ? review.text.slice(0, 200) : review.text}
+        {needsTruncate && (
+          <button onClick={() => onReadMore(review)} className="text-[#FF4A3E] font-medium ml-1 hover:underline">...lire plus</button>
+        )}
+        {!needsTruncate && <>&rdquo;</>}
       </p>
     </div>
   );
 }
 
+/* ── Helper : initiales depuis un nom ── */
+function getInitials(name) {
+  return name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
+}
+
+/* ── Helper : date relative lisible ── */
+function formatDate(dateStr) {
+  if (!dateStr) return "";
+  try {
+    const d = new Date(dateStr);
+    const months = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+    return `${months[d.getMonth()]} ${d.getFullYear()}`;
+  } catch { return ""; }
+}
+
 /* ── Composant principal ── */
 export default function GoogleReviews() {
   const [ref, seen] = useInViewOnce({ threshold: 0.1 });
+  const [openReview, setOpenReview] = useState(null);
+  const { data: reviewsData } = useGoogleReviews();
+
+  const reviews = reviewsData?.reviews?.length
+    ? reviewsData.reviews.slice(0, 3).map((r) => ({
+        author: r.name,
+        rating: r.stars,
+        date: formatDate(r.date),
+        text: r.text,
+        avatar: getInitials(r.name),
+      }))
+    : fallbackReviews;
 
   return (
+    <>
     <section ref={ref} className="relative z-10 bg-white py-20 md:py-28">
       <div className="max-w-[1200px] mx-auto px-6 md:px-12">
 
@@ -125,13 +159,19 @@ export default function GoogleReviews() {
             <div className="flex gap-0.5">
               {[...Array(5)].map((_, i) => <Star key={i} />)}
             </div>
+            {reviewsData && (
+              <>
+                <span className="text-sm text-gray-400">·</span>
+                <span className="text-sm text-gray-600 font-medium">{reviewsData.rating}/5 ({reviewsData.totalReviews} avis)</span>
+              </>
+            )}
           </div>
         </div>
 
         {/* Grille d'avis */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {reviews.map((review, i) => (
-            <ReviewCard key={i} review={review} index={i} seen={seen} />
+            <ReviewCard key={i} review={review} index={i} seen={seen} onReadMore={setOpenReview} />
           ))}
         </div>
 
@@ -158,5 +198,44 @@ export default function GoogleReviews() {
         </div>
       </div>
     </section>
+
+    {/* Modal avis complet */}
+    {openReview && (
+      <div
+        className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
+        onClick={() => setOpenReview(null)}
+      >
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+        <div
+          className="relative bg-white rounded-lg max-w-lg w-full p-8 shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            onClick={() => setOpenReview(null)}
+            className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-700 text-2xl leading-none"
+          >
+            &times;
+          </button>
+          <div className="flex items-center gap-4 mb-5">
+            <div className="w-11 h-11 rounded-full bg-[#FF4A3E] flex items-center justify-center shrink-0">
+              <span className="text-white text-sm font-semibold tracking-wide">{openReview.avatar}</span>
+            </div>
+            <div>
+              <p className="text-gray-900 font-semibold text-[15px]">{openReview.author}</p>
+              <p className="text-gray-400 text-[13px]">{openReview.date}</p>
+            </div>
+          </div>
+          <div className="flex gap-0.5 mb-4">
+            {Array.from({ length: openReview.rating }).map((_, j) => (
+              <Star key={j} />
+            ))}
+          </div>
+          <p className="text-gray-700 text-[15px] md:text-base leading-relaxed">
+            &ldquo;{openReview.text}&rdquo;
+          </p>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
