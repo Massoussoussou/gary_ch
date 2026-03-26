@@ -52,7 +52,7 @@ function useThumbVisible() {
 
 
 export default function ListingDetail() {
-  const { t, link } = useLocale();
+  const { t, link, lang } = useLocale();
   const { id } = useParams();
   const navigate = useNavigate();
   const { data, loading, error } = useProperties();
@@ -921,6 +921,7 @@ export default function ListingDetail() {
 
             {/* ======= BAS DE PAGE : CARTE (gauche) + AGENT (droite) ======= */}
       <section className="detail-bottom relative bg-white" style={{ zIndex: 2 }}>
+        {mapQuery && (
         <div className="detail-bottom__map">
           <div className="detail-map__inner">
             {address && (
@@ -940,13 +941,14 @@ export default function ListingDetail() {
             <iframe
               title={`Carte - ${item.titre || "Adresse"}`}
               src={`https://www.google.com/maps?q=${encodeURIComponent(
-                mapQuery || ""
+                mapQuery
               )}&output=embed`}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
           </div>
         </div>
+        )}
 
         <aside className="detail-bottom__agent">
           <div className="agent-card enhanced">
@@ -957,11 +959,11 @@ export default function ListingDetail() {
             <div className="agent-info">
               <div className="agent-top">
                 <h3 className="agent-name">{agent.name}</h3>
-                {agent.role && <div className="agent-role">{agent.role}</div>}
+                {(agent.role || agent.role_en) && <div className="agent-role">{lang === "en" && agent.role_en ? agent.role_en : agent.role}</div>}
               </div>
 
-              {agent.quote && (
-                <div className="agent-quote">“{agent.quote}”</div>
+              {(agent.quote || agent.quote_en) && (
+                <div className=”agent-quote”>”{lang === “en” && agent.quote_en ? agent.quote_en : agent.quote}”</div>
               )}
 
               <div className="agent-contacts">
