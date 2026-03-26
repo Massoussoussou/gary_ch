@@ -1050,6 +1050,7 @@ function LivrablesSection() {
   const temoignages = reviewsData?.reviews?.length
     ? reviewsData.reviews.slice(0, 3).map((r) => ({ name: r.name, text: r.text, stars: r.stars }))
     : fallback;
+  const [openReview, setOpenReview] = useState(null);
   const sectionRef = useRef(null);
   const [progress, setProgress] = useState(0);
 
@@ -1153,7 +1154,13 @@ function LivrablesSection() {
                   </svg>
                 ))}
               </div>
-              <p className="text-[0.9rem] leading-relaxed text-white/90 mb-3">« {temo.text} »</p>
+              <p className="text-[0.9rem] leading-relaxed text-white/90 mb-3">
+                « {temo.text.length > 120 ? temo.text.slice(0, 120) : temo.text}
+                {temo.text.length > 120 && (
+                  <button onClick={() => setOpenReview(temo)} className="text-[#FF4A3E] font-medium ml-1 hover:underline">...lire plus</button>
+                )}
+                {temo.text.length <= 120 && " »"}
+              </p>
               <p className="text-[0.82rem] text-white/50">— {temo.name}</p>
             </div>
           ))}
@@ -1296,7 +1303,11 @@ function LivrablesSection() {
                       ))}
                     </div>
                     <p className="text-[0.95rem] md:text-[1.05rem] leading-relaxed text-[#1A1A1A]">
-                      « {temo.text} »
+                      « {temo.text.length > 120 ? temo.text.slice(0, 120) : temo.text}
+                      {temo.text.length > 120 && (
+                        <button onClick={() => setOpenReview(temo)} className="text-[#FF4A3E] font-medium ml-1 hover:underline pointer-events-auto">...lire plus</button>
+                      )}
+                      {temo.text.length <= 120 && " »"}
                     </p>
                   </div>
                   <p className="text-[0.9rem] text-neutral-500 mt-4">— {temo.name}</p>
@@ -1318,6 +1329,36 @@ function LivrablesSection() {
         </div>
       </div>
     </section>
+
+    {/* ── Modal avis complet ── */}
+    {openReview && (
+      <div
+        className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
+        onClick={() => setOpenReview(null)}
+      >
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+        <div
+          className="relative bg-white rounded-lg max-w-lg w-full p-8 shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            onClick={() => setOpenReview(null)}
+            className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-700 text-2xl leading-none"
+          >
+            &times;
+          </button>
+          <div className="flex gap-1 mb-4">
+            {Array.from({ length: openReview.stars }).map((_, j) => (
+              <svg key={j} className="w-5 h-5" fill="#FF4A3E" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+              </svg>
+            ))}
+          </div>
+          <p className="text-[1rem] leading-relaxed text-[#1A1A1A] mb-4">« {openReview.text} »</p>
+          <p className="text-[0.9rem] text-neutral-500">— {openReview.name}</p>
+        </div>
+      </div>
+    )}
     </>
   );
 }

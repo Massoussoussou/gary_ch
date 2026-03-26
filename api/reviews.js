@@ -27,7 +27,7 @@ export default async function handler(req, res) {
 
   try {
     const resp = await fetch(
-      `https://places.googleapis.com/v1/places/${placeId}`,
+      `https://places.googleapis.com/v1/places/${placeId}?languageCode=fr`,
       {
         headers: {
           "X-Goog-Api-Key": apiKey,
