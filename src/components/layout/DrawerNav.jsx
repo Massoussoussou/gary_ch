@@ -4,7 +4,7 @@ import { useLocale } from "../../hooks/useLocale.js";
 
 export default function DrawerNav({ open, onClose }) {
   const { pathname } = useLocation();
-  const { t, link } = useLocale();
+  const { t, link, lang, switchLanguage } = useLocale();
   const firstLinkRef = useRef(null);
   const aboutSubsRef = useRef(null);
   const vendreSubsRef = useRef(null);
@@ -152,21 +152,40 @@ export default function DrawerNav({ open, onClose }) {
               </span>
             </Link>
 
-            <button
-              type="button"
-              onClick={onClose}
-              className="
-                inline-flex items-center justify-center rounded-full
-                h-11 w-11
-                bg-white/80 border border-black/12 shadow-sm
-                transition-all duration-200
-                hover:bg-white hover:border-black/20
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/35
-              "
-              aria-label={t("aria.close")}
-            >
-              <span className="text-[18px] leading-none text-black/85">✕</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => { switchLanguage(lang === "fr" ? "en" : "fr"); onClose(); }}
+                className="
+                  inline-flex items-center justify-center rounded-full
+                  h-11 w-11
+                  bg-white/80 border border-black/12 shadow-sm
+                  transition-all duration-200
+                  hover:bg-white hover:border-black/20
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/35
+                  text-[13px] font-semibold tracking-wide text-black/85
+                "
+                aria-label={lang === "fr" ? "Switch to English" : "Passer en français"}
+              >
+                {lang === "fr" ? "EN" : "FR"}
+              </button>
+
+              <button
+                type="button"
+                onClick={onClose}
+                className="
+                  inline-flex items-center justify-center rounded-full
+                  h-11 w-11
+                  bg-white/80 border border-black/12 shadow-sm
+                  transition-all duration-200
+                  hover:bg-white hover:border-black/20
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/35
+                "
+                aria-label={t("aria.close")}
+              >
+                <span className="text-[18px] leading-none text-black/85">✕</span>
+              </button>
+            </div>
           </div>
 
           {/* Content */}
@@ -196,30 +215,38 @@ export default function DrawerNav({ open, onClose }) {
 
               {/* VENDRE — accordéon */}
               <li>
-                <button
-                  type="button"
-                  onClick={() => setVendreOpen((v) => !v)}
+                <div
                   className={`
-                    group relative w-full text-left block rounded-2xl px-5 py-3.5 overflow-hidden border
+                    group relative w-full text-left rounded-2xl px-5 py-3.5 overflow-hidden border
                     transition-all duration-200
-                    focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/30
                     ${vendreActive || vendreOpen
                       ? "bg-[#FF4A3E] border-[#FF4A3E] shadow-[0_10px_24px_rgba(255,74,62,0.25)]"
                       : "border-black/12 bg-white/55 hover:bg-white/80 hover:border-black/18"}
                   `}
                 >
                   <div className="pl-2 flex items-center justify-between">
-                    <div>
+                    <NavLink
+                      to={link("sell")}
+                      onClick={onClose}
+                      className="flex-1 min-w-0"
+                    >
                       <div className={`font-light uppercase leading-none tracking-[0.26em] text-[clamp(22px,6.6vw,34px)] ${vendreActive || vendreOpen ? "text-white" : "text-black"}`}>{t("drawer.sell")}</div>
                       <div className={`mt-2 text-[13px] ${vendreActive || vendreOpen ? "text-white/80" : "text-black/70"}`}>{t("drawer.sell_sub")}</div>
-                    </div>
-                    <span
-                      className={`text-[20px] transition-transform duration-300 ease-out ${vendreActive || vendreOpen ? "text-white/60" : "text-black/40"}`}
-                      style={{ transform: vendreOpen ? "rotate(180deg)" : "rotate(0deg)" }}
-                      aria-hidden
-                    >▾</span>
+                    </NavLink>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); setVendreOpen((v) => !v); }}
+                      className="p-2 -mr-2 focus:outline-none"
+                      aria-label={vendreOpen ? "Fermer sous-menu" : "Ouvrir sous-menu"}
+                    >
+                      <span
+                        className={`text-[20px] transition-transform duration-300 ease-out ${vendreActive || vendreOpen ? "text-white/60" : "text-black/40"}`}
+                        style={{ transform: vendreOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                        aria-hidden
+                      >▾</span>
+                    </button>
                   </div>
-                </button>
+                </div>
                 <div
                   ref={vendreSubsRef}
                   className="overflow-hidden transition-all duration-150 ease-out"

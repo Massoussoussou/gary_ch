@@ -32,7 +32,7 @@ export default function StickyMobileCTA({ hidden }) {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 md:hidden z-50 transition-transform duration-300"
+      className="fixed bottom-0 left-0 right-0 md:hidden z-40 transition-transform duration-300"
       style={{ transform: visible ? "translateY(0)" : "translateY(100%)" }}
     >
       <div className="bg-white/95 backdrop-blur-md border-t border-neutral-200 px-4 py-3 flex items-center justify-between gap-3">
