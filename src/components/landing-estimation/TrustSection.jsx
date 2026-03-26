@@ -1,42 +1,34 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useLocale } from "../../hooks/useLocale.js";
+import useGoogleReviews from "../../hooks/useGoogleReviews.js";
+
+function getInitials(name) {
+  return name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
+}
 
 export default function TrustSection() {
   const { t } = useLocale();
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
   const [activeIdx, setActiveIdx] = useState(1);
+  const [openReview, setOpenReview] = useState(null);
 
-  const testimonials = [
-    {
-      quote: t("estimate.trust.quote_1"),
-      initials: "ML",
-      name: t("estimate.trust.name_1"),
-      detail: t("estimate.trust.detail_1"),
-      accent: false,
-    },
-    {
-      quote: t("estimate.trust.quote_2"),
-      initials: "PD",
-      name: t("estimate.trust.name_2"),
-      detail: t("estimate.trust.detail_2"),
-      accent: true,
-    },
-    {
-      quote: t("estimate.trust.quote_3"),
-      initials: "SF",
-      name: t("estimate.trust.name_3"),
-      detail: t("estimate.trust.detail_3"),
-      accent: false,
-    },
-    {
-      quote: t("estimate.trust.quote_4"),
-      initials: "AR",
-      name: t("estimate.trust.name_4"),
-      detail: t("estimate.trust.detail_4"),
-      accent: false,
-    },
+  const fallback = [
+    { quote: t("estimate.trust.quote_1"), initials: "ML", name: t("estimate.trust.name_1"), detail: t("estimate.trust.detail_1") },
+    { quote: t("estimate.trust.quote_2"), initials: "PD", name: t("estimate.trust.name_2"), detail: t("estimate.trust.detail_2") },
+    { quote: t("estimate.trust.quote_3"), initials: "SF", name: t("estimate.trust.name_3"), detail: t("estimate.trust.detail_3") },
+    { quote: t("estimate.trust.quote_4"), initials: "AR", name: t("estimate.trust.name_4"), detail: t("estimate.trust.detail_4") },
   ];
+
+  const { data: reviewsData } = useGoogleReviews();
+  const testimonials = reviewsData?.reviews?.length >= 4
+    ? reviewsData.reviews.slice(0, 4).map((r) => ({
+        quote: r.text,
+        initials: getInitials(r.name),
+        name: r.name,
+        detail: "Avis Google",
+      }))
+    : fallback;
 
   const numbers = [
     { val: "150+", label: t("estimate.trust.stat_sold") },
@@ -57,6 +49,7 @@ export default function TrustSection() {
   }, []);
 
   return (
+    <>
     <section ref={ref} className="bg-[#FAF7F4] py-24 md:py-32 overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-5 md:px-8">
         {/* Header + stats side by side */}
@@ -128,7 +121,16 @@ export default function TrustSection() {
                     transition: "color 0.3s cubic-bezier(0.4,0,0.2,1) 0.12s",
                   }}
                 >
-                  &laquo;&nbsp;{t.quote}&nbsp;&raquo;
+                  &laquo;&nbsp;{t.quote.length > 200 ? t.quote.slice(0, 200) : t.quote}
+                  {t.quote.length > 200 && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setOpenReview(t); }}
+                      className="text-[#FF4A3E] font-medium ml-1 hover:underline"
+                    >
+                      ...lire plus
+                    </button>
+                  )}
+                  {t.quote.length <= 200 && <>&nbsp;&raquo;</>}
                 </blockquote>
 
                 <div className="flex items-center gap-3">
@@ -194,5 +196,44 @@ export default function TrustSection() {
         </div>
       </div>
     </section>
+
+    {/* Modal avis complet */}
+    {openReview && (
+      <div
+        className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
+        onClick={() => setOpenReview(null)}
+      >
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+        <div
+          className="relative bg-white rounded-lg max-w-lg w-full p-8 shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            onClick={() => setOpenReview(null)}
+            className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-700 text-2xl leading-none"
+          >
+            &times;
+          </button>
+          <div className="flex gap-1 mb-4">
+            {Array.from({ length: 5 }).map((_, j) => (
+              <svg key={j} className="w-5 h-5" fill="#FF4A3E" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+              </svg>
+            ))}
+          </div>
+          <p className="text-[1rem] leading-relaxed text-[#1A1A1A] mb-4">&laquo; {openReview.quote} &raquo;</p>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center text-[0.7rem] font-bold bg-[#FF4A3E] text-white">
+              {openReview.initials}
+            </div>
+            <div>
+              <p className="text-[0.85rem] font-medium text-[#1A1A1A]">{openReview.name}</p>
+              <p className="text-[0.75rem] text-neutral-500">{openReview.detail}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

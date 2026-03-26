@@ -46,7 +46,7 @@ export default async function handler(req, res) {
     const result = {
       rating: raw.rating,
       totalReviews: raw.userRatingCount,
-      reviews: (raw.reviews || []).slice(0, 3).map((r) => ({
+      reviews: (raw.reviews || []).slice(0, 5).map((r) => ({
         name: r.authorAttribution?.displayName || "Anonyme",
         text: r.text?.text || "",
         stars: r.rating || 5,
