@@ -1155,11 +1155,11 @@ function LivrablesSection() {
                 ))}
               </div>
               <p className="text-[0.9rem] leading-relaxed text-white/90 mb-3">
-                « {temo.text.length > 120 ? temo.text.slice(0, 120) : temo.text}
-                {temo.text.length > 120 && (
+                « {temo.text.length > 200 ? temo.text.slice(0, 200) : temo.text}
+                {temo.text.length > 200 && (
                   <button onClick={() => setOpenReview(temo)} className="text-[#FF4A3E] font-medium ml-1 hover:underline">...lire plus</button>
                 )}
-                {temo.text.length <= 120 && " »"}
+                {temo.text.length <= 200 && " »"}
               </p>
               <p className="text-[0.82rem] text-white/50">— {temo.name}</p>
             </div>
@@ -1303,11 +1303,11 @@ function LivrablesSection() {
                       ))}
                     </div>
                     <p className="text-[0.95rem] md:text-[1.05rem] leading-relaxed text-[#1A1A1A]">
-                      « {temo.text.length > 120 ? temo.text.slice(0, 120) : temo.text}
-                      {temo.text.length > 120 && (
+                      « {temo.text.length > 200 ? temo.text.slice(0, 200) : temo.text}
+                      {temo.text.length > 200 && (
                         <button onClick={() => setOpenReview(temo)} className="text-[#FF4A3E] font-medium ml-1 hover:underline pointer-events-auto">...lire plus</button>
                       )}
-                      {temo.text.length <= 120 && " »"}
+                      {temo.text.length <= 200 && " »"}
                     </p>
                   </div>
                   <p className="text-[0.9rem] text-neutral-500 mt-4">— {temo.name}</p>
