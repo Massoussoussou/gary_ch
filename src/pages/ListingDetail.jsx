@@ -963,7 +963,7 @@ export default function ListingDetail() {
               </div>
 
               {(agent.quote || agent.quote_en) && (
-                <div className=”agent-quote”>”{lang === “en” && agent.quote_en ? agent.quote_en : agent.quote}”</div>
+                <div className="agent-quote">{"\u201C"}{lang === "en" && agent.quote_en ? agent.quote_en : agent.quote}{"\u201D"}</div>
               )}
 
               <div className="agent-contacts">
