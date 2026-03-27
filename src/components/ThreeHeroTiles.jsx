@@ -111,9 +111,9 @@ export default function ThreeHeroTiles() {
                 to={band.to}
                 className={`group relative flex ${band.justify} items-center overflow-hidden px-4 sm:px-6`}
               >
-                {/* Ligne raccourcie entre les boutons (mobile only) */}
+                {/* Ligne entre les boutons (mobile only) */}
                 {i > 0 && (
-                  <div className="absolute top-0 left-[10%] right-[10%] h-[1px] bg-white/50 sm:hidden" />
+                  <div className="absolute top-0 left-0 right-0 h-[1px] bg-white/50 sm:hidden" />
                 )}
 
                 {/* Remplissage orange animé (desktop only) */}
