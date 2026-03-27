@@ -76,6 +76,19 @@ export default function FormStep3({
 
       <div className={`form-group${!data.phone && data._touched?.phone ? " has-error" : ""}`}>
         <label htmlFor="fieldPhone">{t("form.phone")}</label>
+        <input
+          type="tel"
+          id="fieldPhone"
+          placeholder="+41 79 000 00 00"
+          value={data.phone}
+          onChange={(e) => update("phone", e.target.value)}
+          onBlur={() => update("_touched", { ...data._touched, phone: true })}
+        />
+      </div>
+
+      {/* SMS VERIFICATION — temporairement désactivé
+      <div className={`form-group${!data.phone && data._touched?.phone ? " has-error" : ""}`}>
+        <label htmlFor="fieldPhone">{t("form.phone")}</label>
         {sms.status !== "verified" ? (
           <div className="phone-verify-row">
             <input
@@ -120,6 +133,7 @@ export default function FormStep3({
         countdown={sms.countdown}
         onResend={handleSendCode}
       />
+      */}
 
       <div className="form-group">
         <label htmlFor="fieldEmail">
