@@ -49,17 +49,17 @@ const S = {
 
 function LogoWithHoverAnim() {
   const [showVideo, setShowVideo] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
   const videoRef = useRef(null);
   const { t } = useLocale();
 
   const handleMouseEnter = () => {
+    if (!videoReady || !videoRef.current) return;
     setShowVideo(true);
-    if (videoRef.current) {
-      try {
-        videoRef.current.currentTime = 0
-        videoRef.current.play().catch(() => {})
-      } catch {}
-    }
+    try {
+      videoRef.current.currentTime = 0
+      videoRef.current.play().catch(() => setShowVideo(false))
+    } catch { setShowVideo(false) }
   };
   const handleEnded = () => setShowVideo(false);
 
@@ -96,8 +96,9 @@ function LogoWithHoverAnim() {
         playsInline
         preload="auto"
         loop={false}
+        onCanPlayThrough={() => setVideoReady(true)}
         onEnded={handleEnded}
-        onError={() => setShowVideo(false)}
+        onError={() => { setVideoReady(false); setShowVideo(false); }}
         controls={false}
         disablePictureInPicture
         controlsList="nodownload noplaybackrate noremoteplayback nofullscreen"
