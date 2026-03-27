@@ -91,7 +91,7 @@ function LogoWithHoverAnim() {
           transformOrigin: 'center',
           willChange: 'transform',
         }}
-        src="https://gary.ch/wp-content/uploads/2024/07/GARY_Anim_4K_HORIZONTAL.mp4"
+        src="/videos/GARY_Anim_4K_HORIZONTAL.mp4"
         muted
         playsInline
         preload="auto"

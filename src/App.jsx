@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import Header from './components/layout/Header.jsx'
+import WelcomeBanner from './components/layout/WelcomeBanner.jsx'
 import Footer from './components/layout/Footer.jsx'
 import IntroCover from './components/layout/IntroCover.jsx'
 import ScrollToTop from "./components/layout/ScrollToTop.jsx";
@@ -121,6 +122,7 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col bg-bg text-text font-sans">
       <Header />
+      <WelcomeBanner />
       {!isEstimer && <IntroCover />}
       <ScrollToTop />
       <main className="flex-1">
