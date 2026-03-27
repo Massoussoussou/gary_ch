@@ -204,9 +204,9 @@ export default function Header(){
               { to: link("sell") + '#constat',        label: t("nav.sell_sub.observation") },
               { to: link("sell") + '#difference',     label: t("nav.sell_sub.difference") },
               { to: link("sell") + '#parcours',       label: t("nav.sell_sub.journey") },
+              { to: link("sell") + '#vendus',         label: t("nav.sell_sub.recently_sold") },
               { to: link("sell") + '#livrables',      label: t("nav.sell_sub.deliverables") },
               { to: link("sell") + '#faq',            label: t("nav.sell_sub.faq") },
-              { to: link("sell") + '#vendus',         label: t("nav.sell_sub.recently_sold") },
             ]},
             { to: link("estimate"),       label: t("nav.estimate") },
             { to: link("newProjects"), label: t("nav.new_projects") },
@@ -251,7 +251,11 @@ export default function Header(){
                           if (el) {
                             const headerH = headerRef.current?.offsetHeight || 72;
                             const y = el.getBoundingClientRect().top + window.scrollY - headerH - 20;
-                            window.scrollTo({ top: y, behavior: 'smooth' });
+                            if (window.__lenis) {
+                              window.__lenis.scrollTo(y, { duration: 1.2 });
+                            } else {
+                              window.scrollTo({ top: y, behavior: 'smooth' });
+                            }
                           }
                         } else {
                           window.location.href = sub.to;

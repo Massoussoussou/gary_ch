@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
+import { useLocale } from '../../hooks/useLocale.js'
 
 const STORAGE_KEY = 'gary_welcome_banner_dismissed'
 
 export default function WelcomeBanner() {
+  const { lang } = useLocale()
   const [visible, setVisible] = useState(false)
   const bannerRef = useRef(null)
 
@@ -36,7 +38,9 @@ export default function WelcomeBanner() {
       >
         <span className="font-serif italic text-[#FF4A3E] mr-1">GARY</span>
         <span className="font-serif text-white/90 text-sm sm:text-base tracking-wide">
-          {' '}fait peau neuve — Bienvenue sur notre nouveau site
+          {lang === 'en'
+            ? ' has a brand new look — Welcome to our new website'
+            : ' fait peau neuve — Bienvenue sur notre nouveau site'}
         </span>
         <button
           onClick={dismiss}

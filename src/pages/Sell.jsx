@@ -716,7 +716,7 @@ function ParcoursSection() {
   return (
     <>
     {/* ── Mobile : parcours en cartes verticales ── */}
-    <section id="parcours" className="md:hidden relative bg-[#F5F2ED] py-14 px-5" style={{ zIndex: 2 }}>
+    <section id="parcours-mobile" className="md:hidden relative bg-[#F5F2ED] py-14 px-5" style={{ zIndex: 2 }}>
       <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-4">
         {t("sell.journey_label")}
       </p>
@@ -757,6 +757,7 @@ function ParcoursSection() {
     {/* ── Desktop : parcours scroll-driven ── */}
     <section
       ref={sectionRef}
+      id="parcours"
       className="relative hidden md:block"
       style={{ zIndex: 2, height: `${(total + 1) * 100}vh` }}
     >
@@ -1103,7 +1104,7 @@ function LivrablesSection() {
   return (
     <>
     {/* ── Mobile : livrables + témoignages en cartes ── */}
-    <section className="md:hidden relative py-14 px-5 overflow-hidden" style={{ zIndex: 2 }}>
+    <section id="livrables-mobile" className="md:hidden relative py-14 px-5 overflow-hidden" style={{ zIndex: 2 }}>
       {/* Fond photo + overlay noir */}
       <img
         src="/img/gary/extver5.webp"
@@ -1462,7 +1463,7 @@ function GenevaMapSection() {
   return (
     <>
     {/* ── Mobile : FAQ accordéon ── */}
-    <section className="md:hidden relative bg-white py-14 px-5" style={{ zIndex: 2 }}>
+    <section id="faq-mobile" className="md:hidden relative bg-white py-14 px-5" style={{ zIndex: 2 }}>
       <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-3">
         {t("sell.faq_label")}
       </p>
@@ -1512,8 +1513,8 @@ function GenevaMapSection() {
       </div>
     </section>
 
-    {/* ── Desktop : carte interactive ── */}
-    <section className="relative bg-white hidden md:block">
+    {/* ── Desktop : carte interactive + FAQ ── */}
+    <section id="faq" className="relative bg-white hidden md:block">
       <div className="relative z-10 text-center pt-20 -mb-40 px-4">
         <p className="text-[clamp(1rem,3vw,1.3rem)] uppercase tracking-[0.2em] text-[#FF4A3E] font-semibold mb-3">
           {t("sell.faq_label")}
@@ -1676,7 +1677,7 @@ function FAQSection() {
   const [openIdx, setOpenIdx] = useState(null);
 
   return (
-    <section id="faq" className="relative bg-white py-20 md:py-28">
+    <section className="relative bg-white py-20 md:py-28">
       <div className="max-w-[1100px] mx-auto px-5 md:px-8 grid md:grid-cols-[1fr_1.2fr] gap-12 md:gap-20 items-start">
         {/* Colonne gauche — titre sticky */}
         <div className="md:sticky md:top-32">

@@ -79,9 +79,9 @@ export default function DrawerNav({ open, onClose }) {
     { to: link("sell") + "#constat",        label: t("nav.sell_sub.observation") },
     { to: link("sell") + "#difference",     label: t("nav.sell_sub.difference") },
     { to: link("sell") + "#parcours",       label: t("nav.sell_sub.journey") },
+    { to: link("sell") + "#vendus",         label: t("nav.sell_sub.recently_sold") },
     { to: link("sell") + "#livrables",      label: t("nav.sell_sub.deliverables") },
     { to: link("sell") + "#faq",            label: t("nav.sell_sub.faq") },
-    { to: link("sell") + "#vendus",         label: t("nav.sell_sub.recently_sold") },
   ];
 
   const sellPath = link("sell");
@@ -254,18 +254,46 @@ export default function DrawerNav({ open, onClose }) {
                   }}
                 >
                   <ul className="mt-2 ml-4 space-y-1.5">
-                    {vendreSubs.map((sub) => (
+                    {vendreSubs.map((sub) => {
+                      const hasHash = sub.to.includes('#');
+                      const handleSubClick = hasHash ? (e) => {
+                        e.preventDefault();
+                        onClose();
+                        const hash = sub.to.split('#')[1];
+                        const basePath = sub.to.split('#')[0];
+                        const navigate = () => {
+                          // On mobile: prefer -mobile variant, fall back to main id
+                          const mobileEl = document.getElementById(hash + '-mobile');
+                          const el = (mobileEl && mobileEl.offsetParent !== null) ? mobileEl : document.getElementById(hash);
+                          if (el) {
+                            const headerH = document.querySelector('header')?.offsetHeight || 72;
+                            const y = el.getBoundingClientRect().top + window.scrollY - headerH - 20;
+                            if (window.__lenis) {
+                              window.__lenis.scrollTo(y, { duration: 1.2 });
+                            } else {
+                              window.scrollTo({ top: y, behavior: 'smooth' });
+                            }
+                          }
+                        };
+                        if (pathname === basePath || pathname === basePath + '/') {
+                          setTimeout(navigate, 350);
+                        } else {
+                          window.location.href = sub.to;
+                        }
+                      } : onClose;
+                      return (
                       <li key={sub.label}>
                         <NavLink
-                          to={sub.to}
-                          onClick={onClose}
+                          to={hasHash ? sub.to.split('#')[0] : sub.to}
+                          onClick={handleSubClick}
                           className="group flex items-center justify-between rounded-xl px-4 py-3 border border-black/8 bg-white/50 hover:bg-white/80 hover:border-black/15 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A3E]/30"
                         >
                           <span className="text-[15px] text-black/85">{sub.label}</span>
                           <span className="text-[13px] text-black/25 group-hover:text-black/45 transition-colors">→</span>
                         </NavLink>
                       </li>
-                    ))}
+                      );
+                    })}
                   </ul>
                 </div>
               </li>
